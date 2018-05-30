@@ -30,12 +30,12 @@ env:
   global:
     - MAVEN_OPTS="-Xmx2g"
   matrix:
-    - MODULE=up            # 5 min 29 sec
+    - MODULE=up             # ?? min ?? sec
     # sorted from longest to shortest (to minimise the overall test stage duration)
-    - MODULE=jwjoubert      # 28 min 51 sec
-    - MODULE=djdebeer       # 10 min 34 sec
-    - MODULE=nmviljoen      # 8 min 39 sec
-    - MODULE=onnene         # 8 min 9 sec
+    - MODULE=djdebeer       # ?? min ?? sec
+    - MODULE=jwjoubert      # ?? min ?? sec
+    - MODULE=nmviljoen      # ?? min ?? sec
+    - MODULE=onnene         # ?? min ?? sec
     
 cache:
   directories:
