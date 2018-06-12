@@ -36,7 +36,7 @@ public class DirectoryConfig {
 	    public static final int MATSIM_ITERATION_NUMBER = 10;
 	    
 	    // Parent Directory
-	    private static final String PARENT_DIRECTORY = "C:\\Users\\NNNOB\\Documents\\GitHub\\matsim-sa\\output\\SBO_input\\";
+	    private static final String PARENT_DIRECTORY = "C:\\Users\\NNNOB\\Documents\\GitHub\\SBO_input\\";
 	    
 	    // MATSim input files 
 	    public static final String CONFIG_FILE = PARENT_DIRECTORY + "common\\config.xml";

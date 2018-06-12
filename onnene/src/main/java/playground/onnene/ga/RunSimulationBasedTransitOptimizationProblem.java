@@ -49,7 +49,7 @@ import org.moeaframework.core.spi.OperatorFactory;
 public class RunSimulationBasedTransitOptimizationProblem {
 	
     //private static final Logger LOGGER = Logger.getLogger(RunSimulationBasedTransitOptimizationProblem.class);
-    private static final int MAX_MOEA_EVALUATIONS = 2;
+    private static final int MAX_MOEA_EVALUATIONS = 5;
     public static int callsToEvaluate = 0;
     
     private static FileOutputStream FOS;
@@ -110,16 +110,14 @@ public class RunSimulationBasedTransitOptimizationProblem {
             .withProperty("operator", "MyCrossover+MyMutation")
             .withProperty("MyCrossover.Rate", 0.75)
             .withProperty("MyMutation.Rate", 0.25)
-            .withProperty("populationSize", 2)
+            .withProperty("populationSize", 5)
             .withMaxEvaluations(MAX_MOEA_EVALUATIONS)
             .withInstrumenter(instrumenter)
             .run();
         
         //Accumulator acc = new Accumulator();
         Accumulator acc = instrumenter.getLastAccumulator();
-        
-        
-        
+                
         new Plot()
             .add("NSGAII", result)
             .setXLabel("User-Cost")
