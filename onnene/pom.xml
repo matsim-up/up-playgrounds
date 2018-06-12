@@ -1,11 +1,86 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-    	<groupId>org.matsim.up</groupId>
-    	<artifactId>up-playgrounds</artifactId>
-    	<version>0.10.0-SNAPSHOT</version>
-  	</parent>
-  	<modelVersion>4.0.0</modelVersion>
-  	<groupId>org.matsim.up.up-playgrounds</groupId>
-  	<artifactId>onnene</artifactId>
-  	<name>onnene</name>
+		<groupId>org.matsim.up</groupId>
+		<artifactId>up-playgrounds</artifactId>
+		<version>0.10.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.matsim.up.up-playgrounds</groupId>
+	<artifactId>onnene</artifactId>
+	<name>onnene</name>
+
+	<dependencies>
+		<!-- Include some MATSim extensions -->
+		<dependency>
+			<groupId>org.matsim.contrib</groupId>
+			<artifactId>matsim-gtfs</artifactId>
+			<version>0.8.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+
+		<!-- JGraph dependencies -->
+		<dependency>
+			<groupId>org.jgrapht</groupId>
+			<artifactId>jgrapht-core</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jgrapht</groupId>
+			<artifactId>jgrapht-io</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jgrapht</groupId>
+			<artifactId>jgrapht-ext</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+
+		<!-- Processes XML -->
+		<dependency>
+			<groupId>com.jcabi</groupId>
+			<artifactId>jcabi-xml</artifactId>
+			<version>0.21.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>4.1</version>
+		</dependency>
+
+	   <dependency>
+	       <groupId>com.thoughtworks.xstream</groupId>
+	  	   <artifactId>xstream</artifactId>
+	       <version>1.4</version>
+	   </dependency>
+
+		<!-- Multiobjective Evolutionary Algorithm framework  -->
+        <dependency>
+		    <groupId>org.moeaframework</groupId>
+		    <artifactId>moeaframework</artifactId>
+		    <version>2.12</version>
+       </dependency>
+
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180130</version>
+		</dependency>
+		<dependency>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+
+
+	</dependencies>
 </project>
