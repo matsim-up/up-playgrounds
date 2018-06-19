@@ -60,7 +60,7 @@ public class CreateFeasibleSolutions {
 			numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
 			String InitialPopFolder = DirectoryConfig.INITIAL_POPULATION_DIRECTORY;
 	    	String feasibleRoutes = DirectoryConfig.FEASIBLE_ROUTES_FILE;
-	    	cfs.makeInitialPop(feasibleRoutes,  numLines, InitialPopFolder);
+	    	cfs.makeInitialPop(feasibleRoutes, numLines, InitialPopFolder);
 	    	
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -112,8 +112,22 @@ public class CreateFeasibleSolutions {
 			    	collection.add(a);
 
 		    	}
-		    	
 
+		    	
+		    	if (collection.size() < numLines){
+		    		
+		    	} else if (collection.size() == numLines) {
+		    				    	
+		    		System.out.println("Feasible solution " + index + " has " + collection.size() + " routes");
+		    		
+		    	} else {
+		    		
+		    		System.out.println("This solution has only " + collection.size() + " so we will discard it");
+		    		continue;
+		    		
+		    	}
+		    	 
+		    	
 		    	String initialPopFiles = outputFolder + "transitSchedule" + index + ".xml";					    	
 		    	feasibleRoutesList.add(TS.createTransitScheduleXML(collection, index, numLines, initialPopFiles));			   
 			}

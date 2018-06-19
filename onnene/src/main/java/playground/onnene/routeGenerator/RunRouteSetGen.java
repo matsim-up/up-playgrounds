@@ -40,7 +40,7 @@ public class RunRouteSetGen {
 	public static void main(String[] args) throws Exception {
 		
 		int numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
-		List temp = RouteSetGen.getPoolOfFeasibleRoutes();
+		List<List<String>> temp = RouteSetGen.getFeasibleRoutesByStratifiedSampling();
 		int numOfSplit = temp.size()/numLines;
 		
 		String transitNetworkXml = DirectoryConfig.DECOMPRESSED_TRANSIT_NETWORK_XML_FILE;

@@ -60,7 +60,7 @@ public class FileMakerUtils {
 	          gzipOuputStream.finish();
 	          gzipOuputStream.close();
 
-	          System.out.println("The file was compressed successfully!");
+	          //System.out.println("The file was compressed successfully!");
 
 	      } catch (IOException ex) {
 
@@ -90,7 +90,7 @@ public class FileMakerUtils {
 	          gZIPInputStream.close();
 	          fileOutputStream.close();
 
-	          System.out.println("The file was decompressed successfully!");
+	          //System.out.println("The file was decompressed successfully!");
 
 	      } catch (IOException ex) {
 

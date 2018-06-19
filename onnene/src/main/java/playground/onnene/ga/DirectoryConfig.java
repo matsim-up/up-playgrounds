@@ -35,6 +35,8 @@ public class DirectoryConfig {
 		// MATSim Iterations
 	    public static final int MATSIM_ITERATION_NUMBER = 10;
 	    
+	   
+	    
 	    // Parent Directory
 	    private static final String PARENT_DIRECTORY = "C:\\Users\\NNNOB\\Documents\\GitHub\\SBO_input\\";
 	    
@@ -42,9 +44,15 @@ public class DirectoryConfig {
 	    public static final String CONFIG_FILE = PARENT_DIRECTORY + "common\\config.xml";
 	    public static final String TRANSIT_SCHEDULE_FILE = PARENT_DIRECTORY + "common\\transitSchedule.xml";
 	    public static final String TRANSIT_VEHICLES_FILE = PARENT_DIRECTORY + "common\\transitVehicles.xml";
+	    public static final String TRANSIT_NETWORK_FILE = PARENT_DIRECTORY + "common\\transitNetwork.xml";
 	    
-	    // MATSim output directory
+	    
+	    
+	    // MATSim Result directory
 	    public static final String MATSIM_OUTPUT_FOLDER = PARENT_DIRECTORY + "output\\";
+	    
+	    // Pareto solutions directory
+	    public static final String RESULTS_FILE = PARENT_DIRECTORY + "pareto_solutions\\";
 	    
 	    //AFC data directory
 	    public static final String AFC_DATA_FOLDER = PARENT_DIRECTORY + "AFC_data\\";
@@ -54,8 +62,13 @@ public class DirectoryConfig {
 	    
 	    // Log Files Directory
 	    public static final String LOG_FOLDER_PATH = PARENT_DIRECTORY + "logs\\";
+	    public static final String CHECKPOINT_FILE = PARENT_DIRECTORY + "logs\\checkpointFile.dat";
 	    public static final String RUN_MOEA_LOG_FILE_PATH = LOG_FOLDER_PATH + "run_moea_log.txt";
 	    public static final String TRANSIT_PROBLEM_LOG_FILE_PATH = LOG_FOLDER_PATH + "transit_problem_log.txt";
+	    
+	    //Scoring Functions
+	    public static final String USER_SCORING_FUNCTION_FILE = PARENT_DIRECTORY + "ScoringFunctionResults\\user_score.csv";
+	    public static final String OPERATOR_SCORING_FUNCTION_FILE = PARENT_DIRECTORY + "ScoringFunctionResults\\operator_score.csv";
 
 	    // Route Generation Utility Files 
 	    public static final String OD_NODES_FILE = PARENT_DIRECTORY + "route_gen_input\\46_myciti_station.csv";

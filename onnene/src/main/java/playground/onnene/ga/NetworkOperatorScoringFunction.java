@@ -24,7 +24,11 @@ package playground.onnene.ga;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -58,15 +62,19 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 	LinkLeaveEventHandler, TransitDriverStartsEventHandler{
 	
 	private final Logger log = Logger.getLogger(NetworkOperatorScoringFunction.class);
-	private Map<Id<Vehicle>, Double> vehicleMap = new TreeMap<>();
-	private Map<Id<Vehicle>, Id<Link>> vehicleLinkMap = new TreeMap<>();
-	private Map<Id<Vehicle>, Double> vkt = new TreeMap<>();
+	private static Map<Id<Vehicle>, Double> vehicleMap = new TreeMap<>();
+	private static Map<Id<Vehicle>, Id<Link>> vehicleLinkMap = new TreeMap<>();
+	private static Map<Id<Vehicle>, Double> vkt = new TreeMap<>();
 	//private Map<Id<Person>,Double> travelledDistance = new HashMap<>(); 
-	private Map<Id<Vehicle>,Id<Person>> vehicles2Persons = new HashMap<>();
+	private static Map<Id<Vehicle>,Id<Person>> vehicles2Persons = new HashMap<>();
 	//private Map<Id<Person>, Double> personMap = new TreeMap<>();
-	private Map<Id<Vehicle>,Id<Person>> vehicleDriver = new HashMap<>();
+	private static Map<Id<Vehicle>,Id<Person>> vehicleDriver = new HashMap<>();
+	private static List<Double> totalTraveltime = new ArrayList<>();
 	private String freqOutput;
 	private Network network; 
+	
+	private static double totalvehTripDuration;
+	private static Double totalvehicleLength;
 
 	
 	public NetworkOperatorScoringFunction(String output, Network network) {
@@ -86,6 +94,7 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 		
 		vehicleMap = new TreeMap<>();
 		vehicleLinkMap = new TreeMap<>();
+		vehicles2Persons = new TreeMap<>();
 			
 	}
 	
@@ -118,7 +127,7 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 //				System.out.println("start time for " + event.getVehicleId() + " is "  + vehTripStartTime);
 //				System.out.println("end time for " + event.getVehicleId() + " is " +  event.getTime());
 				double vehTripDuration = event.getTime() - vehTripStartTime;
-				
+				//System.out.println("end time for " + event.getVehicleId() + " is " +  event.getTime());
 								
 				BufferedWriter bw = IOUtils.getAppendingBufferedWriter(freqOutput);
 				try {
@@ -127,6 +136,8 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 							
 							bw.write(event.getVehicleId().toString() + "," + vehTripDuration);
 							bw.newLine();
+							
+							totalvehTripDuration += vehTripDuration;
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -144,6 +155,8 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 				/* Remove vehicle from map. */
 				vehicleMap.remove(event.getVehicleId());
 			}
+			 
+			 //System.out.println("end time for " + totalvehTripDuration);
 		}
 		
 	}
@@ -154,8 +167,8 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 	public void handleEvent(LinkLeaveEvent event) {
 				
 		Double value = 0.0;
+		//double totalvehicleLength = 0.0;
 		
-		Double totalLength = 0.0;
 		
 		if (this.vehicleLinkMap.containsKey(event.getVehicleId())) {
 					
@@ -164,7 +177,7 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 		  if (value == null) {
 			    value = 0.0;
 		      }
-		 totalLength = this.vkt.put(event.getVehicleId(), length);		
+		  totalvehicleLength = this.vkt.put(event.getVehicleId(), length);		
 		 //totalLength = this.vkt.put(event.getVehicleId(), value + length);	
 		 
 		}
@@ -203,12 +216,69 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 	public void handleEvent(TransitDriverStartsEvent event) {
 		
 		if (!vehicleDriver.containsKey(event.getDriverId())){
-			vehicles2Persons.put(event.getVehicleId(), event.getDriverId());
+			vehicleDriver.put(event.getVehicleId(), event.getDriverId());
 		}
+		
 		
 		//System.out.println(event);
 		
 	}
+	
+	public static double getOperatorScore() {
+		
+		double vehicleOpTimeCost = (vehicleDriver.size() * (totalvehTripDuration/(3600)));
+		
+		//double vehicleOpTimeCost = (vehicleDriver.size() * (totalvehTripDuration/(3600))/vehicleMap.size());
+		
+		//double vehicleOpDistanceCost = ((totalvehicleLength/1000) * 100);
+		
+		double vehicleOpDistanceCost = ((totalvehicleLength/1000) * vehicleMap.size());
+		
+		//double totalOpCost = vehicleOpTimeCost + vehicleOpDistanceCost;
+		
+		BigDecimal totalOpCost = new BigDecimal(vehicleOpTimeCost + vehicleOpDistanceCost);
+		
+		BigDecimal operatorScore = totalOpCost.setScale(4, RoundingMode.HALF_DOWN);
+		
+		//BigDecimal durationInHr = biggestTime.subtract(smallestTime).divide(new BigDecimal(3600), 2, RoundingMode.HALF_UP);
+		
+//		System.out.println("total number of Drivers " + vehicleDriver.size());
+//
+//		System.out.println("total number of Buses " + vehicleMap.size());
+//		
+//		System.out.println("total veh time cost " + vehicleOpTimeCost);
+//		
+//		System.out.println("total veh distance cost " + vehicleOpDistanceCost);
+//		
+//		System.out.println("total operations cost " + totalOpCost);
+//		
+//		System.out.println("final total operations cost " + operatorScore.doubleValue());
+		
+		return operatorScore.doubleValue();		
+	}
+	
+	
+	
+//	public static int getNumDrivers() {
+//				
+//		return vehicleDriver.size();		
+//	}
+//	
+//	public static int getNumVehicles() {
+//		
+//		return vehicleMap.size();
+//	}
+//	
+//	public static int getVehicleHours() {
+//		
+//		return (int) totalvehTripDuration;
+//	}
+//	
+//	public static double getVehicleKilometer() {
+//			
+//		return totalvehicleLength/1000;
+//	}
+	
 
 
 

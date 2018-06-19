@@ -48,7 +48,7 @@ public class RouteSetGen {
 		
 		try {
 			
-			List temp = getPoolOfFeasibleRoutes2();
+			List<List<String>> temp = getFeasibleRoutesByStratifiedSampling() ;
 			int numOfSplit = temp.size()/numLines;
 			
 			System.out.print(splitPopulationIntoIndividuals(temp, numOfSplit));
@@ -59,7 +59,7 @@ public class RouteSetGen {
 
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 
@@ -156,7 +156,7 @@ public class RouteSetGen {
 	    return result;
 	}
 	
-	public static List getPoolOfFeasibleRoutes2() throws IOException {
+	public static List<List<String>> getFeasibleRoutesByStratifiedSampling() throws IOException {
 		
 		Graph<CustomVertex, CustomEdge> graph;
 		
@@ -174,13 +174,12 @@ public class RouteSetGen {
 
 			graph = getGraphFromGraphMLFile();
 			
-
-			int counter = 0;
+			//int counter = 0;
 			String line = "";
 			br.readLine(); // skip the header line
 			while ((line = br.readLine()) != null) {
 
-				counter++;
+				//counter++;
 
 				String[] od = line.split(",");
 
@@ -333,8 +332,10 @@ public class RouteSetGen {
 					
 					
 					temp = lol.get(y);
+					System.out.println(temp.size());
 					//System.out.println(RouteSetGen.choice(temp, r));
 					vertLst.add(RouteSetGen.choice(temp, r));
+					
 					//System.out.println();
 					//System.out.print(ooo);
 							
@@ -342,7 +343,9 @@ public class RouteSetGen {
 					
 					//System.out.println();
 				}
-				 
+				
+				
+				
 				
 			}
 			
@@ -439,12 +442,12 @@ public class RouteSetGen {
 	
 	
 	
-	public static List getPoolOfFeasibleRoutes() throws IOException {
+	public static List<List<String>> getFeasibleRoutesByRandomSampling() throws IOException {
 		
 		Graph<CustomVertex, CustomEdge> graph;
 		List<GraphPath<CustomVertex, CustomEdge>> totalPaths = new ArrayList<>();
-		List vertLst = new ArrayList();
-		List lst2 = new ArrayList();
+		List<List<String>> vertLst = new ArrayList<>();
+		//List<List<String>> lst2 = new ArrayList<>();
 		
 		int numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
 				
@@ -777,7 +780,7 @@ public class RouteSetGen {
 
 	public static List<GraphPath<CustomVertex, CustomEdge>> getKShortestPaths(
 			Graph<CustomVertex, CustomEdge> directedGraph, CustomVertex startVertex, CustomVertex endVertex) {
-		KShortestPaths<CustomVertex, CustomEdge> kShortestPaths = new KShortestPaths<>(directedGraph, 5);
+		KShortestPaths<CustomVertex, CustomEdge> kShortestPaths = new KShortestPaths<>(directedGraph, 1500);
 		List<GraphPath<CustomVertex, CustomEdge>> paths = kShortestPaths.getPaths(startVertex, endVertex);
 
 		// System.out.print("Pair: " + " [" + startVertex + "," + endVertex + "]" + "\n");

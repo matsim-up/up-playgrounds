@@ -100,8 +100,8 @@ class Vehicle {
         d2.appendChild(e);
         DOMSource doms = new DOMSource(d2);
         //String fileName = "C:\\Users\\NNNOB\\Documents\\GitHub\\matsim-sa\\output\\SBO_input\\common\\transitVehicles" + ".xml";
-        String fileName = DirectoryConfig.TRANSIT_VEHICLES_FILE;
-        StreamResult sr = new StreamResult(new File(fileName));
+        String vehicleFile = DirectoryConfig.TRANSIT_VEHICLES_FILE;
+        StreamResult sr = new StreamResult(new File(vehicleFile));
         
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer t = tf.newTransformer();
@@ -109,6 +109,6 @@ class Vehicle {
         t.setOutputProperty(OutputKeys.INDENT, "yes");
         t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         t.transform(doms, sr);
-        System.out.println("DONE!!!");
+        //System.out.println("DONE!!!");
     }
 }

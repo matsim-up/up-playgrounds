@@ -156,8 +156,7 @@ public class ProblemUtils {
         	routefromJsonLink.add(temp);  	
        
     	}
-    	
-  	
+    	 	
     	String routesStr = Arrays.toString(routefromJsonLink.toArray()).toString();
 	    String[] arr = routesStr.split("],");
 	   

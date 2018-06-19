@@ -21,45 +21,62 @@
  */
 package playground.onnene.ga;
 
-import java.util.Properties;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import org.moeaframework.core.FrameworkException;
+import org.moeaframework.core.NondominatedPopulation;
+import org.moeaframework.core.PopulationIO;
 import org.moeaframework.core.Problem;
-import org.moeaframework.core.Variation;
-import org.moeaframework.core.spi.OperatorProvider;
-import org.moeaframework.util.TypedProperties;
+import org.moeaframework.core.spi.ProblemProvider;
 
 /**
- * This is a utility class for the GA, it specifies the 
- * variation operators to be used and their probabilities
- * 
  * @author Onnene
  *
  */
-public class GA_OperatorProvider extends OperatorProvider {
+public class GA_ProblemProvider extends ProblemProvider {
+
+	@Override
+	public Problem getProblem(String name) {
+		
+		if (name.equalsIgnoreCase("SimulationBasedTransitOptimizationProblem")) {
+			
+						try {
+					return new SimulationBasedTransitOptimizationProblem();
+				} catch (FileNotFoundException e) {
+					
+					e.printStackTrace();
+				}				
+		}
+		
+		else {
+			
+			return null;						
+		}
+		
+		return null;		
+	}
 	
-	    @Override
-	    public String getMutationHint(Problem problem) {
-	        return "MyCrossover+MyMutation";
-	    }
+	
 
-	    @Override
-	    public String getVariationHint(Problem problem) {
-	        return "MyCrossOver+MyMutation";
-	    }
-
-	    @Override
-	    public Variation getVariation(String name, Properties properties, Problem problem) {
-	        
-	        TypedProperties typedProperties = new TypedProperties(properties);
-
-	        if (name.equalsIgnoreCase("MyCrossover")) {
-	            return new Crossover(typedProperties.getDouble("MyCrossover.Rate", 0.75));
-	        } else if (name.equalsIgnoreCase("MyMutation")) {
-	            return new Mutation(typedProperties.getDouble("MyMutation.Rate", 0.25));
-	        }
-
-	        // No match, return null
-	        return null;
-	    }
+	@Override
+	public NondominatedPopulation getReferenceSet(String name) {
+		
+		if (name.equalsIgnoreCase("SimulationBasedTransitOptimizationProblem")){
+			
+			try {
+				return new NondominatedPopulation(PopulationIO.readObjectives(new File("myProblemRefSet.txt")));
+			} catch (IOException e) {
+				throw new FrameworkException(e);
+			}
+			
+		}
+		else {
+			
+			return null;
+		}
+	}
+		
 
 }

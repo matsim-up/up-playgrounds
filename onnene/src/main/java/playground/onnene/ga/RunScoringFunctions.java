@@ -21,8 +21,6 @@
  */
 package playground.onnene.ga;
 
-import java.util.List;
-
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.ConfigUtils;
@@ -48,9 +46,9 @@ public class RunScoringFunctions {
 		Header.printHeader(RunScoringFunctions.class, args);
 		
 		String eventsFile = args[0];
-		String output = args[1];
+		String userScoreOutputFile = args[1];
 		String networkFile = args[2];
-		String operationsOutput = args[3];	
+		String operatorScoreOutputFile = args[3];	
 		
 		//Score Function 2
 		Scenario scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());	
@@ -63,8 +61,8 @@ public class RunScoringFunctions {
 		
 		//Score Function 1
 		EventsManager manager = new EventsManagerImpl();		
-		manager.addHandler(new NetworkUserScoringFunction(output));	
-		manager.addHandler(new NetworkOperatorScoringFunction(operationsOutput, scenario.getNetwork()));
+		manager.addHandler(new NetworkUserScoringFunction(userScoreOutputFile));	
+		manager.addHandler(new NetworkOperatorScoringFunction(operatorScoreOutputFile, scenario.getNetwork()));
 		
 		new MatsimEventsReader(manager).readFile(eventsFile);
 		//manager.addHandler(new CarTravelDistanceEvaluator(scenario.getNetwork()));
@@ -80,16 +78,22 @@ public class RunScoringFunctions {
 //		
 		
 		//NetworkUserScoringFunction nuc = new NetworkUserScoringFunction(output);
-		List<Double> totalVehicleTime = NetworkUserScoringFunction.getTotalVehicleTime();
+		//List<Double> totalVehicleTime = NetworkUserScoringFunction.getUsersTimeList();
 		
-		double sum = 0.0;
+		double aaa = NetworkUserScoringFunction.getUserScore();
 		
-		for(Double tvt: totalVehicleTime) {
-			
-			sum += tvt;
-		}
-		System.out.println(sum);
-		System.out.println(NetworkUserScoringFunction.getTotalVehicleTime());
+		
+		double bbb = NetworkOperatorScoringFunction.getOperatorScore();
+		
+//		double sum = 0.0;
+//		
+//		for(Double tvt: totalVehicleTime) {
+//			
+//			sum += tvt;
+//		}
+		System.out.println("user score is " + aaa + " minutes");
+		System.out.println("operator score is " + bbb + " rands");
+		///System.out.println(NetworkUserScoringFunction.getTotalVehicleTime());
 		
 		
 		Header.printFooter();

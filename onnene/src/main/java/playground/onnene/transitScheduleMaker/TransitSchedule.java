@@ -79,6 +79,8 @@ public class TransitSchedule {
 
         //departure hours
         int [] hours = {4,4,4,4,3,3,3,3,3,3,4,4,4,2,2,2};
+        
+        //System.out.println("Decision variable has " + f2.size() + " routes");
 
         Iterator<String> iterator = f2.iterator();
 
@@ -96,8 +98,9 @@ public class TransitSchedule {
 
             int routenum = Integer.parseInt(a[1]);
             String routes = iterator.next();
-
-            System.out.println(routes);
+            
+           
+            //System.out.println(routes);
              
             
             for(int i = 0; i<routenum; i++){
@@ -354,7 +357,7 @@ public class TransitSchedule {
         t.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, dt.getSystemId());
         t.transform(doms, sr);
         
-        System.out.println("DONE!!!");
+        //System.out.println("DONE!!!");
         
         //write vehicles files
         v.output();
@@ -397,7 +400,7 @@ public class TransitSchedule {
     }
     
     
-    public static void string2Dom(String xmlSource) 
+    public static void string2Dom(String xmlSource, String outputFolder) 
             throws SAXException, ParserConfigurationException, IOException, TransformerException {
         // Parse the given input
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -418,7 +421,7 @@ public class TransitSchedule {
         DocumentType dt = di.createDocumentType("doctype","transitSchedule","http://www.matsim.org/files/dtd/transitSchedule_v1.dtd");
         transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, dt.getSystemId());
         
-        StreamResult result =  new StreamResult(new File("my-file.xml"));
+        StreamResult result =  new StreamResult(new File(outputFolder));
         
         transformer.transform(source, result);
     }

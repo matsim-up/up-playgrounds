@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,10 +44,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.core.api.experimental.events.EventsManager;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
+import org.matsim.core.events.EventsManagerImpl;
+import org.matsim.core.events.MatsimEventsReader;
+import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.moeaframework.core.Solution;
 import org.moeaframework.problem.AbstractProblem;
@@ -88,13 +93,13 @@ private Logger LOGGER = Logger.getLogger(SimulationBasedTransitOptimizationProbl
     @Override
     public void evaluate(Solution solution) {
     	
-    	System.out.println(callsToEvaluate++);
+    	//System.out.println(callsToEvaluate++);
 
     	DecisionVariable var = (DecisionVariable) solution.getVariable(0);
 
         
-        System.out.println("Number of MOEA Evaluations is:" + " " + currentMOEAEvaluationNumber++);
-        
+        //System.out.println("Number of MOEA Evaluations is " + currentMOEAEvaluationNumber++);
+        System.out.println("Number of MOEA Evaluations is " + callsToEvaluate++);
         
         JSONObject Jvar = var.getTransitSchedule();
         
@@ -103,24 +108,27 @@ private Logger LOGGER = Logger.getLogger(SimulationBasedTransitOptimizationProbl
         
         try {
 			ProblemUtils.getXMLFromJSONDecisionVar(Jvar, tScheduleFile);
+			FOS.write("\nMOEA evaluate(...) function called".getBytes());
 		} catch (IOException e2) {
 			e2.printStackTrace();
 		}
         
         try {
-            FOS.write("\nMOEA evaluate(...) function called".getBytes());
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
+			FOS.write("\nMOEA evaluate(...) function called".getBytes());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+            
         LOGGER.debug("\nMOEA evaluate(...) function called".getBytes());
         
 
-        String matsimOutputFolderPath = DirectoryConfig.MATSIM_OUTPUT_FOLDER + "\\" + currentMOEAEvaluationNumber + "\\";
+        String matsimOutputFolderPath = DirectoryConfig.MATSIM_OUTPUT_FOLDER + callsToEvaluate++ + "\\";
 
         runMatsim(DirectoryConfig.CONFIG_FILE, matsimOutputFolderPath);
         
         try {
-            double[] objectives = processOutputFiles(matsimOutputFolderPath, DirectoryConfig.MATSIM_ITERATION_NUMBER);
+        	
+            double[] objectives = processOutputFiles(matsimOutputFolderPath);
             
             //System.out.print(Arrays.toString(objectives));
             
@@ -171,6 +179,8 @@ private Logger LOGGER = Logger.getLogger(SimulationBasedTransitOptimizationProbl
         Controler controler = new Controler(scenario);
         controler.run();
     }
+    
+    
 
     @SuppressWarnings("unused")
 	private void printObjectives(Objectives objectives) {
@@ -191,8 +201,81 @@ private Logger LOGGER = Logger.getLogger(SimulationBasedTransitOptimizationProbl
             e.printStackTrace();
         }
     }
+    
+	private double[] processOutputFiles(String outputFolderPath) throws Exception {
+				
+		//String eventsFile = args[0];
+		//String userScoreOutputFile = args[1];
+		//String networkFile = args[2];
+		//String operatorScoreOutputFile = args[3];	
+		
+		//String iterationFolderPath = outputFolderPath + iterationNumber + "ITERS\\;
+		String eventsFile = outputFolderPath + "output_events.xml.gz";
+		String userScoreOutputFile = DirectoryConfig.USER_SCORING_FUNCTION_FILE;
+		String operatorScoreOutputFile = DirectoryConfig.OPERATOR_SCORING_FUNCTION_FILE;
+		String networkFile = DirectoryConfig.TRANSIT_NETWORK_FILE;
+		
+		//Score Function 2
+		Scenario scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());	
+//		MatsimNetworkReader mnr = new MatsimNetworkReader(scenario.getNetwork());
+//		//MatsimNetworkReader mnr1 = new MatsimNetworkReader(scenario.getNetwork());
+		
+//		mnr.readFile(networkFile);
+		
+		new MatsimNetworkReader(scenario.getNetwork()).readFile(networkFile);
+		
+		//Score Function 1
+		EventsManager manager = new EventsManagerImpl();		
+		manager.addHandler(new NetworkUserScoringFunction(userScoreOutputFile));	
+		manager.addHandler(new NetworkOperatorScoringFunction(operatorScoreOutputFile, scenario.getNetwork()));
+		
+		new MatsimEventsReader(manager).readFile(eventsFile);
+		//manager.addHandler(new CarTravelDistanceEvaluator(scenario.getNetwork()));
+		//manager.addHandler(new PtTravelDistanceCalculator(scenario.getNetwork()));
+		
+//		EventsManager eventsManager = EventsUtils.createEventsManager();
+//		Scenario scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());		
+//		new MatsimNetworkReader(scenario.getNetwork()).readFile("input/network.xml");
+		
+//		PtTravelDistanceCalculator PtTravelDistanceEvaluator = new PtTravelDistanceCalculator(scenario.getNetwork());
+//		
+//		System.out.println(Arrays.toString(PtTravelDistanceEvaluator.getDistanceDistribution()));
+//		
+		
+		
+		//NetworkUserScoringFunction nuc = new NetworkUserScoringFunction(output);
+		//List<Double> totalVehicleTime = NetworkUserScoringFunction.getUsersTimeList();
+		
+		//double[] obj = {totalTimeObjective.doubleValue(), secondObjective.doubleValue()};
+		
+//		double aaa = NetworkUserScoringFunction.getUserScore();
+//		
+//		
+//		double bbb = NetworkOperatorScoringFunction.getOperatorScore();
+		
+		double userScore = NetworkUserScoringFunction.getUserScore();
+		double opScore = NetworkOperatorScoringFunction.getOperatorScore();
+		
+		double[] obj = {userScore, opScore};
+		
+//		double sum = 0.0;
+//		
+//		for(Double tvt: totalVehicleTime) {
+//			
+//			sum += tvt;
+//		}
+//		System.out.println("user score is " + aaa + " minutes");
+//		System.out.println("operator score is " + bbb + " rands");
+		
+		System.out.println(Arrays.toString(obj));
+	    	
+	    	    	
+		return obj;
+  	  	
+	    }
 
-    private double[] processOutputFiles(String outputFolderPath, int iterationNumber) throws Exception {
+    private double[] processOutputFiles1(String outputFolderPath, int iterationNumber) throws Exception {
+    	
         String iterationFolderPath = outputFolderPath + "ITERS\\it." + iterationNumber + "\\";
 
         File eventsZipFile = new File(iterationFolderPath + iterationNumber + ".events.xml.gz");

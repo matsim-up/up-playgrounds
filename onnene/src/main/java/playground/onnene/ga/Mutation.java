@@ -21,6 +21,7 @@
  */
 package playground.onnene.ga;
 
+import java.io.IOException;
 import java.util.Random;
 
 import org.json.JSONArray;
@@ -29,6 +30,8 @@ import org.moeaframework.core.PRNG;
 import org.moeaframework.core.Solution;
 import org.moeaframework.core.Variable;
 import org.moeaframework.core.Variation;
+
+import playground.onnene.transitScheduleMaker.FileMakerUtils;
 
 /**
  * This class performs applies the mutation operator to the GA's decision variable. 
@@ -69,15 +72,21 @@ public class Mutation implements Variation {
 
 
     private void applyMutation(DecisionVariable v1) {
+    	
+    	try {
+    		
+			int numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
+			int transitLineNumberToReplace = new Random().nextInt(numLines);
+	        JSONObject ts2 = ProblemUtils.getRandomTransitSchedule();
+	        JSONObject transitLine = getTransitLine(ts2, transitLineNumberToReplace);
+	        replaceTransitLine(v1, transitLine, transitLineNumberToReplace); 
+	        
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
         
-        int transitLineNumberToReplace = new Random().nextInt(47);
-
-        JSONObject ts2 = ProblemUtils.getRandomTransitSchedule();
-        JSONObject transitLine = getTransitLine(ts2, transitLineNumberToReplace);
-        replaceTransitLine(v1, transitLine, transitLineNumberToReplace); 
     }
     
-
     private JSONObject getTransitLine(JSONObject ts, int transitLineNumberToReplace) {
         JSONArray tsList = ProblemUtils.getTransitLines(ts);
         return tsList.getJSONObject(transitLineNumberToReplace);

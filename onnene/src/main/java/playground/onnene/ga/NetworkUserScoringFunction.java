@@ -22,6 +22,8 @@ package playground.onnene.ga;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +51,8 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 	private final Logger log = Logger.getLogger(NetworkUserScoringFunction.class);
 	private Map<Id<Person>, Double> personMap = new TreeMap<>();
 	private String output;
-	//private int[] distanceDistribution = new int[100000];
 	private static List<Double> totalTraveltime = new ArrayList<>();
+	private static double totalPersonTripDuration;
 	
 
 
@@ -87,7 +89,7 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 	@Override
 	public void handleEvent(PersonArrivalEvent event) {
 		
-		double totalTripDuration = 0.0;
+		//double totalTripDuration = 0.0;
 		
 		//double[] totalTripDuration = new double[100000];
 		
@@ -109,6 +111,8 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 						//this.distanceDistribution[(int) tripDuration]++;
 						totalTraveltime.add(tripDuration);
 						
+						totalPersonTripDuration += tripDuration;
+						
 					} catch (IOException e) {
 						e.printStackTrace();
 						throw new RuntimeException("Cannot write to output.");
@@ -122,7 +126,7 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 					}
 				}
 				
-				totalTripDuration += tripDuration;
+				//totalTripDuration += tripDuration;
 
 				/* Remove person from map. */
 				personMap.remove(event.getPersonId());
@@ -135,20 +139,52 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 		//System.out.println(totalTraveltime);
 	}
 	
-	public static List<Double> getTotalVehicleTime() {
-		
-		//System.out.println(totalTraveltime);
-		
-		//System.out.println(Arrays.toString(this.totalTraveltime));
-		
-		return totalTraveltime;
+		public static List<Double> getUsersTimeList() {
+				
+			return totalTraveltime;
 	}
 		
-//		public int[] getTotalVehicleTime() {
+		public static double getUserScore() {
+			
+			BigDecimal averagetripDur = new BigDecimal(totalPersonTripDuration/(15*60*totalTraveltime.size()));
+			BigDecimal userScore = averagetripDur.setScale(4, RoundingMode.CEILING);
+			
+//			BigDecimal totaltripDur = new BigDecimal(totalPersonTripDuration/(24*60));			
+//			BigDecimal userScore = totaltripDur.setScale(4, RoundingMode.CEILING);
 //			
-//			System.out.println(Arrays.toString(this.distanceDistribution));
+						
+			return userScore.doubleValue();
+		}
+	
+	
+//	
+//	public static int getUserScore1(List<Double> userTimeList) {
+//		
+//		double sum = 0.0;
+//		
+//		
+//		for(Double tvt: userTimeList) {
 //			
-//			return this.distanceDistribution;
+//			sum += tvt;
+//		}
+//		
+//		System.out.println("another way to calculate total user cost " + totalPersonTripDuration/(24*60));
+//		System.out.println("another way to calculate avr user cost " + totalPersonTripDuration/(24*60*userTimeList.size()));
+//		
+//		int totalTravelTime = (int) (sum/(24*60));
+//		
+//		int averageTravelTime = (int) (sum/(24*60*userTimeList.size()));
+//		
+//		System.out.println("first way to calculate total user cost " + totalTravelTime );
+//		System.out.println("first way to calculate avr user cost " + averageTravelTime);
+//		
+//		//System.out.println(totalTraveltime);
+//		
+//		//System.out.println(Arrays.toString(this.totalTraveltime));
+//		
+//		return averageTravelTime ;
 //	}
+		
+
 
 }
