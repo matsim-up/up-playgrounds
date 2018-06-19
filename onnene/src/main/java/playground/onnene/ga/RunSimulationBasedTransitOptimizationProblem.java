@@ -224,8 +224,8 @@ public class RunSimulationBasedTransitOptimizationProblem {
   
 //        	
         NondominatedPopulation result = new Executor()
-            .withProblemClass(SimulationBasedTransitOptimizationProblem.class)
-        	//.withSameProblemAs(instrumenter)
+            //.withProblemClass(SimulationBasedTransitOptimizationProblem.class)
+        	.withSameProblemAs(instrumenter)
             .withAlgorithm("NSGAII")
             .withProperty("operator", "MyCrossover+MyMutation")
             .withProperty("MyCrossover.Rate", 0.75)
