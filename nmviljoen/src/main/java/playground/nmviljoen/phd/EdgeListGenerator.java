@@ -78,7 +78,7 @@ public class EdgeListGenerator {
 		String outputAllTrips = args[3];
 		
 		/* Parse the vehicles. */
-		DigicoreVehicles dvs = new DigicoreVehicles("WGS84_SA_Albers");
+		DigicoreVehicles dvs = new DigicoreVehicles();
 		new DigicoreVehiclesReader(dvs).readFile(vehiclesFile);
 		
 		/* Parse the shapefile geometry. */
@@ -111,7 +111,7 @@ public class EdgeListGenerator {
 		Map<Id<ActivityFacility>, Boolean> inAreaMap = new HashMap<>();
 		GeometryFactory gf = new GeometryFactory();
 		
-		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation("WGS84_SA_Albers", "WGS84");
+		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(vehicles.getCoordinateReferenceSystem(), "WGS84");
 		
 		int totalTripsConsidered = 0;
 		int ignoredTrips = 0;
