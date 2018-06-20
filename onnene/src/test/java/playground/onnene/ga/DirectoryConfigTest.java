@@ -16,57 +16,26 @@
  *                                                                         *
  * *********************************************************************** */
   
-/**
- * 
- */
 package playground.onnene.ga;
 
-import org.json.JSONObject;
-import org.moeaframework.core.Variable;
+import org.junit.Assert;
+import org.junit.Test;
 
-/**
- * This class creates the GA's decision variable in the form of 
- *  a JSON format of a MATSim TransitSchedule files.
- *  
- * @author Onnene
- *
- */
-public class DecisionVariable implements Variable{
-	
-	private static final long serialVersionUID = 1L;
-    private JSONObject transitSchedule; 
+public class DirectoryConfigTest {
 
-    public DecisionVariable() {
-    	
-    	super();
-    		
-    }
-    
-    public DecisionVariable(JSONObject transitSchedule) {
-    	
-		this();
-		this.transitSchedule = transitSchedule;
-    }
-    
-    public JSONObject getTransitSchedule() {
-        return transitSchedule;
-    }
+	@Test
+	public void testGetParentDirectory() {
+		String parentDefault = DirectoryConfig.getParentDirectory();
+		Assert.assertTrue("Wrong default parent folder", parentDefault.equalsIgnoreCase("C:\\Users\\NNNOB\\Documents\\GitHub\\SBO_input\\"));
+	}
 
-    public void setTransitSchedule(JSONObject transitSchedule) {
-        this.transitSchedule = transitSchedule;
-    }
-
-    @Override
-    public Variable copy() {
-    	
-        DecisionVariable v = new DecisionVariable();
-        v.setTransitSchedule(new JSONObject(this.getTransitSchedule().toString()));
-        return v;
-    }
-
-    @Override
-    public void randomize() {
-        transitSchedule = new ProblemUtils().getRandomTransitSchedule();
-    }
+	@Test
+	public void testSetParentDirectory() {
+		String parentDefault = DirectoryConfig.getParentDirectory();
+		DirectoryConfig.setParentDirectory("/home/dummy/");
+		String changedParent = DirectoryConfig.getParentDirectory();
+		Assert.assertFalse("Wrong default parent folder", changedParent.equalsIgnoreCase(parentDefault));
+		Assert.assertTrue("Wrong default parent folder", changedParent.equalsIgnoreCase("/home/dummy/"));
+	}
 	
 }

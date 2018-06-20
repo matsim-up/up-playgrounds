@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -55,50 +54,56 @@ import playground.onnene.transitScheduleMaker.TransitSchedule;
  *
  */
 public class ProblemUtils {
+    private List<File> transitScheduleFiles;
 	
+	public ProblemUtils() {
+		this.transitScheduleFiles = fetchTransitScheduleFilesPath();
+	}
+
+	public ProblemUtils(String folder) {
+		this.transitScheduleFiles = fetchTransitScheduleFilesPath(folder);
+	}
 	
-    static List<File> transitScheduleFiles;
+	public List<File> getTransitScheduleFiles(){
+		return this.transitScheduleFiles;
+	}
     
-    static {
-        transitScheduleFiles = fetchTransitScheduleFilesPath();
-    }
-    
-    
-    public static JSONObject getRandomTransitSchedule() {
-    	
+    public JSONObject getRandomTransitSchedule() {
     	File transitScheduleXmlFile = PRNG.nextItem(transitScheduleFiles);
         String transitScheduleXmlStr = convertXMLFileIntoString(transitScheduleXmlFile);
         return XML.toJSONObject(transitScheduleXmlStr);
     }
     
-    
-    private static List<File> fetchTransitScheduleFilesPath() {
-        List<File> files = new ArrayList<File>();
-        
-        File parentDirectory = new File(DirectoryConfig.INITIAL_POPULATION_DIRECTORY);
-        if ((!parentDirectory.exists()) || (!parentDirectory.isDirectory()))
-            throw new RuntimeException("Directory doesn't exists: " + DirectoryConfig.INITIAL_POPULATION_DIRECTORY);
-        
-        for (File file : parentDirectory.listFiles()) {
-            
-            if (file.isDirectory())
-                continue;
-            
-            if (file.getName().startsWith("transitSchedule"))
-                files.add(file);
-        }
-        
-        return files;
+    private List<File> fetchTransitScheduleFilesPath(String folder){
+    	List<File> files = new ArrayList<File>();
+    	
+    	File parentDirectory = new File(folder);
+    	if ((!parentDirectory.exists()) || (!parentDirectory.isDirectory()))
+    		throw new RuntimeException("Directory doesn't exists: " + folder);
+    	
+    	for (File file : parentDirectory.listFiles()) {
+    		if (file.isDirectory())
+    			continue;
+    		
+    		if (file.getName().startsWith("transitSchedule"))
+    			files.add(file);
+    	}
+    	
+    	return files;    	
     }
     
     
-    @SuppressWarnings("unused")
-	private static File selectTransitScheduleXMLFileRandomly() {
-        return transitScheduleFiles.get(new Random().nextInt(transitScheduleFiles.size()));
+    private List<File> fetchTransitScheduleFilesPath() {
+    	return(fetchTransitScheduleFilesPath(DirectoryConfig.INITIAL_POPULATION_DIRECTORY));
     }
     
     
-    private static String convertXMLFileIntoString(File xmlFile) {
+	public File selectTransitScheduleXMLFileRandomly() {
+        return transitScheduleFiles.get(PRNG.nextInt(transitScheduleFiles.size()));
+    }
+    
+    
+    private String convertXMLFileIntoString(File xmlFile) {
         StringBuilder sb = new StringBuilder();
 
         BufferedReader br;
