@@ -50,8 +50,9 @@ public class ExampleParallel {
 	public static void main(String[] args) {
 		Header.printHeader(ExampleParallel.class, args);
 		
-		runnableExample(4);
-		callableExample(4);
+		int numberOfThreads = Integer.parseInt(args[0]);
+		runnableExample(numberOfThreads);
+		callableExample(numberOfThreads);
 		
 		Header.printFooter();
 	}
@@ -107,15 +108,15 @@ public class ExampleParallel {
 		/* Consolidate the output */
 		int bigTotal = 0;
 		for(Future<Integer> job : jobsCallable) {
-			try {
-				bigTotal += job.get();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Woopsie!! Something went wrong!!");
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Woopsie!! Something went wrong!!");
-			}
+				try {
+					bigTotal += job.get();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					throw new RuntimeException("Woopsie!! Something went wrong!!");
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+					throw new RuntimeException("Woopsie!! Something went wrong!!");
+				}
 		}
 		LOG.info("Total from Callable: " + bigTotal);
 	}
