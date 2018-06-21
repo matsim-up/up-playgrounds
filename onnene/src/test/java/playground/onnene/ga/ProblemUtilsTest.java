@@ -25,7 +25,6 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.matsim.core.gbl.MatsimRandom;
 import org.matsim.testcases.MatsimTestUtils;
 import org.moeaframework.core.PRNG;
 
@@ -61,7 +60,7 @@ public class ProblemUtilsTest {
 		PRNG.setSeed(12);
 		ProblemUtils pu = new ProblemUtils(utils.getClassInputDirectory());
 		File f = pu.selectTransitScheduleXMLFileRandomly();
-		Assert.assertTrue("Wrong file sampled", f.getName().equalsIgnoreCase("transitSchedule2.xml"));
+		Assert.assertTrue("Wrong file sampled: " + f.getName(), f.getName().equalsIgnoreCase("transitSchedule2.xml"));
 	}
 
 }
