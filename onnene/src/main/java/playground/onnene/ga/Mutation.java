@@ -76,7 +76,7 @@ public class Mutation implements Variation {
     	try {
     		
 			int numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
-			int transitLineNumberToReplace = PRNG.nextInt(numLines);
+			int transitLineNumberToReplace = PRNG.nextInt(1, numLines-1);
 	        JSONObject ts2 = pu.getRandomTransitSchedule();
 	        JSONObject transitLine = getTransitLine(ts2, transitLineNumberToReplace);
 	        replaceTransitLine(v1, transitLine, transitLineNumberToReplace); 

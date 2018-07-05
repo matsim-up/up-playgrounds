@@ -39,7 +39,7 @@ public class GA_OperatorProvider extends OperatorProvider {
 	
 	    @Override
 	    public String getMutationHint(Problem problem) {
-	        return "MyCrossover+MyMutation";
+	        return "MyMutation";
 	    }
 
 	    @Override

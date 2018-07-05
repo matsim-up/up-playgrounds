@@ -55,6 +55,7 @@ public class GA_Instrumenter {
 				//.withProblem(problem)
 				instrumenter.attachApproximationSetCollector();
 				instrumenter.attachElapsedTimeCollector();
+				instrumenter.withFrequency(10);
 				//instrumenter.attachHypervolumeCollector();
 		
 		Executor executor = new Executor()

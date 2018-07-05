@@ -40,7 +40,6 @@ import javax.xml.transform.TransformerException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
-import org.matsim.core.gbl.MatsimRandom;
 import org.moeaframework.core.PRNG;
 import org.xml.sax.SAXException;
 
@@ -76,14 +75,16 @@ public class ProblemUtils {
         return XML.toJSONObject(transitScheduleXmlStr);
     }
     
-    private List<File> fetchTransitScheduleFilesPath(String folder){
+    public List<File> fetchTransitScheduleFilesPath(String folder){
     	List<File> files = new ArrayList<File>();
     	
-    	File parentDirectory = new File(folder);
-    	if ((!parentDirectory.exists()) || (!parentDirectory.isDirectory()))
+    	File InitialPopDirectory = new File(folder);
+    	
+    	// File parentDirectory = new File(folder);
+    	if ((!InitialPopDirectory.exists()) || (!InitialPopDirectory.isDirectory()))
     		throw new RuntimeException("Directory doesn't exists: " + folder);
     	
-    	for (File file : parentDirectory.listFiles()) {
+    	for (File file : InitialPopDirectory.listFiles()) {
     		if (file.isDirectory())
     			continue;
     		
@@ -95,7 +96,8 @@ public class ProblemUtils {
     }
     
     
-    private List<File> fetchTransitScheduleFilesPath() {
+    public List<File> fetchTransitScheduleFilesPath() {
+    	//return(fetchTransitScheduleFilesPath(DirectoryConfig.getParentDirectory()));
     	return(fetchTransitScheduleFilesPath(DirectoryConfig.INITIAL_POPULATION_DIRECTORY));
     }
     

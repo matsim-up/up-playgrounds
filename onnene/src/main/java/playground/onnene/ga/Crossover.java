@@ -91,7 +91,7 @@ public class Crossover implements Variation {
 	    
 	        //int numberOfTransitLinesToSwap = 25;
 	        int numberOfTransitLinesToSwap = PRNG.nextInt(1, numLines-1);
-	        System.out.println("number of lines" + numberOfTransitLinesToSwap);
+	        //System.out.println("number of lines" + numberOfTransitLinesToSwap);
 	        List<JSONObject> transitLines1 = getTransitLines(v1, numberOfTransitLinesToSwap);
 	        List<JSONObject> transitLines2 = getTransitLines(v2, numberOfTransitLinesToSwap);
         
