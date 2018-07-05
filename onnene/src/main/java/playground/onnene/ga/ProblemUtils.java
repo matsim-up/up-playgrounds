@@ -39,6 +39,7 @@ import javax.xml.transform.TransformerException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
+import org.matsim.core.gbl.MatsimRandom;
 import org.moeaframework.core.PRNG;
 import org.xml.sax.SAXException;
 
@@ -99,7 +100,7 @@ public class ProblemUtils {
     
     
 	public File selectTransitScheduleXMLFileRandomly() {
-        return transitScheduleFiles.get(PRNG.nextInt(transitScheduleFiles.size()));
+        return transitScheduleFiles.get(MatsimRandom.getLocalInstance().nextInt(transitScheduleFiles.size()));
     }
     
     
