@@ -66,13 +66,7 @@ public class DecisionVariable implements Variable{
 
     @Override
     public void randomize() {
-    	
-        transitSchedule = ProblemUtils.getRandomTransitSchedule();
-        
+        transitSchedule = new ProblemUtils().getRandomTransitSchedule();
     }
-
-    
-	
-	
 	
 }

@@ -22,7 +22,6 @@
 package playground.onnene.ga;
 
 import java.io.IOException;
-import java.util.Random;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -72,12 +71,13 @@ public class Mutation implements Variation {
 
 
     private void applyMutation(DecisionVariable v1) {
+    	ProblemUtils pu = new ProblemUtils();
     	
     	try {
     		
 			int numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
-			int transitLineNumberToReplace = new Random().nextInt(numLines);
-	        JSONObject ts2 = ProblemUtils.getRandomTransitSchedule();
+			int transitLineNumberToReplace = PRNG.nextInt(numLines);
+	        JSONObject ts2 = pu.getRandomTransitSchedule();
 	        JSONObject transitLine = getTransitLine(ts2, transitLineNumberToReplace);
 	        replaceTransitLine(v1, transitLine, transitLineNumberToReplace); 
 	        

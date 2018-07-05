@@ -38,6 +38,7 @@ import org.moeaframework.Instrumenter;
 import org.moeaframework.analysis.collector.Accumulator;
 import org.moeaframework.analysis.plot.Plot;
 import org.moeaframework.core.NondominatedPopulation;
+import org.moeaframework.core.PRNG;
 import org.moeaframework.core.Solution;
 import org.moeaframework.core.Variable;
 import org.moeaframework.core.spi.OperatorFactory;
@@ -223,8 +224,15 @@ public class RunSimulationBasedTransitOptimizationProblem {
 //        	instrumenter.attachPopulationSizeCollector();
   
 //        	
-        NondominatedPopulation result = new Executor()
+        	int run = 1;
+        	int threads = 2;
+        	boolean plot = false;
+        	
+        	PRNG.setSeed(run * 20180620);
+        	
+		NondominatedPopulation result = new Executor()
             //.withProblemClass(SimulationBasedTransitOptimizationProblem.class)
+        		.distributeOn(threads)
         	.withSameProblemAs(instrumenter)
             .withAlgorithm("NSGAII")
             .withProperty("operator", "MyCrossover+MyMutation")
@@ -242,16 +250,18 @@ public class RunSimulationBasedTransitOptimizationProblem {
         //Accumulator acc = new Accumulator();
         Accumulator acc = instrumenter.getLastAccumulator();
                 
-        new Plot()
-            .add("NSGAII", result)
-            .setXLabel("User-Cost")
-            .setYLabel("Operator-Cost")
-            //.add(acc)
-            .show();
-        
-        new Plot()
-        .add(acc)
-        .show();
+        if(plot) {
+        	new Plot()
+        	.add("NSGAII", result)
+        	.setXLabel("User-Cost")
+        	.setYLabel("Operator-Cost")
+        	//.add(acc)
+        	.show();
+        	
+        	new Plot()
+        	.add(acc)
+        	.show();
+        }
               
         System.out.println(acc.toCSV());
      
