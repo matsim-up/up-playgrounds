@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -100,7 +101,9 @@ public class ProblemUtils {
     
     
 	public File selectTransitScheduleXMLFileRandomly() {
-        return transitScheduleFiles.get(MatsimRandom.getLocalInstance().nextInt(transitScheduleFiles.size()));
+		/* For deterministic behaviour, the files must be SORTED first. */
+		Collections.sort(this.transitScheduleFiles);
+        return transitScheduleFiles.get(PRNG.nextInt(transitScheduleFiles.size()));
     }
     
     

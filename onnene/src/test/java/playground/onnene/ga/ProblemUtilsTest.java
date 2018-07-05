@@ -35,6 +35,7 @@ public class ProblemUtilsTest {
 
 	@Test
 	public void testConstructor() {
+		@SuppressWarnings("unused")
 		ProblemUtils pu = null;
 		try {
 			pu = new ProblemUtils(utils.getClassInputDirectory());
@@ -59,7 +60,6 @@ public class ProblemUtilsTest {
 	@Test
 	public void testSelectTransitScheduleXMLFileRandomly() {
 		PRNG.setSeed(12);
-		MatsimRandom.reset(1234);
 		ProblemUtils pu = new ProblemUtils(utils.getClassInputDirectory());
 		File f = pu.selectTransitScheduleXMLFileRandomly();
 		Assert.assertTrue("Wrong file sampled: " + f.getName(), f.getName().equalsIgnoreCase("transitSchedule1.xml"));
