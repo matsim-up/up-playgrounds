@@ -69,6 +69,14 @@ public class RunSimulationBasedTransitOptimizationProblem {
         }
     }
     
+    
+    public static void main(String[] args) throws Exception {
+    	
+    	runSimulation(args[0]);
+    	//runSimulation(DirectoryConfig.RESULTS_FILE);
+    	   	
+    }
+    
 
     
   
@@ -92,7 +100,7 @@ public class RunSimulationBasedTransitOptimizationProblem {
                     
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void runSimulation(String ResultFolder) throws Exception {
     	
     	ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
     	Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");     
@@ -171,7 +179,7 @@ public class RunSimulationBasedTransitOptimizationProblem {
         
         int folderIdx = 0;
         
-        FileUtils.deleteDirectory(new File(DirectoryConfig.RESULTS_FILE));
+        FileUtils.deleteDirectory(new File(ResultFolder));
         
         //System.out.println("this is the results " + result);
         
@@ -186,8 +194,8 @@ public class RunSimulationBasedTransitOptimizationProblem {
         	for (Solution solution : pop) {
         		 
         		fileIdx++;
-             	
-             	 rsbtop.decodeResult(solution.getVariable(0), DirectoryConfig.RESULTS_FILE, folderIdx, fileIdx);
+        		 //rsbtop.decodeResult(solution.getVariable(0), DirectoryConfig.RESULTS_FILE, folderIdx, fileIdx);
+             	 rsbtop.decodeResult(solution.getVariable(0), ResultFolder, folderIdx, fileIdx);
              	 
 	             System.out.format("%.4f      %.4f%n", solution.getObjective(0), solution.getObjective(1));
 	             FOS.write(String.format("\n%.4f      %.4f%n", solution.getObjective(0), solution.getObjective(1)).getBytes());
