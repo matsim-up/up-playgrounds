@@ -66,7 +66,7 @@ public class GA_ProblemProvider extends ProblemProvider {
 		if (name.equalsIgnoreCase("SimulationBasedTransitOptimizationProblem")){
 			
 			try {
-				return new NondominatedPopulation(PopulationIO.readObjectives(new File("myProblemRefSet.txt")));
+				return new NondominatedPopulation(PopulationIO.readObjectives(new File(DirectoryConfig.PROBLEM_REFERNCE_SET)));
 			} catch (IOException e) {
 				throw new FrameworkException(e);
 			}

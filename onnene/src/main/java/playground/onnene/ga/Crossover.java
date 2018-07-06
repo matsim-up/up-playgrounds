@@ -32,8 +32,10 @@ import org.moeaframework.core.Variation;
 import playground.onnene.transitScheduleMaker.FileMakerUtils;
 
 /**
- * This class performs a one-point crossover operator on the GA's decision variable. 
- * It swaps genetic materials on either side of the crossover point
+ * This class performs a one-point crossover operator on a pair of the GA's parent 
+ * decision variables. It swaps genetic materials on either side of the crossover point.
+ * In terms of the transport network, the operator swaps the routes and their operational frequencies
+ * between two selected parent networks at the specified crossover point on the networks.
  * 
  * @author Onnene
  *

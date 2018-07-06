@@ -52,12 +52,13 @@ public class DirectoryConfig {
 	public static final String TRANSIT_VEHICLES_FILE = PARENT_DIRECTORY + "matsimInput\\transitVehicles.xml";
 	public static final String TRANSIT_NETWORK_FILE = PARENT_DIRECTORY + "matsimInput\\transitNetwork.xml";
 
-
+	//Problem Reference Set
+	public static final String PROBLEM_REFERNCE_SET = PARENT_DIRECTORY + "ProblemReferenceSet\\problemRefSet.txt";
 
 	// MATSim Result directory
 	public static final String MATSIM_OUTPUT_FOLDER = PARENT_DIRECTORY + "matsimOutput\\";
 
-	// Pareto solutions directory
+	// Optimisation solutions directory
 	public static final String RESULTS_FILE = PARENT_DIRECTORY + "optimisationResults\\";
 
 	//AFC data directory

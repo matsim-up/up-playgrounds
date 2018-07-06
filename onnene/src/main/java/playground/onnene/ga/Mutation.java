@@ -34,7 +34,9 @@ import playground.onnene.transitScheduleMaker.FileMakerUtils;
 
 /**
  * This class performs applies the mutation operator to the GA's decision variable. 
- * It helps to increase variation in the population after crossover has been performed.
+ * It replaces a randomly selected route with its  operational frequency in each offspring network
+ * created after crossover with a corresponding route that from a randomly selected network in the 
+ * feasible population of solutions. It helps to increase variation in the population after crossover has been performed.
  * 
  * @author Onnene
  *

@@ -1,4 +1,5 @@
 package playground.onnene.ga;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,15 +49,17 @@ public class GA_Instrumenter {
     	Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");
     	OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
 		String[] algorithms = { "NSGAII" };
+		File refSet = new File(DirectoryConfig.PROBLEM_REFERNCE_SET);
 		
 		Instrumenter instrumenter = new Instrumenter();
 				instrumenter.withProblem(problem);
-				
+				instrumenter.withReferenceSet(refSet);
 				//.withProblem(problem)
 				instrumenter.attachApproximationSetCollector();
 				instrumenter.attachElapsedTimeCollector();
-				instrumenter.withFrequency(10);
-				//instrumenter.attachHypervolumeCollector();
+				//instrumenter.attachAllMetricCollectors();
+				instrumenter.withFrequency(30);
+				instrumenter.attachHypervolumeCollector();
 		
 		Executor executor = new Executor()
 				//.withSameProblemAs(instrumenter)
@@ -64,8 +67,8 @@ public class GA_Instrumenter {
 				.withProperty("operator", "MyCrossover+MyMutation")
 				.withProperty("MyCrossover.Rate", 0.75)
 	            .withProperty("MyMutation.Rate", 0.25)
-	            .withProperty("populationSize", 2)
-				.withMaxEvaluations(2)
+	            .withProperty("populationSize", 30)
+				.withMaxEvaluations(30)
 				.withInstrumenter(instrumenter);
 				
 		
@@ -97,12 +100,12 @@ public class GA_Instrumenter {
 			results.put(algorithm, instrumenter.getLastAccumulator());
 			
 		}
-		System.out.println();
-		System.out.println(sb.append(instrumenter.getLastAccumulator().toString()));
-		System.out.println();
-		System.out.println(sb.append(instrumenter.getLastAccumulator().keySet()));
-		System.out.println();
-		System.out.println(sb.append(instrumenter.getLastAccumulator().toCSV()));
+//		System.out.println();
+//		System.out.println(sb.append(instrumenter.getLastAccumulator().toString()));
+//		System.out.println();
+//		System.out.println(sb.append(instrumenter.getLastAccumulator().keySet()));
+//		System.out.println();
+//		System.out.println(sb.append(instrumenter.getLastAccumulator().toCSV()));
 		
 		//System.out.print(Arrays.toString(results.entrySet().toArray()));
 		

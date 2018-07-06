@@ -76,15 +76,15 @@ public class ProblemUtils {
     }
     
     public List<File> fetchTransitScheduleFilesPath(String folder){
-    	List<File> files = new ArrayList<File>();
     	
-    	File InitialPopDirectory = new File(folder);
+    	List<File> files = new ArrayList<File>();    	
+    	File InitialPopDirectory = new File(folder);   	
     	
-    	// File parentDirectory = new File(folder);
     	if ((!InitialPopDirectory.exists()) || (!InitialPopDirectory.isDirectory()))
     		throw new RuntimeException("Directory doesn't exists: " + folder);
     	
     	for (File file : InitialPopDirectory.listFiles()) {
+    		
     		if (file.isDirectory())
     			continue;
     		
@@ -175,8 +175,6 @@ public class ProblemUtils {
     		
 	    	collection.add(a);
     	}
-    	
-    	//System.out.print(collection);
     	   	
     	try {
     		

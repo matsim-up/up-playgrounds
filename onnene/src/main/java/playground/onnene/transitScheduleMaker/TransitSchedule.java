@@ -80,7 +80,7 @@ public class TransitSchedule {
         //departure hours
         int [] hours = {4,4,4,4,3,3,3,3,3,3,4,4,4,2,2,2};
         
-        System.out.println("Current decision variable has " + f2.size() + " routes...");
+        //System.out.println("Current decision variable has " + f2.size() + " routes...");
 
         Iterator<String> iterator = f2.iterator();
 

@@ -169,7 +169,6 @@ public class RunSimulationBasedTransitOptimizationProblem {
      
         System.out.println("Evaluate called " + SimulationBasedTransitOptimizationProblem.callsToEvaluate + " times...");
         
-        
         int folderIdx = 0;
         
         FileUtils.deleteDirectory(new File(DirectoryConfig.RESULTS_FILE));
