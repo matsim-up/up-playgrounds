@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.exampleCode;
 
 import java.io.File;
 
@@ -40,7 +40,7 @@ public class DirectoryConfig {
 	}
 
 	// MATSim Iterations
-	public static final int MATSIM_ITERATION_NUMBER = 10;
+	//public static final int MATSIM_ITERATION_NUMBER = 10;
 
 
 	// Parent Directory
@@ -88,8 +88,8 @@ public class DirectoryConfig {
 	public static final String GRAPH_STYLESHEET_FILE = PARENT_DIRECTORY + "routeGenInput\\graph_style.xsl";
 	public static final String GRAPH_FILE_PATH = PARENT_DIRECTORY + "routeGenInput\\NetworkGraph.graphml";
 	public static final File   GRAPH_FILE = new File(GRAPH_FILE_PATH);
-	public static final String NETWORK_GRAPH_OUPUT_DIRECTORY = PARENT_DIRECTORY + "route_gen_input\\";    
-
+	//public static final String NETWORK_GRAPH_OUPUT_DIRECTORY = PARENT_DIRECTORY + "route_gen_input\\";    
+    public static final String NETWORK_GRAPH_OUPUT_DIRECTORY = PARENT_DIRECTORY + "routeGenInput\\"; 
 
 	// Transit Schedule creator helper files directory
 	public static final String SCHEDULE_STOPS_AND_LINES_HELPER_FILES_PATH = PARENT_DIRECTORY + "transitScheduleMakerHelperFiles\\";
@@ -103,7 +103,7 @@ public class DirectoryConfig {
 	public static final String COMPRESSED_GTFS_GZIP_TRANSIT_NETWORK_FILE = PARENT_DIRECTORY + "gtfsInputs\\gtfsOutput\\transitNetwork.xml.gz";
 	public static final String COMPRESSED_GTFS_GZIP_TRANSIT_VEHICLE_FILE = PARENT_DIRECTORY + "gtfsInputs\\gtfsOutput\\transitVehicles.xml.gz";
 	public static final String DECOMPRESSED_GTFS_XML_DIRECTORY = PARENT_DIRECTORY + "gtfsInputs\\gtfsOutput\\";
-	public static final String DECOMPRESSED_TRANSIT_SCHEDULE_XML_FILE = PARENT_DIRECTORY + "gtfsInputs\\ggtfsOutput\\transitSchedule.xml";
+	public static final String DECOMPRESSED_TRANSIT_SCHEDULE_XML_FILE = PARENT_DIRECTORY + "gtfsInputs\\gtfsOutput\\transitSchedule.xml";
 	public static final String DECOMPRESSED_TRANSIT_NETWORK_XML_FILE = PARENT_DIRECTORY + "gtfsInputs\\gtfsOutput\\transitNetwork.xml";
 	public static final String DECOMPRESSED_TRANSIT_VEHICLE_XML_FILE = PARENT_DIRECTORY + "gtfsInputs\\gtfsOutput\\transitVehicles.xml";
 

@@ -15,8 +15,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 
-import com.jcabi.xml.XMLDocument;
-
 public class MatsimNetwork2Graphml {
 
 	public void Network2Graphml(String graphStyleSheet, String transitNetworkFile, String graphFileDirectory) throws Exception{
@@ -38,7 +36,7 @@ public class MatsimNetwork2Graphml {
         Result outputTarget = new StreamResult(new File(graphFileDirectory));
         transformer.transform(source, outputTarget);
         
-        String xml = new XMLDocument(source).toString();
+        //String xml = new XMLDocument(source).toString();
         
         System.out.println("Network converted to Graphml format");
     

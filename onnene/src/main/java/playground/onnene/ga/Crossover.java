@@ -18,7 +18,6 @@
   
 package playground.onnene.ga;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +27,6 @@ import org.moeaframework.core.PRNG;
 import org.moeaframework.core.Solution;
 import org.moeaframework.core.Variable;
 import org.moeaframework.core.Variation;
-
-import playground.onnene.transitScheduleMaker.FileMakerUtils;
 
 /**
  * This class performs a one-point crossover operator on a pair of the GA's parent 
@@ -83,17 +80,8 @@ public class Crossover implements Variation {
 	    private void applyCrossover(DecisionVariable v1, DecisionVariable v2) {
 	        // swap first half of <transitLine> between v1 and v2
 	    	
-	    	int numLines = 0;
-			try {
-				numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-	    	
-	    
-	        //int numberOfTransitLinesToSwap = 25;
+	    	int numLines = ProblemUtils.numberOfLines();	       
 	        int numberOfTransitLinesToSwap = PRNG.nextInt(1, numLines-1);
-	        //System.out.println("number of lines" + numberOfTransitLinesToSwap);
 	        List<JSONObject> transitLines1 = getTransitLines(v1, numberOfTransitLinesToSwap);
 	        List<JSONObject> transitLines2 = getTransitLines(v2, numberOfTransitLinesToSwap);
         

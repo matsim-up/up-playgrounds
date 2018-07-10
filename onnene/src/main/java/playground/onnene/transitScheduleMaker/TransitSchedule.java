@@ -33,8 +33,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import playground.onnene.ga.DirectoryConfig;
-
 
 /**
  * Class that converts the generated routes into MATSim transitSchedule.xml files
@@ -64,8 +62,8 @@ public class TransitSchedule {
         v.defineVehicle();
         
         //text files used throughout code
-        File f0 = new File(DirectoryConfig.SCHEDULE_STOPS_HELPER_FILE);
-        File f1 = new File(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
+        File f0 = new File("./input/transitScheduleMakerHelperFiles/transitStopList.txt");
+        File f1 = new File("./input/transitScheduleMakerHelperFiles/transitLineList.txt");
 
         //transit stop object and stop facility called
         TransitStops tsObject = new TransitStops (d, e0, f0);
@@ -95,14 +93,9 @@ public class TransitSchedule {
             String[] a = s.nextLine().split(",");
             tlObject.transitLine(a[0]);
 
-
             int routenum = Integer.parseInt(a[1]);
             String routes = iterator.next();
-            
-           
-            //System.out.println(routes);
-             
-            
+
             for(int i = 0; i<routenum; i++){
                 if(i<Math.round((double)routenum/2)){
                     forward++;
@@ -222,7 +215,7 @@ public class TransitSchedule {
             
            trip = (int) Math.round((double)(hours.length/reverse));
                 //System.out.println(trip+"@@@");
-           //System.out.println(routes);
+          
                 //for uneven route sizes
             left = hours.length - trip*reverse;
             int min2 = 0;
@@ -356,8 +349,6 @@ public class TransitSchedule {
         DocumentType dt = di.createDocumentType("doctype","transitSchedule","http://www.matsim.org/files/dtd/transitSchedule_v1.dtd");
         t.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, dt.getSystemId());
         t.transform(doms, sr);
-        
-        //System.out.println("DONE!!!");
         
         //write vehicles files
         v.output();

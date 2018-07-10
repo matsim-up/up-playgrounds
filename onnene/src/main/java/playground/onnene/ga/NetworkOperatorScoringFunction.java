@@ -63,11 +63,7 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 	private static Map<Id<Vehicle>, Double> vehicleMap = new TreeMap<>();
 	private static Map<Id<Vehicle>, Id<Link>> vehicleLinkMap = new TreeMap<>();
 	private static Map<Id<Vehicle>, Double> vkt = new TreeMap<>();
-	//private Map<Id<Person>,Double> travelledDistance = new HashMap<>(); 
-	//private static Map<Id<Vehicle>,Id<Person>> vehicles2Persons = new HashMap<>();
-	//private Map<Id<Person>, Double> personMap = new TreeMap<>();
 	private static Map<Id<Vehicle>,Id<Person>> vehicleDriver = new HashMap<>();
-	//private static List<Double> totalTraveltime = new ArrayList<>();
 	private String freqOutput;
 	private Network network; 
 	
@@ -92,7 +88,6 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 		
 		vehicleMap = new TreeMap<>();
 		vehicleLinkMap = new TreeMap<>();
-		//vehicles2Persons = new TreeMap<>();
 			
 	}
 	
@@ -113,19 +108,15 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 	@Override
 	public void handleEvent(VehicleLeavesTrafficEvent event) {
 		
-		
 		if (!vehicleMap.containsKey(event.getVehicleId())) {
 			log.error("Cannot calculate trip duration for " + event.getVehicleId().toString());
-			//vehicleMap.put(event.getVehicleId(), event.getTime());
+			
 		} else {
 			
 			 if (event.getVehicleId().toString().startsWith("tr_")) {
 				 
 				double vehTripStartTime = vehicleMap.get(event.getVehicleId());
-//				System.out.println("start time for " + event.getVehicleId() + " is "  + vehTripStartTime);
-//				System.out.println("end time for " + event.getVehicleId() + " is " +  event.getTime());
 				double vehTripDuration = event.getTime() - vehTripStartTime;
-				//System.out.println("end time for " + event.getVehicleId() + " is " +  event.getTime());
 								
 				BufferedWriter bw = IOUtils.getAppendingBufferedWriter(freqOutput);
 				try {
@@ -154,60 +145,29 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 				vehicleMap.remove(event.getVehicleId());
 			}
 			 
-			 //System.out.println("end time for " + totalvehTripDuration);
 		}
 		
 	}
-
 
 
 	@Override
 	public void handleEvent(LinkLeaveEvent event) {
 				
 		Double value = 0.0;
-		//double totalvehicleLength = 0.0;
-		
-		
+
 		if (vehicleLinkMap.containsKey(event.getVehicleId())) {
 					
 		  double length = this.network.getLinks().get(event.getLinkId()).getLength();
 		  value = vkt.get(event.getVehicleId());
+		  
 		  if (value == null) {
 			    value = 0.0;
 		      }
-		  totalvehicleDistance = vkt.put(event.getVehicleId(), length);		
-		 //totalLength = this.vkt.put(event.getVehicleId(), value + length);	
+		  totalvehicleDistance = vkt.put(event.getVehicleId(), length);			
 		 
 		}
 		
-		
-//		if (totalLength != null) {
-//			
-//			System.out.println(totalLength);
-//			
-//		}
-		
-		
-		
-		
-		//System.out.println("travel length for vehicle " + event.getVehicleId() + " is " + this.vkt.get(event.getVehicleId()));
-		
 	}
-
-//
-//	@Override
-//	public void handleEvent(LinkEnterEvent event) {
-//		
-//		if (this.vehicles2Persons.containsKey(event.getVehicleId())){
-//			Id<Person> personId = this.vehicles2Persons.get(event.getVehicleId());
-//			double distanceSoFarTravelled = this.travelledDistance.get(personId);
-//			double length = this.network.getLinks().get(event.getLinkId()).getLength();
-//			double newDistanceTravelled = distanceSoFarTravelled+length;
-//			this.travelledDistance.put(personId, newDistanceTravelled);
-//			}
-//		
-//	}
-
 
 
 	@Override
@@ -216,70 +176,17 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 		if (!vehicleDriver.containsKey(event.getDriverId())){
 			vehicleDriver.put(event.getVehicleId(), event.getDriverId());
 		}
-		
-		
-		//System.out.println(event);
-		
+
 	}
 	
 	public static double getOperatorScore() {
 		
 		double vehicleOpTimeCost = ((totalvehTripDuration/(3600)));
-		
-		//double vehicleOpTimeCost = (vehicleDriver.size() * (totalvehTripDuration/(3600))/vehicleMap.size());
-		
-		//double vehicleOpDistanceCost = ((totalvehicleLength/1000) * 100);
-		
 		double vehicleOpDistanceCost = ((totalvehicleDistance/1000) * vehicleMap.size());
-		
-		//double totalOpCost = vehicleOpTimeCost + vehicleOpDistanceCost;
-		
 		BigDecimal totalOpCost = new BigDecimal(vehicleOpTimeCost + vehicleOpDistanceCost);
-		
 		BigDecimal operatorScore = totalOpCost.setScale(4, RoundingMode.HALF_DOWN);
-		
-		//BigDecimal durationInHr = biggestTime.subtract(smallestTime).divide(new BigDecimal(3600), 2, RoundingMode.HALF_UP);
-		
-//		System.out.println("total number of Drivers " + vehicleDriver.size());
-//
-//		System.out.println("total number of Buses " + vehicleMap.size());
-//		
-//		System.out.println("total veh time cost " + vehicleOpTimeCost);
-//		
-//		System.out.println("total veh distance cost " + vehicleOpDistanceCost);
-//		
-//		System.out.println("total operations cost " + totalOpCost);
-//		
-//		System.out.println("final total operations cost " + operatorScore.doubleValue());
-		
+
 		return operatorScore.doubleValue();		
 	}
-	
-	
-	
-//	public static int getNumDrivers() {
-//				
-//		return vehicleDriver.size();		
-//	}
-//	
-//	public static int getNumVehicles() {
-//		
-//		return vehicleMap.size();
-//	}
-//	
-//	public static int getVehicleHours() {
-//		
-//		return (int) totalvehTripDuration;
-//	}
-//	
-//	public static double getVehicleKilometer() {
-//			
-//		return totalvehicleLength/1000;
-//	}
-	
-
-
-
-
 
 }

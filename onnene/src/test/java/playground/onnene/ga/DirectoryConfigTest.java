@@ -21,6 +21,8 @@ package playground.onnene.ga;
 import org.junit.Assert;
 import org.junit.Test;
 
+import playground.onnene.exampleCode.DirectoryConfig;
+
 public class DirectoryConfigTest {
 
 	@Test

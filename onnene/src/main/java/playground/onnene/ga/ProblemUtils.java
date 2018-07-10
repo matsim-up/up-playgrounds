@@ -26,10 +26,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +53,7 @@ import playground.onnene.transitScheduleMaker.TransitSchedule;
  *
  */
 public class ProblemUtils {
+	
     private List<File> transitScheduleFiles;
 	
 	public ProblemUtils() {
@@ -97,8 +96,7 @@ public class ProblemUtils {
     
     
     public List<File> fetchTransitScheduleFilesPath() {
-    	//return(fetchTransitScheduleFilesPath(DirectoryConfig.getParentDirectory()));
-    	return(fetchTransitScheduleFilesPath(DirectoryConfig.INITIAL_POPULATION_DIRECTORY));
+    	return(fetchTransitScheduleFilesPath("./input/initialPop/"));
     }
     
     
@@ -143,7 +141,7 @@ public class ProblemUtils {
     public static void getXMLFromJSONDecisionVar(JSONObject jObject, String outputFile) throws IOException {
     	
     	int index = 0;   	
-    	int numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
+    	int numLines = FileMakerUtils.count("./input/transitScheduleMakerHelperFiles/transitLineList.txt");
     	List<List<Integer>> routefromJsonLink = new ArrayList<List<Integer>>();
     	Collection<String> collection = new ArrayList<>();
     		
@@ -187,14 +185,22 @@ public class ProblemUtils {
     	
     }
     
+   
     
-    public static String currentTime() {
+    public static int numberOfLines() {
     	
-    	Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+    	int numlines = 0;
     	
-    	return sdf.format(cal.getTime());
+    	try {
+    		
+    		numlines = FileMakerUtils.count("./input/transitScheduleMakerHelperFiles/transitLineList.txt");
+    		
+    		} catch (IOException e) {
+    			
+    			e.printStackTrace();
+    		}
+    	
+		return numlines;
     }
     
-	
 }

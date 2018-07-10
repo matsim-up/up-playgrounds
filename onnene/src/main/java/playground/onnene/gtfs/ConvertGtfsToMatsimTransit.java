@@ -19,7 +19,7 @@ import org.matsim.vehicles.VehicleWriterV1;
 
 import com.conveyal.gtfs.GTFSFeed;
 
-import playground.onnene.ga.DirectoryConfig;
+import playground.onnene.exampleCode.DirectoryConfig;
 
 //import com.conveyal.gtfs.GTFSFeed;
 

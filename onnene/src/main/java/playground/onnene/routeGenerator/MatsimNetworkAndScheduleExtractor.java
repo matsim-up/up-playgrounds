@@ -59,7 +59,7 @@ public class MatsimNetworkAndScheduleExtractor {
         Result outputTarget = new StreamResult(new File(outputDirectory + "myciti_stopFacilities.csv"));
         transformer.transform(source, outputTarget);
 
-        System.out.println("Route extraction finished");
+        System.out.println("Stop facility extraction finished");
 
 	}
 	

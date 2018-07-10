@@ -27,8 +27,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import playground.onnene.ga.DirectoryConfig;
-
 /**
  * This class is used to run the transitSchedule helper files extractor class
  * 
@@ -42,13 +40,21 @@ public class RunExtractTransitScheduleHelperFiles {
 	 */	 
     public static void main(String[] args) throws ParserConfigurationException, SAXException {
 	
-		String gZipTschedule = DirectoryConfig.COMPRESSED_GTFS_GZIP_TRANSIT_SCHEDULE_FILE;
-	    String decompressedTscheduleXml = DirectoryConfig.DECOMPRESSED_TRANSIT_SCHEDULE_XML_FILE;
-	    String gZipNetwork = DirectoryConfig.COMPRESSED_GTFS_GZIP_TRANSIT_NETWORK_FILE;
-	    String decompressedNetworkXml = DirectoryConfig.DECOMPRESSED_TRANSIT_NETWORK_XML_FILE;
-	    String gZipVehicle = DirectoryConfig.COMPRESSED_GTFS_GZIP_TRANSIT_VEHICLE_FILE;
-	    String decompressedVehicleXml = DirectoryConfig.DECOMPRESSED_TRANSIT_VEHICLE_XML_FILE;
-	    String xmlOutputFilePath = DirectoryConfig.SCHEDULE_STOPS_AND_LINES_HELPER_FILES_PATH;
+		String gZipTschedule = "./input/gtfsInputs/gtfsOutput/transitSchedule.xml.gz";
+	    String decompressedTscheduleXml = "./input/gtfsInputs/gtfsOutput/transitSchedule.xml";
+	    String gZipNetwork = "./input/gtfsInputs/gtfsOutput/transitNetwork.xml.gz";
+	    String decompressedNetworkXml = "./input/gtfsInputs/gtfsOutput/transitNetwork.xml";
+	    String gZipVehicle = "./input/gtfsInputs/gtfsOutput/transitVehicles.xml.gz";
+	    String decompressedVehicleXml = "./input/gtfsInputs/gtfsOutput/transitVehicles.xml";
+	    String xmlOutputFilePath = "./input/transitScheduleMakerHelperFiles/";
+	    
+//	    String gZipTschedule = DirectoryConfig.COMPRESSED_GTFS_GZIP_TRANSIT_SCHEDULE_FILE;
+//	    String decompressedTscheduleXml = DirectoryConfig.DECOMPRESSED_TRANSIT_SCHEDULE_XML_FILE;
+//	    String gZipNetwork = DirectoryConfig.COMPRESSED_GTFS_GZIP_TRANSIT_NETWORK_FILE;
+//	    String decompressedNetworkXml = DirectoryConfig.DECOMPRESSED_TRANSIT_NETWORK_XML_FILE;
+//	    String gZipVehicle = DirectoryConfig.COMPRESSED_GTFS_GZIP_TRANSIT_VEHICLE_FILE;
+//	    String decompressedVehicleXml = DirectoryConfig.DECOMPRESSED_TRANSIT_VEHICLE_XML_FILE;
+//	    String xmlOutputFilePath = DirectoryConfig.SCHEDULE_STOPS_AND_LINES_HELPER_FILES_PATH;
 
 	    FileMakerUtils fmu = new FileMakerUtils();   
 	    ExtractTransitScheduleHelperFiles tsd = new ExtractTransitScheduleHelperFiles();

@@ -45,7 +45,6 @@ import org.moeaframework.core.spi.OperatorFactory;
 import org.xml.sax.SAXException;
 
 import playground.onnene.ga.DecisionVariable;
-import playground.onnene.ga.DirectoryConfig;
 import playground.onnene.ga.GA_OperatorProvider;
 import playground.onnene.ga.ProblemUtils;
 import playground.onnene.ga.SimulationBasedTransitOptimizationProblem;

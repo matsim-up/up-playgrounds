@@ -30,14 +30,13 @@ import org.moeaframework.core.spi.ProblemFactory;
  * @author Onnene
  *
  */
-public class Analysis {
+public class RunWithAnalyser {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
+	
 		 OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());   
 		 ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
 		 ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");
@@ -49,7 +48,7 @@ public class Analysis {
 		 try {
 			LaunchDiagnosticTool.main(args);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 	}

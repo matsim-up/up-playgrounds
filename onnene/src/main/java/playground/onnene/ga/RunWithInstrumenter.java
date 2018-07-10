@@ -37,32 +37,28 @@ import org.moeaframework.core.spi.ProblemFactory;
  * @author Onnene
  *
  */
-public class GA_Instrumenter {
+public class RunWithInstrumenter {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		
-		//Problem problem = ProblemFactory.getInstance().getProblem("DTLZ2_2");
 		ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
     	Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");
     	OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
 		String[] algorithms = { "NSGAII" };
-		File refSet = new File(DirectoryConfig.PROBLEM_REFERNCE_SET);
+		File refSet = new File("./input/ProblemReferenceSet/problemRefSet.txt");
 		
 		Instrumenter instrumenter = new Instrumenter();
 				instrumenter.withProblem(problem);
 				instrumenter.withReferenceSet(refSet);
-				//.withProblem(problem)
 				instrumenter.attachApproximationSetCollector();
 				instrumenter.attachElapsedTimeCollector();
-				//instrumenter.attachAllMetricCollectors();
 				instrumenter.withFrequency(30);
 				instrumenter.attachHypervolumeCollector();
 		
 		Executor executor = new Executor()
-				//.withSameProblemAs(instrumenter)
 				.withProblem(problem)
 				.withProperty("operator", "MyCrossover+MyMutation")
 				.withProperty("MyCrossover.Rate", 0.75)
@@ -70,9 +66,7 @@ public class GA_Instrumenter {
 	            .withProperty("populationSize", 30)
 				.withMaxEvaluations(30)
 				.withInstrumenter(instrumenter);
-				
-		
-		 Accumulator acc = instrumenter.getLastAccumulator();
+					
 		
 //       new Plot()
 //       //.add("NSGAII", result)
@@ -89,25 +83,12 @@ public class GA_Instrumenter {
 		// Store the data and compute the reference set
 		Map<String, Accumulator> results = new HashMap<String, Accumulator>();
 		NondominatedPopulation referenceSet = new NondominatedPopulation();
-//		
-//		referenceSet.addAll(executor.withAlgorithm("NSGAII").run());
-//		results.put("NSGAII", instrumenter.getLastAccumulator());
-//		
-		 StringBuilder sb = new StringBuilder();
-		
+
 		for (String algorithm : algorithms) {
 			referenceSet.addAll(executor.withAlgorithm(algorithm).run());
 			results.put(algorithm, instrumenter.getLastAccumulator());
 			
 		}
-//		System.out.println();
-//		System.out.println(sb.append(instrumenter.getLastAccumulator().toString()));
-//		System.out.println();
-//		System.out.println(sb.append(instrumenter.getLastAccumulator().keySet()));
-//		System.out.println();
-//		System.out.println(sb.append(instrumenter.getLastAccumulator().toCSV()));
-		
-		//System.out.print(Arrays.toString(results.entrySet().toArray()));
 		
 		// Calculate the performance metrics using the reference set
 		QualityIndicator qi = new QualityIndicator(problem, referenceSet);
@@ -115,7 +96,6 @@ public class GA_Instrumenter {
 		for (String algorithm : algorithms) {
 			Accumulator accumulator = results.get(algorithm);
 			System.out.print(accumulator.keySet());
-			
 			
 			
 			for (int i = 0; i < accumulator.size("NFE"); i++) {

@@ -34,7 +34,6 @@ import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
-import playground.onnene.transitScheduleMaker.FileMakerUtils;
 import playground.onnene.transitScheduleMaker.TransitSchedule;
 
 /**
@@ -45,21 +44,21 @@ import playground.onnene.transitScheduleMaker.TransitSchedule;
  * @author Onnene
  *
  */
-public class CreateFeasibleSolutions {
+public class CreateInitialPop {
+	
+	static int numLines = ProblemUtils.numberOfLines();
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		
-		int numLines;
-		CreateFeasibleSolutions cfs = new CreateFeasibleSolutions();
+		CreateInitialPop cfs = new CreateInitialPop();
 		
 		try {
 			
-			numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
-			String InitialPopFolder = DirectoryConfig.INITIAL_POPULATION_DIRECTORY;
-	    	String feasibleRoutes = DirectoryConfig.FEASIBLE_ROUTES_FILE;
+			String InitialPopFolder = "./input/initialPop1/";
+			String feasibleRoutes = "./input/routeGenInput/feasibleRoutes.txt";
 	    	cfs.makeInitialPop(feasibleRoutes, numLines, InitialPopFolder);
 	    	
 		} catch (IOException e) {
@@ -67,7 +66,6 @@ public class CreateFeasibleSolutions {
 		}
     		
 	}
-	
 	
 	public List<String> makeInitialPop(String feasibleRoutes, int numLines, String outputFolder) throws IOException {
     	
@@ -122,7 +120,8 @@ public class CreateFeasibleSolutions {
 		    		
 		    	} else {
 		    		
-		    		System.out.println("This solution has only " + collection.size() + " so we will discard it");
+		    		System.out.println("This solution has only " + collection.size() + " so it will be discarded it");
+		    		
 		    		continue;
 		    		
 		    	}

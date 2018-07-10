@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.exampleCode;
 
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.api.experimental.events.EventsManager;
@@ -29,6 +29,9 @@ import org.matsim.core.events.MatsimEventsReader;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.up.utils.Header;
+
+import playground.onnene.ga.NetworkOperatorScoringFunction;
+import playground.onnene.ga.NetworkUserScoringFunction;
 
 /**
  * This class is used to run the user and operator scoring function
@@ -50,52 +53,21 @@ public class RunScoringFunctions {
 		String networkFile = args[2];
 		String operatorScoreOutputFile = args[3];	
 		
-		//Score Function 2
-		Scenario scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());	
-//		MatsimNetworkReader mnr = new MatsimNetworkReader(scenario.getNetwork());
-//		//MatsimNetworkReader mnr1 = new MatsimNetworkReader(scenario.getNetwork());
-		
-//		mnr.readFile(networkFile);
-		
+		Scenario scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());			
 		new MatsimNetworkReader(scenario.getNetwork()).readFile(networkFile);
 		
-		//Score Function 1
 		EventsManager manager = new EventsManagerImpl();		
 		manager.addHandler(new NetworkUserScoringFunction(userScoreOutputFile));	
 		manager.addHandler(new NetworkOperatorScoringFunction(operatorScoreOutputFile, scenario.getNetwork()));
 		
 		new MatsimEventsReader(manager).readFile(eventsFile);
-		//manager.addHandler(new CarTravelDistanceEvaluator(scenario.getNetwork()));
-		//manager.addHandler(new PtTravelDistanceCalculator(scenario.getNetwork()));
 		
-//		EventsManager eventsManager = EventsUtils.createEventsManager();
-//		Scenario scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());		
-//		new MatsimNetworkReader(scenario.getNetwork()).readFile("input/network.xml");
-		
-//		PtTravelDistanceCalculator PtTravelDistanceEvaluator = new PtTravelDistanceCalculator(scenario.getNetwork());
-//		
-//		System.out.println(Arrays.toString(PtTravelDistanceEvaluator.getDistanceDistribution()));
-//		
-		
-		//NetworkUserScoringFunction nuc = new NetworkUserScoringFunction(output);
-		//List<Double> totalVehicleTime = NetworkUserScoringFunction.getUsersTimeList();
-		
-		double aaa = NetworkUserScoringFunction.getUserScore();
-		
-		
+		double aaa = NetworkUserScoringFunction.getUserScore();		
 		double bbb = NetworkOperatorScoringFunction.getOperatorScore();
-		
-//		double sum = 0.0;
-//		
-//		for(Double tvt: totalVehicleTime) {
-//			
-//			sum += tvt;
-//		}
+
 		System.out.println("user score is " + aaa + " minutes");
 		System.out.println("operator score is " + bbb + " rands");
-		///System.out.println(NetworkUserScoringFunction.getTotalVehicleTime());
-		
-		
+
 		Header.printFooter();
 	}
 

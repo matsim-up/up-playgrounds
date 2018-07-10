@@ -58,13 +58,7 @@ class TransitLine{
     public void routeProfile(String s, int i, int num, int flag, int numberOfLines){ 
        Element e000 = d.createElement("routeProfile");
        e00.appendChild(e000);
-       //int numLines = 0;
-//       
-//       try {
-//		numLines = TransitStopData.count("C:\\Users\\NNNOB\\Documents\\GitHub\\Hyperion\\Tschedule\\TransitSchedule\\transitLIneList.txt");
-//	} catch (IOException e) {
-//		e.printStackTrace();
-//	}
+       
        //string slicing and appending routes to array
        String chop;
        //System.out.println(s);

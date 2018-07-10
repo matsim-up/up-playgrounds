@@ -54,8 +54,6 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 	private static List<Double> totalTraveltime = new ArrayList<>();
 	private static double totalPersonTripDuration;
 	
-
-
 	public NetworkUserScoringFunction(String output) {
 		File file = new File(output);
 		if (file.exists()) {
@@ -71,7 +69,6 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 	@Override
 	public void reset(int iteration) {
 		personMap = new TreeMap<>();
-		//distanceDistribution = new int[100000];
 		totalTraveltime = new ArrayList<>();
 	}
 
@@ -89,10 +86,6 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 	@Override
 	public void handleEvent(PersonArrivalEvent event) {
 		
-		//double totalTripDuration = 0.0;
-		
-		//double[] totalTripDuration = new double[100000];
-		
 		if (!personMap.containsKey(event.getPersonId())) {
 			log.error("Cannot calculate trip duration for " + event.getPersonId().toString());
 			
@@ -100,17 +93,14 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 			if (!event.getPersonId().toString().startsWith("pt_tr")) {
 				double tripStartTime = personMap.get(event.getPersonId());
 				double tripDuration = event.getTime() - tripStartTime;
-				
-				
+								
 				BufferedWriter bw = IOUtils.getAppendingBufferedWriter(output);
 				try {
 					try {
 						 
 						bw.write(event.getPersonId().toString() + "," + tripDuration);
 						bw.newLine();
-						//this.distanceDistribution[(int) tripDuration]++;
 						totalTraveltime.add(tripDuration);
-						
 						totalPersonTripDuration += tripDuration;
 						
 					} catch (IOException e) {
@@ -126,8 +116,6 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 					}
 				}
 				
-				//totalTripDuration += tripDuration;
-
 				/* Remove person from map. */
 				personMap.remove(event.getPersonId());
 			}
@@ -135,57 +123,19 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 			
 		}
 		
-		//System.out.println(totalTripDuration);
-		//System.out.println(totalTraveltime);
 	}
 	
-		public static List<Double> getUsersTimeList() {
-				
-			return totalTraveltime;
-	}
+//		public static List<Double> getUsersTimeList() {
+//				
+//			return totalTraveltime;
+//	}
 		
 		public static double getUserScore() {
 			
 			BigDecimal averagetripDur = new BigDecimal(totalPersonTripDuration/(15*60*totalTraveltime.size()));
 			BigDecimal userScore = averagetripDur.setScale(4, RoundingMode.CEILING);
-			//*totalTraveltime.size()
-			
-//			BigDecimal totaltripDur = new BigDecimal(totalPersonTripDuration/(24*60));			
-//			BigDecimal userScore = totaltripDur.setScale(4, RoundingMode.CEILING);
-//			
-						
+
 			return userScore.doubleValue();
 		}
-	
-	
-//	
-//	public static int getUserScore1(List<Double> userTimeList) {
-//		
-//		double sum = 0.0;
-//		
-//		
-//		for(Double tvt: userTimeList) {
-//			
-//			sum += tvt;
-//		}
-//		
-//		System.out.println("another way to calculate total user cost " + totalPersonTripDuration/(24*60));
-//		System.out.println("another way to calculate avr user cost " + totalPersonTripDuration/(24*60*userTimeList.size()));
-//		
-//		int totalTravelTime = (int) (sum/(24*60));
-//		
-//		int averageTravelTime = (int) (sum/(24*60*userTimeList.size()));
-//		
-//		System.out.println("first way to calculate total user cost " + totalTravelTime );
-//		System.out.println("first way to calculate avr user cost " + averageTravelTime);
-//		
-//		//System.out.println(totalTraveltime);
-//		
-//		//System.out.println(Arrays.toString(this.totalTraveltime));
-//		
-//		return averageTravelTime ;
-//	}
-		
-
 
 }

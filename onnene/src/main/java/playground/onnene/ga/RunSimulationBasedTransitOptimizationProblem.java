@@ -37,7 +37,6 @@ import org.apache.commons.io.FileUtils;
 import org.moeaframework.Executor;
 import org.moeaframework.Instrumenter;
 import org.moeaframework.analysis.collector.Accumulator;
-import org.moeaframework.analysis.plot.Plot;
 import org.moeaframework.core.NondominatedPopulation;
 import org.moeaframework.core.Problem;
 import org.moeaframework.core.Solution;
@@ -54,7 +53,8 @@ import org.moeaframework.core.spi.ProblemFactory;
  */
 public class RunSimulationBasedTransitOptimizationProblem {
     
-    private static final int MAX_MOEA_EVALUATIONS = 2;
+    private static final int MAX_MOEA_EVALUATIONS = 3;
+    public static final int MATSIM_ITERATION_NUMBER = 10;
     
     private static FileOutputStream FOS;
     static Calendar cal = Calendar.getInstance();
@@ -63,7 +63,7 @@ public class RunSimulationBasedTransitOptimizationProblem {
     
     static {
         try {
-            FOS = new FileOutputStream(new File(DirectoryConfig.RUN_MOEA_LOG_FILE_PATH));
+            FOS = new FileOutputStream(new File("./output/logs/run_moea_log.txt"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -72,14 +72,10 @@ public class RunSimulationBasedTransitOptimizationProblem {
     
     public static void main(String[] args) throws Exception {
     	
-    	runSimulation(args[0]);
-    	//runSimulation(DirectoryConfig.RESULTS_FILE);
-    	   	
+    	runSimulation("./output/optimisationResults/");
     }
     
 
-    
-  
     private void decodeResult(Variable variable, String resultFilePath, int folderNum, int fileNum) throws IOException {
 
         if (variable instanceof  DecisionVariable) {
@@ -107,71 +103,24 @@ public class RunSimulationBasedTransitOptimizationProblem {
         OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());    
         
         Instrumenter instrumenter = new Instrumenter();       	
-            instrumenter.withProblem("SimulationBasedTransitOptimizationProblem");
+            instrumenter.withProblem(problem);
         	instrumenter.withFrequency(1);
         	instrumenter.attachElapsedTimeCollector();
-
-      
-//        List<NondominatedPopulation> result = new Executor()
-
-//        	instrumenter.withReferenceSet(null);
-//        	instrumenter.attachGenerationalDistanceCollector();
-//        	instrumenter.attachHypervolumeCollector();
-//        	instrumenter.attachPopulationSizeCollector();
-  
-//        	
-//        	int run = 1;
-//        	int threads = 2;
-//        	boolean plot = false;
-        	
-        	//PRNG.setSeed(run * 20180620);
         	
 		List<NondominatedPopulation> result = new Executor()
-            //.withProblemClass(SimulationBasedTransitOptimizationProblem.class)
-        	//.distributeOn(threads)
         	.withSameProblemAs(instrumenter)
             .withAlgorithm("NSGAII")
             .withProperty("operator", "MyCrossover+MyMutation")
             .withProperty("MyCrossover.Rate", 0.75)
             .withProperty("MyMutation.Rate", 0.25)
-            .withProperty("populationSize", 2)
+            .withProperty("populationSize", 3)
             .withMaxEvaluations(MAX_MOEA_EVALUATIONS)        
             .withInstrumenter(instrumenter)
-            .runSeeds(2);
+            .runSeeds(3);
 
         Accumulator acc = instrumenter.getLastAccumulator();
-
-        
-//	      new Plot()
-//	      //.add("NSGAII", result)
-//	      .setXLabel("User-Cost")
-//	      .setYLabel("Operator-Cost")
-//	      //.add(acc)
-//	      .show();
-	  
-		  new Plot()
-		  .add(acc)
-		  .show();
-          
-        //System.out.println(acc.toCSV());
-                
-//        if(plot) {
-//        	new Plot()
-//        	.add("NSGAII", result)
-//        	.setXLabel("User-Cost")
-//        	.setYLabel("Operator-Cost")
-//        	//.add(acc)
-//        	.show();
-//        	
-//        	new Plot()
-//        	.add(acc)
-//        	.show();
-//        }
-              
+                         
         System.out.println(acc.toCSV());
-
-     
-        StringBuilder sb = new StringBuilder();
        
         RunSimulationBasedTransitOptimizationProblem rsbtop = new RunSimulationBasedTransitOptimizationProblem();
      
@@ -180,10 +129,7 @@ public class RunSimulationBasedTransitOptimizationProblem {
         int folderIdx = 0;
         
         FileUtils.deleteDirectory(new File(ResultFolder));
-        
-        //System.out.println("this is the results " + result);
-        
-        
+
         for (NondominatedPopulation pop: result) {
         	
         	folderIdx++;
@@ -203,11 +149,17 @@ public class RunSimulationBasedTransitOptimizationProblem {
 	                             
              }
         	
+//  	      new Plot()
+//  	      .add("NSGAII", pop)
+//  	      .setXLabel("User-Cost")
+//  	      .setYLabel("Operator-Cost")
+//  	      //.add(acc)
+//  	      .show();
+        	
         	System.out.println();
         }
         
        
-              
         Date endTime = new Date();        
         long timeDiff = endTime.getTime() - startTime.getTime();   
         int durationInMilliseconds = (int) (timeDiff);

@@ -30,7 +30,6 @@ public class ExtractTransitScheduleHelperFiles {
        
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(xmlFile);
-        //Document document = documentBuilder.parse("C:\\Users\\NNNOB\\Documents\\GitHub\\Hyperion\\Tschedule\\transitSchedule.xml");
         
         NodeList transitScheduleList = document.getElementsByTagName("transitSchedule"); 
         fileMaker.openFile(outputFilePath + "transitStopList");
@@ -120,8 +119,7 @@ public class ExtractTransitScheduleHelperFiles {
                                                                  
                                 if(transitLineNode.getNodeType() == Node.ELEMENT_NODE){
                                     counter++;
-                                    //Element transitLineElement = (Element) transitLineNode;
-                                   
+                                                     
                                 }  
                             }
                             fileMaker.addRecord(transitElement.getAttribute("id")+","+counter+"\n");

@@ -25,8 +25,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import playground.onnene.ga.DirectoryConfig;
-
 
 
 /**
@@ -100,7 +98,8 @@ class Vehicle {
         d2.appendChild(e);
         DOMSource doms = new DOMSource(d2);
         //String fileName = "C:\\Users\\NNNOB\\Documents\\GitHub\\matsim-sa\\output\\SBO_input\\common\\transitVehicles" + ".xml";
-        String vehicleFile = DirectoryConfig.TRANSIT_VEHICLES_FILE;
+        String vehicleFile = "./input/matsimInput/transitVehicles.xml";
+        //String vehicleFile = DirectoryConfig.TRANSIT_VEHICLES_FILE;
         StreamResult sr = new StreamResult(new File(vehicleFile));
         
         TransformerFactory tf = TransformerFactory.newInstance();

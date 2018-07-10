@@ -21,12 +21,6 @@
  */
 package playground.onnene.routeGenerator;
 
-import java.util.List;
-
-import playground.onnene.ga.DirectoryConfig;
-import playground.onnene.transitScheduleMaker.FileMakerUtils;
-
-
 /**
  * @author Onnene
  *
@@ -39,25 +33,28 @@ public class RunRouteSetGen {
 	 */
 	public static void main(String[] args) throws Exception {
 		
-		int numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
-		List<List<String>> temp = RouteSetGen.getFeasibleRoutesByStratifiedSampling();
-		int numOfSplit = temp.size()/numLines;
+		//int numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
+		//int numLines = FileMakerUtils.count("./input/transitScheduleMakerHelperFiles/transitLineList.txt");
+		//List<List<String>> temp = RouteSetGen.getFeasibleRoutesByStratifiedSampling();
+		//int numOfSplit = temp.size()/numLines;
+
 		
-		String transitNetworkXml = DirectoryConfig.DECOMPRESSED_TRANSIT_NETWORK_XML_FILE;
-		String transitScheduleXml = DirectoryConfig.DECOMPRESSED_TRANSIT_SCHEDULE_XML_FILE;
+		String transitNetworkXml = "./input/gtfsInputs/gtfsOutput/transitNetwork.xml";
+		String transitScheduleXml = "./input/gtfsInputs/gtfsOutput/transitSchedule.xml";
+
+				
+		String linkStyle = "./input/routeGenInput/link_style.xsl";
+		String nodeStyle = "./input/routeGenInput/node_style.xsl";
+		String routeStyle = "./input/routeGenInput/route_style.xsl";
+		String stopFacility = "./input/routeGenInput/stopFacility_style.xsl";
+		String graphStyle = "./input/routeGenInput/graph_style.xsl";
+		String networkGraphml = "./input/routeGenInput/NetworkGraph.graphml";
+		String outputFolder = "./input/routeGenInput/";
 		
-		String linkStyle = DirectoryConfig.LINKS_STYLESHEET_FILE;
-		String nodeStyle = DirectoryConfig.NODES_STYLESHEET_FILE;
-		String routeStyle = DirectoryConfig.ROUTES_STYLESHEET_FILE;
-		String stopFacility = DirectoryConfig.STOP_FACILITY_STYLESHEET_FILE;
-		String graphStyle = DirectoryConfig.GRAPH_STYLESHEET_FILE;
-		String networkGraphml = DirectoryConfig.GRAPH_FILE_PATH;
-		String outputFolder = DirectoryConfig.NETWORK_GRAPH_OUPUT_DIRECTORY;
-		
+				
 		MatsimNetworkAndScheduleExtractor mnse = new MatsimNetworkAndScheduleExtractor();
 		MatsimNetwork2Graphml mng = new MatsimNetwork2Graphml();	
 		//RouteSetGen rag = new RouteSetGen();	
-		
 
 		// Step1: Extract link details from transitNetwork.xml
 		mnse.LinkExtractor(linkStyle, transitNetworkXml, outputFolder);
@@ -74,8 +71,9 @@ public class RunRouteSetGen {
 		//Step 5: Create network Graph 
 		mng.Network2Graphml(graphStyle, transitNetworkXml, networkGraphml);
 		
-		//Step 6: Create create feasible Routes		
-		RouteSetGen.splitPopulationIntoIndividuals(temp, numOfSplit);
+		
+//		//Step 6: Create create feasible Routes		
+//		RouteSetGen.splitPopulationIntoIndividuals(temp, numOfSplit);
 		
 	}
 

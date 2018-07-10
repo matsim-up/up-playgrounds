@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.exampleCode;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -41,6 +41,8 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.utils.io.IOUtils;
 import org.matsim.vehicles.Vehicle;
+
+import playground.onnene.ga.NetworkOperatorScoringFunction;
 
 /**
  * @author Onnene
