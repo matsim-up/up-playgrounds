@@ -25,30 +25,30 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.json.JSONException;
+import org.apache.commons.io.FileUtils;
 import org.moeaframework.Executor;
 import org.moeaframework.Instrumenter;
 import org.moeaframework.analysis.collector.Accumulator;
-import org.moeaframework.analysis.plot.Plot;
 import org.moeaframework.core.NondominatedPopulation;
-import org.moeaframework.core.PRNG;
+import org.moeaframework.core.Problem;
 import org.moeaframework.core.Solution;
 import org.moeaframework.core.Variable;
 import org.moeaframework.core.spi.OperatorFactory;
-import org.xml.sax.SAXException;
+import org.moeaframework.core.spi.ProblemFactory;
 
 import playground.onnene.ga.DecisionVariable;
 import playground.onnene.ga.GA_OperatorProvider;
+import playground.onnene.ga.GA_ProblemProvider;
 import playground.onnene.ga.ProblemUtils;
 import playground.onnene.ga.SimulationBasedTransitOptimizationProblem;
-import playground.onnene.transitScheduleMaker.TransitSchedule;
 
 
 /**
@@ -58,10 +58,9 @@ import playground.onnene.transitScheduleMaker.TransitSchedule;
  *
  */
 public class RunSimulationBasedTransitOptimizationProblem {
-	
-    //private static final Logger LOGGER = Logger.getLogger(RunSimulationBasedTransitOptimizationProblem.class);
-    private static final int MAX_MOEA_EVALUATIONS = 100;
-    //public static int callsToEvaluate = 0;
+    
+    private static final int MAX_MOEA_EVALUATIONS = 3;
+    public static final int MATSIM_ITERATION_NUMBER = 10;
     
     private static FileOutputStream FOS;
     static Calendar cal = Calendar.getInstance();
@@ -70,267 +69,106 @@ public class RunSimulationBasedTransitOptimizationProblem {
     
     static {
         try {
-            FOS = new FileOutputStream(new File(DirectoryConfig.RUN_MOEA_LOG_FILE_PATH));
+            FOS = new FileOutputStream(new File("./output/logs/run_moea_log.txt"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
     
-    private String encode(Variable variable, String resultFilePath) throws IOException {
-    	
-    	int index = 1;
-    	
-    	//TransitSchedule TS = new TransitSchedule();
-    	
-		StringBuilder sb = new StringBuilder();
-		
-		if (variable instanceof  DecisionVariable) {
-			
-			DecisionVariable obi = (DecisionVariable) variable;
-			
-			//sb.append(obi.getTransitSchedule());
-			
-			String paretoResultName = DirectoryConfig.LOG_FOLDER_PATH + "paretoSolution" + index++ + ".xml";
-			
-			try {
-				TransitSchedule.string2Dom(TransitSchedule.JSON2XML(obi.getTransitSchedule().toString()), paretoResultName);
-			} catch (JSONException | SAXException | ParserConfigurationException | TransformerException e) {
-				
-				e.printStackTrace();
-			}
-								
-		} 
-		
-		else {
-			
-			throw new IOException("type not supported");
-		}
-		
-		 //System.out.print(sb.length());
-		
-		return sb.toString();
-	}
     
-    
-    private void decodeResult(Variable variable, String resultFilePath) throws IOException {
-        //StringBuilder sb = new StringBuilder();
+    public static void main(String[] args) throws Exception {
     	
-    	File resultFolder = new File(resultFilePath);
-        
-        int index = 1;
-       
+    	runSimulation("./output/optimisationResults/");
+    }
+    
+
+    private void decodeResult(Variable variable, String resultFilePath, int folderNum, int fileNum) throws IOException {
+
         if (variable instanceof  DecisionVariable) {
                
-               DecisionVariable varObj = (DecisionVariable) variable;
-                             
-               //return varObj.getTransitSchedule();
-               
-               
-               if (resultFolder.listFiles() != null){
-                   
-	                   for (File file: resultFolder.listFiles()) {
-	                         
-	                         if (file.isFile()) {
-	                                
-	                                file.delete();
-	                         }
-	                   }
-	                   
-	                   String resultFileName = "pareto_solution" + index++ + ".xml";             
-	                   String pareto_result_folder = DirectoryConfig.RESULTS_FILE + resultFileName;              
-	                   ProblemUtils.getXMLFromJSONDecisionVar(varObj.getTransitSchedule(), pareto_result_folder);
-               }
-               
-               //ProblemUtils.getXMLFromJSONDecisionVar(solution.getVariable(0))
+               DecisionVariable varObj = (DecisionVariable) variable;               
+               String resultFileName = "Solution" + fileNum + ".xml";                   
+               String innerFolderStr = resultFilePath + folderNum + File.separator;             
+               Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));               
+               String paretoResultFolderPath = innerFolder + File.separator + resultFileName;
+               ProblemUtils.getXMLFromJSONDecisionVar(varObj.getTransitSchedule(), paretoResultFolderPath);
                
         }
         
         else {
                
                throw new IOException("type not supported");
-        }
-        
+        }        
                     
     }
 
-    
-    public static void main(String[] args) throws Exception {
+    public static void runSimulation(String ResultFolder) throws Exception {
     	
-//    	File checkpointFile = new File(DirectoryConfig.CHECKPOINT_FILE);
-//    	long start = System.currentTimeMillis();
-//    	
-//    	if (checkpointFile.exists()) {
-//    		
-//    		System.out.println("Checkpoint file exists, will resume from prior run!");
-//    	}
-
+    	ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
+    	Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");     
+        OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());    
         
-    	//ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
-    	//Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");
-    	//Problem problem = ProblemFactory.getInstance().getProblem("DTLZ2_2");
-        //Problem problem = new SimulationBasedTransitOptimizationProblem();
-        
-        OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
-       
-//        String[] algorithms = { "NSGAII", "GDE3" };
-//        
-//        Instrumenter instrumenter = new Instrumenter()
-//				.withProblem(problem)
-//				.attachApproximationSetCollector();
-//		
-//        Executor executor = new Executor()
-//				.withProblem(problem)
-//				.withMaxEvaluations(10000)
-//				.withInstrumenter(instrumenter);
-//		
-//		  // Store the data and compute the reference set
-// 		Map<String, Accumulator> results = new HashMap<String, Accumulator>();
-// 		NondominatedPopulation referenceSet = new NondominatedPopulation();
-// 		
-// 		for (String algorithm : algorithms) {
-// 			referenceSet.addAll(executor.withAlgorithm(algorithm).run());
-// 			results.put(algorithm, instrumenter.getLastAccumulator());
-// 		}
-// 		
-// 		// Calculate the performance metrics using the reference set
-// 		QualityIndicator qi = new QualityIndicator(problem, referenceSet);
-// 		
-// 		for (String algorithm : algorithms) {
-// 			Accumulator accumulator = results.get(algorithm);
-// 			
-// 			System.out.println(algorithm);
-// 			
-// 			for (int i = 0; i < accumulator.size("NFE"); i++) {
-// 				List<Solution> approximationSet = (List<Solution>) accumulator.get("Approximation Set", i);
-// 				qi.calculate(new NondominatedPopulation(approximationSet));
-// 				
-// 				System.out.print("    ");
-// 				System.out.print(accumulator.get("NFE", i));
-// 				System.out.print(" ");
-// 				System.out.print(qi.getHypervolume());
-// 				System.out.println();
-// 			}
-// 			
-// 			System.out.println();
-// 		}
-    
-        
-        //PRNG.setSeed(2255);
-        
-        Instrumenter instrumenter = new Instrumenter();
-        	
-            instrumenter.withProblemClass(SimulationBasedTransitOptimizationProblem.class);
+        Instrumenter instrumenter = new Instrumenter();       	
+            instrumenter.withProblem(problem);
         	instrumenter.withFrequency(1);
         	instrumenter.attachElapsedTimeCollector();
-//        	instrumenter.withReferenceSet(null);
-//        	instrumenter.attachGenerationalDistanceCollector();
-//        	instrumenter.attachHypervolumeCollector();
-//        	instrumenter.attachPopulationSizeCollector();
-  
-//        	
-        	int run = 1;
-        	int threads = 2;
-        	boolean plot = false;
         	
-        	PRNG.setSeed(run * 20180620);
-        	
-		NondominatedPopulation result = new Executor()
-            //.withProblemClass(SimulationBasedTransitOptimizationProblem.class)
-        		.distributeOn(threads)
+		List<NondominatedPopulation> result = new Executor()
         	.withSameProblemAs(instrumenter)
             .withAlgorithm("NSGAII")
             .withProperty("operator", "MyCrossover+MyMutation")
             .withProperty("MyCrossover.Rate", 0.75)
             .withProperty("MyMutation.Rate", 0.25)
-            .withProperty("populationSize", 15)
-            //.withCheckpointFrequency(1)
-            .withMaxEvaluations(MAX_MOEA_EVALUATIONS)
-            //.withCheckpointFile(checkpointFile)           
-            .withInstrumenter(instrumenter)
-            .run();
-        
-        
-        
-        //Accumulator acc = new Accumulator();
+            .withProperty("populationSize", 3)
+            .withMaxEvaluations(MAX_MOEA_EVALUATIONS)        
+            .withInstrumenter(instrumenter)          
+            .runSeeds(3);
+			
+
         Accumulator acc = instrumenter.getLastAccumulator();
-                
-        if(plot) {
-        	new Plot()
-        	.add("NSGAII", result)
-        	.setXLabel("User-Cost")
-        	.setYLabel("Operator-Cost")
-        	//.add(acc)
-        	.show();
-        	
-        	new Plot()
-        	.add(acc)
-        	.show();
-        }
-              
+                         
         System.out.println(acc.toCSV());
-     
-        StringBuilder sb = new StringBuilder();
-        
+       
         RunSimulationBasedTransitOptimizationProblem rsbtop = new RunSimulationBasedTransitOptimizationProblem();
-         
-        System.out.println("Size of Pareto front is:" + " " + sb.append(result.size()));
+     
         System.out.println("Evaluate called " + SimulationBasedTransitOptimizationProblem.callsToEvaluate + " times...");
         
-        /*File resultFolder = new File(DirectoryConfig.RESULTS_FILE);
+        int folderIdx = 0;
         
-        int index = 0;
-        */
-        
-        for (Solution solution : result) {
+        FileUtils.deleteDirectory(new File(ResultFolder));
+
+        for (NondominatedPopulation pop: result) {
         	
-        	//rsbtop.encode(solution.getVariable(0));
-        	//System.out.print(rsbtop.encode(solution.getVariable(0)));
+        	folderIdx++;
+        	int fileIdx = 0;
+
+       	 	System.out.println("Size of Pareto front is:" + " " + pop.size());
+  
+        	for (Solution solution : pop) {
+        		 
+        		fileIdx++;
+        		 //rsbtop.decodeResult(solution.getVariable(0), DirectoryConfig.RESULTS_FILE, folderIdx, fileIdx);
+             	 rsbtop.decodeResult(solution.getVariable(0), ResultFolder, folderIdx, fileIdx);
+             	 
+	             System.out.format("%.4f      %.4f%n", solution.getObjective(0), solution.getObjective(1));
+	             FOS.write(String.format("\n%.4f      %.4f%n", solution.getObjective(0), solution.getObjective(1)).getBytes());
+	             FOS.write("\nObjective1  Objective2%n".getBytes());
+	                             
+             }
         	
-        	//String xml = XML.toString(rsbtop.encode(solution.getVariable(0)));
+//  	      new Plot()
+//  	      .add("NSGAII", pop)
+//  	      .setXLabel("User-Cost")
+//  	      .setYLabel("Operator-Cost")
+//  	      //.add(acc)
+//  	      .show();
         	
-        	//rsbtop.encode(solution.getVariable(0), DirectoryConfig.LOG_FOLDER_PATH);
-        	
-        	rsbtop.decodeResult(solution.getVariable(0), DirectoryConfig.RESULTS_FILE);
-        	
-        	
-        	/*if (resultFolder.listFiles() != null){
-                
-                for (File file: resultFolder.listFiles()) {
-                      
-                      
-                      if (file.isFile()) {
-                             
-                             file.delete();
-                      }
-                }
-                
-                String resultFileName = "pareto_solution" + index++ + 1 + ".xml";             
-                String pareto_result_folder = DirectoryConfig.RESULTS_FILE + resultFileName;              
-                ProblemUtils.getXMLFromJSONDecisionVar(rsbtop.decode(solution.getVariable(0)), pareto_result_folder);
-         }*/
-        	
-//        	try (PrintWriter out = new PrintWriter("filename.xml")) {
-//        		//System.out.println(xml);
-//        	}
-        	
-        	//FOS.write(String.format(xml));
-        	
-        	//System.out.print(solution.getVariable(0));
-        	//System.out.println();
-        	//sb.append(solution.toString());
         	System.out.println();
-            System.out.format("%.4f      %.4f%n", solution.getObjective(0), solution.getObjective(1));
-            FOS.write(String.format("\n%.4f      %.4f%n", solution.getObjective(0), solution.getObjective(1)).getBytes());
-            FOS.write("\nObjective1  Objective2%n".getBytes());
-            
         }
-              
-        Date endTime = new Date();
         
-        long timeDiff = endTime.getTime() - startTime.getTime();
-      
-        //long end = System.currentTimeMillis();
        
+        Date endTime = new Date();        
+        long timeDiff = endTime.getTime() - startTime.getTime();   
         int durationInMilliseconds = (int) (timeDiff);
        
         int seconds = (int) (durationInMilliseconds / 1000) % 60 ;
@@ -343,9 +181,7 @@ public class RunSimulationBasedTransitOptimizationProblem {
         FOS.write(endTime.toString().getBytes());
         FOS.write(String.format("\nEvaluate is called %d times...", SimulationBasedTransitOptimizationProblem.callsToEvaluate).getBytes());
         FOS.write(String.format("\nDuration: %02d:%02d:%02d", hours, minutes, seconds).getBytes());
-               
-        
-        //System.out.println("Elapsed time: " + (System.currentTimeMillis() - start)/1000 + "s");
+
     }
 	
 

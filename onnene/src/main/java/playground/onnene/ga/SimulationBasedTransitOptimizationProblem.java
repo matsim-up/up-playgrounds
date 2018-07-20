@@ -80,27 +80,27 @@ public class SimulationBasedTransitOptimizationProblem extends AbstractProblem {
         
         try {
         	
-			ProblemUtils.getXMLFromJSONDecisionVar(Jvar, tScheduleFile);
-			FOS.write("\nMOEA evaluate(...) function called".getBytes());
+				ProblemUtils.getXMLFromJSONDecisionVar(Jvar, tScheduleFile);
+				FOS.write("\nMOEA evaluate(...) function called".getBytes());
 			
 			} catch (IOException e2) {
 				
 				e2.printStackTrace();
 			}
         
-        try {
-        	
-			FOS.write("\nMOEA evaluate(...) function called".getBytes());
-			
-			} catch (IOException e1) {
-				
-				e1.printStackTrace();
-			
-			}
+//        try {
+//        	
+//				FOS.write("\nMOEA evaluate(...) function called".getBytes());
+//			
+//			} catch (IOException e1) {
+//				
+//				e1.printStackTrace();
+//			
+//			}
             
         LOGGER.debug("\nMOEA evaluate(...) function called".getBytes());
         
-        String matsimOutputFolderPath = "./output/matsimOutput/"+ callsToEvaluate + "\\";
+        String matsimOutputFolderPath = "./output/matsimOutput/"+ callsToEvaluate + File.separator;
    
         runMatsim("./input/matsimInput/config.xml", matsimOutputFolderPath);
         try {
@@ -146,10 +146,10 @@ public class SimulationBasedTransitOptimizationProblem extends AbstractProblem {
         
         
         Config config = ConfigUtils.loadConfig(configFile);
-        config.controler().setLastIteration(RunWithOwnSeed.MATSIM_ITERATION_NUMBER);       
+        config.controler().setLastIteration(RunSimulationBasedTransitOptimisationProblem.MATSIM_ITERATION_NUMBER);       
         config.controler().setOutputDirectory(matsimOutputDirectory);       
         config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-        config.controler().setWriteEventsInterval(50);
+        //config.controler().setWriteEventsInterval(50);
        
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
