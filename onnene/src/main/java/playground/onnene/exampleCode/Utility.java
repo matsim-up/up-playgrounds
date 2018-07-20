@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.exampleCode;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

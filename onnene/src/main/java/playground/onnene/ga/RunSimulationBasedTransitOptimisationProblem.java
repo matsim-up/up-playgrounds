@@ -66,7 +66,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 	
 	static long start = System.currentTimeMillis();
 	
-    private static final int MAX_MOEA_EVALUATIONS = 10000;
+    private static final int MAX_MOEA_EVALUATIONS = 5000;
     public static final int MATSIM_ITERATION_NUMBER = 100;
     private static FileOutputStream MOEA_LOG_FILE, INDICATOR_FILE, REFERENCE_SET_FILE, REFERENCE_SET_FILE_PF_FORMAT, SEED_FILE;
     static Calendar cal = Calendar.getInstance();
@@ -134,7 +134,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
        
         Instrumenter instrumenter = new Instrumenter();       	
             instrumenter.withProblem(problem);
-        	instrumenter.withFrequency(5);
+        	instrumenter.withFrequency(100);
         	instrumenter.attachApproximationSetCollector();
         	instrumenter.attachElapsedTimeCollector();
         		        		        	
@@ -149,11 +149,11 @@ public class RunSimulationBasedTransitOptimisationProblem {
 	            .withProperty("operator", "MyCrossover+MyMutation")
 	            .withProperty("MyCrossover.Rate", 0.75)
 	            .withProperty("MyMutation.Rate", 0.25)
-	            .withProperty("populationSize", 5)
+	            .withProperty("populationSize", 100)
 	            .withMaxEvaluations(MAX_MOEA_EVALUATIONS)  
 	            //.resetCheckpointFile()
 	            .withCheckpointFile(checkPointFile)		  
-	            .withCheckpointFrequency(5)
+	            .withCheckpointFrequency(100)
 	            .withInstrumenter(instrumenter)     
 	            .distributeOn(numThreads)
 	            .run();
