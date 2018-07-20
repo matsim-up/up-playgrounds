@@ -144,14 +144,31 @@ public class SimulationBasedTransitOptimizationProblem extends AbstractProblem {
             e1.printStackTrace();
         }
         
+        
         Config config = ConfigUtils.loadConfig(configFile);
-        config.controler().setLastIteration(RunSimulationBasedTransitOptimizationProblem.MATSIM_ITERATION_NUMBER);       
+        config.controler().setLastIteration(RunWithOwnSeed.MATSIM_ITERATION_NUMBER);       
         config.controler().setOutputDirectory(matsimOutputDirectory);       
         config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-        config.controler().setWriteEventsInterval(10);
+        config.controler().setWriteEventsInterval(50);
+       
 
         Scenario scenario = ScenarioUtils.loadScenario(config);
         Controler controler = new Controler(scenario);
+        
+        /*Code stub to implement SBB Raptor router
+         * get back to it when the dependency is resolved
+         * */
+//        controler.addOverridingModule(new AbstractModule() {
+//			@Override
+//			public void install() {
+//				// To use the deterministic pt simulation:
+//				install(new SBBQSimModule());
+//
+//				// To use the fast pt router:
+//				install(new SwissRailRaptorModule());
+//			}
+//		});
+        
         controler.run();
     }
        

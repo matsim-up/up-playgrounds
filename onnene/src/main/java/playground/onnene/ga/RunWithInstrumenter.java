@@ -1,5 +1,6 @@
 package playground.onnene.ga;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,23 +49,24 @@ public class RunWithInstrumenter {
     	Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");
     	OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
 		String[] algorithms = { "NSGAII" };
-		File refSet = new File("./input/ProblemReferenceSet/problemRefSet.txt");
+		//File refSet = new File("./input/ProblemReferenceSet/problemRefSet.txt");
 		
 		Instrumenter instrumenter = new Instrumenter();
 				instrumenter.withProblem(problem);
-				instrumenter.withReferenceSet(refSet);
+				//instrumenter.withReferenceSet(refSet);
 				instrumenter.attachApproximationSetCollector();
 				instrumenter.attachElapsedTimeCollector();
-				instrumenter.withFrequency(30);
-				instrumenter.attachHypervolumeCollector();
+				//instrumenter.withFrequency(10);
+				//instrumenter.attachGenerationalDistanceCollector();
+				//instrumenter.attachHypervolumeCollector();
 		
 		Executor executor = new Executor()
-				.withProblem(problem)
+				.withSameProblemAs(instrumenter)
 				.withProperty("operator", "MyCrossover+MyMutation")
 				.withProperty("MyCrossover.Rate", 0.75)
 	            .withProperty("MyMutation.Rate", 0.25)
-	            .withProperty("populationSize", 30)
-				.withMaxEvaluations(30)
+	            .withProperty("populationSize", 100)
+				.withMaxEvaluations(500)
 				.withInstrumenter(instrumenter);
 					
 		
@@ -91,12 +93,29 @@ public class RunWithInstrumenter {
 		}
 		
 		// Calculate the performance metrics using the reference set
+		
+		
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < referenceSet.size(); i++) {
+			
+			sb.append(referenceSet.get(i));
+			
+			System.out.println(sb.toString());
+			
+		}
+		//StringBuilder resultStr = sb.append(referenceSet.toString());
+		
 		QualityIndicator qi = new QualityIndicator(problem, referenceSet);
 		
 		for (String algorithm : algorithms) {
 			Accumulator accumulator = results.get(algorithm);
-			System.out.print(accumulator.keySet());
-			
+			System.out.print(accumulator.toCSV());
+			try {
+				accumulator.saveCSV(new File("./output/optimisationResults/runtimeResults.csv"));
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+			}
 			
 			for (int i = 0; i < accumulator.size("NFE"); i++) {
 
@@ -106,12 +125,45 @@ public class RunWithInstrumenter {
 				System.out.print("    ");
 				System.out.print(accumulator.get("NFE", i));
 				System.out.print(" ");
+				System.out.println("hypervolume");
 				System.out.print(qi.getHypervolume());
 				System.out.println();
+				System.out.println("GD");
+				System.out.print(qi.getGenerationalDistance());
+				
 			}
 			
 			System.out.println();
 		}
+		
+//		private String encode(Variable variable) throws IOException {
+//			StringBuilder sb = new StringBuilder();
+//			
+//			if (variable instanceof RealVariable) {
+//				RealVariable rv = (RealVariable)variable;
+//				sb.append(rv.getValue());
+//			} else if (variable instanceof BinaryVariable) {
+//				BinaryVariable bv = (BinaryVariable)variable;
+//				
+//				for (int i=0; i<bv.getNumberOfBits(); i++) {
+//					sb.append(bv.get(i) ? "1" : "0");
+//				}
+//			} else if (variable instanceof Permutation) {
+//				Permutation p = (Permutation)variable;
+//
+//				for (int i=0; i<p.size(); i++) {
+//					if (i > 0) {
+//						sb.append(',');
+//					}
+//					
+//					sb.append(p.get(i));
+//				}
+//			} else {
+//				throw new IOException("type not supported");
+//			}
+//			
+//			return sb.toString();
+//		}
 	}
 
 }

@@ -115,8 +115,9 @@ public class RunSimulationBasedTransitOptimizationProblem {
             .withProperty("MyMutation.Rate", 0.25)
             .withProperty("populationSize", 3)
             .withMaxEvaluations(MAX_MOEA_EVALUATIONS)        
-            .withInstrumenter(instrumenter)
+            .withInstrumenter(instrumenter)          
             .runSeeds(3);
+			
 
         Accumulator acc = instrumenter.getLastAccumulator();
                          
