@@ -60,8 +60,11 @@ public class RunSimulationBasedTransitOptimisationProblem {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {	
+		
+		int numSeeds = Integer.parseInt(args[0]);
+		int numThreads = Integer.parseInt(args[1]);
 
-		runSimulation(10, 35);
+		runSimulation(numSeeds, numThreads);
 	}
 	
 	static long start = System.currentTimeMillis();
@@ -156,6 +159,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 	            .withCheckpointFrequency(100)
 	            .withInstrumenter(instrumenter)     
 	            .distributeOn(numThreads)
+	            //.distributeOnAllCores()
 	            .run();
 			result.add(offSpring);
 			lstOfSeeds.add(seed);
