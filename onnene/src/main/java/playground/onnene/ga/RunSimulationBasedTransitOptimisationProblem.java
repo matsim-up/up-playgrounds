@@ -159,8 +159,9 @@ public class RunSimulationBasedTransitOptimisationProblem {
 	            .withCheckpointFrequency(100)
 	            .withInstrumenter(instrumenter)     
 	            .distributeOn(numThreads)
-	            //.distributeOnAllCores()
+	            //.distributeOnAllCores()            
 	            .run();
+			
 			result.add(offSpring);
 			lstOfSeeds.add(seed);
         }

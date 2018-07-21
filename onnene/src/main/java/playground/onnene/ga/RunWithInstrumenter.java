@@ -68,7 +68,6 @@ public class RunWithInstrumenter {
 	            .withProperty("populationSize", 100)
 				.withMaxEvaluations(500)
 				.withInstrumenter(instrumenter);
-					
 		
 //       new Plot()
 //       //.add("NSGAII", result)
