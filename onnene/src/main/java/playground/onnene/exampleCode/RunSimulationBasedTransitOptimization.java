@@ -57,7 +57,7 @@ import playground.onnene.ga.SimulationBasedTransitOptimizationProblem;
  * @author Onnene
  *
  */
-public class RunSimulationBasedTransitOptimizationProblem {
+public class RunSimulationBasedTransitOptimization {
     
     private static final int MAX_MOEA_EVALUATIONS = 3;
     public static final int MATSIM_ITERATION_NUMBER = 10;
@@ -129,7 +129,7 @@ public class RunSimulationBasedTransitOptimizationProblem {
                          
         System.out.println(acc.toCSV());
        
-        RunSimulationBasedTransitOptimizationProblem rsbtop = new RunSimulationBasedTransitOptimizationProblem();
+        RunSimulationBasedTransitOptimization rsbtop = new RunSimulationBasedTransitOptimization();
      
         System.out.println("Evaluate called " + SimulationBasedTransitOptimizationProblem.callsToEvaluate + " times...");
         
