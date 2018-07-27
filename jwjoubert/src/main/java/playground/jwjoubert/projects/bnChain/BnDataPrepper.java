@@ -1,9 +1,8 @@
 /* *********************************************************************** *
- * project: org.matsim.*												   *
- *                                                                         *
+ * project: org.matsim.*
  * *********************************************************************** *
  *                                                                         *
- * copyright       : (C) 2008 by the members listed in the COPYING,        *
+ * copyright       : (C) 2018 by the members listed in the COPYING,        *
  *                   LICENSE and WARRANTY file.                            *
  * email           : info at matsim dot org                                *
  *                                                                         *
@@ -16,38 +15,29 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-package org.matsim.example;
+  
+/**
+ * 
+ */
+package playground.jwjoubert.projects.bnChain;
 
-import org.matsim.api.core.v01.Scenario;
-import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.controler.Controler;
-import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
-import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.up.utils.Header;
 
 /**
- * @author nagel
- *
+ * A class to prepare the City of Cape Town travel survey's data into a format
+ * that can be used as input to a Bayesian Network (BN) procedure in R.
+ * 
+ * @author jwjoubert
  */
-public class HelloWorld {
-// a comment
+public class BnDataPrepper {
 
+	/**
+	 * @param args
+	 */
 	public static void main(String[] args) {
+		Header.printHeader(BnDataPrepper.class, args);
 		
-		// This creates a default matsim config:
-		Config config = ConfigUtils.createConfig();
-		
-		config.controler().setLastIteration(1);
-		config.controler().setOverwriteFileSetting( OverwriteFileSetting.deleteDirectoryIfExists );
-
-		// This creates a default matsim scenario (which is empty):
-		Scenario scenario = ScenarioUtils.createScenario(config) ;
-
-		Controler controler = new Controler( scenario ) ;
-
-		// This indeed runs iterations, but based on an empty scenario:
-		controler.run();
-
+		Header.printFooter();
 	}
 
 }
