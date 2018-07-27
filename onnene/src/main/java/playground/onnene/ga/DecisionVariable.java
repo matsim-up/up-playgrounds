@@ -59,8 +59,10 @@ public class DecisionVariable implements Variable{
     @Override
     public Variable copy() {
     	
-        DecisionVariable v = new DecisionVariable();        
-        v.setTransitSchedule(new JSONObject(this.getTransitSchedule().toString()));                
+        DecisionVariable v = new DecisionVariable(); 
+        if (this.getTransitSchedule() != null) {
+        	v.setTransitSchedule(new JSONObject(this.getTransitSchedule().toString())); 
+        }
         return v;
     }
 

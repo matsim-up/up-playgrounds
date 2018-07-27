@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
@@ -77,6 +78,7 @@ public class SimulationBasedTransitOptimizationProblem extends AbstractProblem {
         System.out.println("Number of MOEA Evaluations is " + callsToEvaluate++);        
         JSONObject Jvar = var.getTransitSchedule();
         String tScheduleFile = "./input/matsimInput/transitSchedule.xml";
+        String configFile = "./input/matsimInput/config.xml";
         
         try {
         	
@@ -100,12 +102,12 @@ public class SimulationBasedTransitOptimizationProblem extends AbstractProblem {
             
         LOGGER.debug("\nMOEA evaluate(...) function called".getBytes());
         
-        String matsimOutputFolderPath = "./output/matsimOutput/"+ callsToEvaluate + File.separator;
+        String matsimOutputFolderPath = "./output/matsimOutput/" + callsToEvaluate + "//";
    
-        runMatsim("./input/matsimInput/config.xml", matsimOutputFolderPath);
+        runMatsim(configFile, matsimOutputFolderPath);
         try {
         	
-            double[] objectives = processScoreFiles(matsimOutputFolderPath);
+            double[] objectives = processScoringFiles(matsimOutputFolderPath);
             
             for (int i = 0; i < objectives.length; i++) {
             
@@ -172,7 +174,7 @@ public class SimulationBasedTransitOptimizationProblem extends AbstractProblem {
         controler.run();
     }
        
-	private double[] processScoreFiles(String outputFolderPath) throws Exception {
+	private double[] processScoringFiles(String outputFolderPath) throws Exception {
 		
 		String eventsFile = outputFolderPath + "output_events.xml.gz";
 		String userScoreOutputFile = "./output/ScoringFunctionResults/user_score.csv";
@@ -192,6 +194,7 @@ public class SimulationBasedTransitOptimizationProblem extends AbstractProblem {
 		new MatsimEventsReader(manager).readFile(eventsFile);
 
 		double[] obj = {NetworkUserScoringFunction.getUserScore(), NetworkOperatorScoringFunction.getOperatorScore()};
+		System.out.println(Arrays.toString(obj));
 	    	
 		Header.printFooter();
 		

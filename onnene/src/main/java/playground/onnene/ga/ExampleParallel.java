@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.exampleCode;
+package playground.onnene.ga;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
-import org.matsim.up.utils.Header;
+
+import playground.onnene.exampleCode.ExampleParallelRunnable;
 
 /**
  * Class to demonstrate two possible implementations of parallelization. The 
@@ -46,15 +47,16 @@ public class ExampleParallel {
 
 	/**
 	 * @param args
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
-		Header.printHeader(ExampleParallel.class, args);
+	public static void main(String[] args) throws Exception {
+		//Header.printHeader(ExampleParallel.class, args);
 		
 		int numberOfThreads = Integer.parseInt(args[0]);
 		runnableExample(numberOfThreads);
 		callableExample(numberOfThreads);
 		
-		Header.printFooter();
+		//Header.printFooter();
 	}
 
 	
@@ -62,8 +64,10 @@ public class ExampleParallel {
 	 * Execute an example to show how to use a {@link Runnable} class.
 	 * @param numberOfThreads
 	 */
+	@SuppressWarnings("unused")
 	private static void runnableExample(int numberOfThreads) {
 		/* Set up the multithreaded infrastructure. */
+		int threads = Runtime.getRuntime().availableProcessors();
 		ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
 		List<ExampleParallelRunnable> jobsRunnable = new ArrayList<>();
 		for(int i = 1; i <= 4; i++) {
@@ -89,13 +93,15 @@ public class ExampleParallel {
 
 	
 	/**
-	 * Execute an example to show how to use a {@link Runnable} class.
+	 * Execute an example to show how to use a {@link Callable} class.
 	 * @param numberOfThreads
+	 * @throws Exception 
 	 */
-	private static void callableExample(int numberOfThreads) {
+	private static void callableExample(int numberOfThreads) throws Exception {
 		/* Set up the multithreaded infrastructure. */
 		ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
 		List<Future<Integer>> jobsCallable = new ArrayList<>();
+
 		for(int i = 1; i <= 4; i++) {
 			ExampleParallelCallable job = new ExampleParallelCallable(i);
 			Future<Integer> result = executor.submit(job);
@@ -109,6 +115,7 @@ public class ExampleParallel {
 		int bigTotal = 0;
 		for(Future<Integer> job : jobsCallable) {
 				try {
+					//System.out.println(job.get());
 					bigTotal += job.get();
 				} catch (InterruptedException e) {
 					e.printStackTrace();

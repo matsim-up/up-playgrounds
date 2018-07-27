@@ -3,9 +3,9 @@ package playground.onnene.transitScheduleMaker;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Random;
 import java.util.Scanner;
 
+import org.moeaframework.core.PRNG;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -76,8 +76,9 @@ class TransitLine{
        }
        arr = chop.split(", ");
  
-       
-       Random r = new Random();
+     
+       //Random r = new Random();
+       //PRNG.nextInt(2);
        for(int j = 0; j<arr.length; j++){
            
             Element e0000 = d.createElement("stop");      
@@ -95,7 +96,7 @@ class TransitLine{
             int hr = 0;
             //random arrival/departure time
             if(min != 0){
-                min = (r.nextInt((2)+1)+min-2);  
+                min = (PRNG.nextInt((2)+1)+min-2);  
             }
             
             //convert minutes to hours

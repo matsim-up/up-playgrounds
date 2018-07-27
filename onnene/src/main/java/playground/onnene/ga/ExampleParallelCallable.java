@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.exampleCode;
+package playground.onnene.ga;
 
 import java.util.concurrent.Callable;
 
@@ -32,6 +32,7 @@ public class ExampleParallelCallable implements Callable<Integer> {
 
 	private final int run;
 	private int total = 0;
+	
 	
 	public ExampleParallelCallable(int run) {
 		this.run = run;
