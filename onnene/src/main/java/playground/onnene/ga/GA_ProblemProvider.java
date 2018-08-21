@@ -15,14 +15,13 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-  
+
 /**
  * 
  */
 package playground.onnene.ga;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.moeaframework.core.FrameworkException;
@@ -32,51 +31,40 @@ import org.moeaframework.core.Problem;
 import org.moeaframework.core.spi.ProblemProvider;
 
 /**
- * @author Onnene
  *
+ * @author Onnene
  */
 public class GA_ProblemProvider extends ProblemProvider {
 
 	@Override
 	public Problem getProblem(String name) {
-		
 		if (name.equalsIgnoreCase("SimulationBasedTransitOptimizationProblem")) {
-			
-						try {
-					return new SimulationBasedTransitOptimizationProblem();
-				} catch (FileNotFoundException e) {
-					
-					e.printStackTrace();
-				}				
+			return new SimulationBasedTransitOptimizationProblem();				
 		}
-		
 		else {
-			
 			return null;						
 		}
-		
-		return null;		
 	}
-	
-	
+
+
 
 	@Override
 	public NondominatedPopulation getReferenceSet(String name) {
-		
+
 		if (name.equalsIgnoreCase("SimulationBasedTransitOptimizationProblem")){
-			
+
 			try {
 				return new NondominatedPopulation(PopulationIO.readObjectives(new File("./output/ProblemReferenceSet/problemRefSet.txt")));
 			} catch (IOException e) {
 				throw new FrameworkException(e);
 			}
-			
+
 		}
 		else {
-			
+
 			return null;
 		}
 	}
-		
+
 
 }

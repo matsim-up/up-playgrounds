@@ -15,15 +15,14 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-  
+
 /**
  * 
  */
 package playground.onnene.ga;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.matsim.core.utils.io.IOUtils;
+import org.matsim.up.utils.Header;
 import org.moeaframework.Executor;
 import org.moeaframework.Instrumenter;
 import org.moeaframework.analysis.collector.Accumulator;
@@ -54,229 +56,278 @@ import org.moeaframework.core.spi.ProblemFactory;
  *
  */
 public class RunSimulationBasedTransitOptimisationProblem {
+	final private static Logger LOG = Logger.getLogger(RunSimulationBasedTransitOptimisationProblem.class);
+	private static final int MAX_MOEA_EVALUATIONS = 4; //FIXME was 20
+	public static final int MATSIM_ITERATION_NUMBER = 2; // FIXME was 10
+	private static BufferedWriter SEED_FILE;
+	static Calendar cal = Calendar.getInstance();
+	static SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss");   
+	static Date startTime = new Date();
 
+	
 	/**
 	 * @param args
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {	
-		
-		int numSeeds = Integer.parseInt(args[0]);
-		int numThreads = Integer.parseInt(args[1]);
+		Header.printHeader(RunSimulationBasedTransitOptimisationProblem.class, args);
 
-		runSimulation(numSeeds, numThreads);
+		int numThreads = Integer.parseInt(args[0]);
+		long seed_base = Long.parseLong(args[1]);
+		int numberOfRuns = Integer.parseInt(args[2]);
+
+		runSimulation(numThreads, seed_base, numberOfRuns);
+		Header.printFooter();
+	}
+
+	
+	/**
+	 * Creates all the necessary output folders and sets up the log files.
+	 */
+	private static void setupOutput() {
+		File outputFolder = new File("./output/");
+		if(outputFolder.exists()) {
+			LOG.warn("The output folder exists and will be deleted.");
+			try {
+				FileUtils.deleteDirectory(outputFolder);
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Cannot delete the old output folder.");
+			}
+		}
+		
+		/* Set up output folders. */
+		new File("./output/logs/").mkdirs();
+		new File("./output/matsimOutput/").mkdirs();
+		new File("./output/optimisationResults/").mkdirs();
+		new File("./output/problemReferenceSet/").mkdirs();
+
+		BufferedWriter bwSeed = IOUtils.getBufferedWriter("./output/logs/seeds.txt");
+		BufferedWriter bwMoea = IOUtils.getBufferedWriter("./output/logs/run_moea_log.txt");
+		BufferedWriter bwRef = IOUtils.getBufferedWriter("./output/problemReferenceSet/referenceSet.txt");
+		
+		try {
+			bwSeed.write("Run\tSeed\n");
+			bwMoea.write("Run\tPareto\tObj1\tOb2\n");
+			bwRef.write("Run\tPareto\tObj1\tOb2\n");
+			/* No header to the PF format file. */
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Cannot write to seed file");
+		} finally {
+			try {
+				bwSeed.close();
+				bwMoea.close();
+				bwRef.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Cannot close seed file");
+			}
+		}
 	}
 	
-	static long start = System.currentTimeMillis();
-	
-    private static final int MAX_MOEA_EVALUATIONS = 20;
-    public static final int MATSIM_ITERATION_NUMBER = 10;
-    private static FileOutputStream MOEA_LOG_FILE, INDICATOR_FILE, REFERENCE_SET_FILE, REFERENCE_SET_FILE_PF_FORMAT, SEED_FILE;
-    static Calendar cal = Calendar.getInstance();
-    static SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss");   
-    static Date startTime = new Date();
-    //static String ResultFolder = "./output/optimisationResults/";
-    
-    static {
-        try {
-            MOEA_LOG_FILE = new FileOutputStream(new File("./output/logs/run_moea_log.txt"));
-            REFERENCE_SET_FILE = new FileOutputStream(new File("./output/ProblemReferenceSet/referenceSet.txt"), true);
-            REFERENCE_SET_FILE_PF_FORMAT = new FileOutputStream(new File("./output/ProblemReferenceSet/referenceSet.pf"), true);
-            SEED_FILE = new FileOutputStream(new File("./output/logs/seeds.txt"), true);
-            
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-        
-    private static File checkPoint(String checkPointFile) {
-    	
-    	File checkpointFile = new File (checkPointFile);
-    	
-    	if (checkpointFile.exists()) {
-    		
-    		System.out.println("Checkpoint file exists, will resume from prior run!");
-    	}
+
+	private static File checkPoint(String checkPointFile) {
+		File checkpointFile = new File (checkPointFile);
+		if (checkpointFile.exists()) {
+			LOG.error("Checkpoint file exists, will resume from prior run!");
+		}
 		return checkpointFile;
-    } 
-    	    
-    private void decodeResult(Variable variable, String resultFilePath, int folderNum, int fileNum) throws IOException {
+	} 
 
-        if (variable instanceof  DecisionVariable) {
-               
-               DecisionVariable varObj = (DecisionVariable) variable;               
-               String resultFileName = "Solution" + fileNum + ".xml";                   
-               String innerFolderStr = resultFilePath + folderNum + File.separator;             
-               Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));               
-               String paretoResultFolderPath = innerFolder + File.separator + resultFileName;
-               ProblemUtils.getXMLFromJSONDecisionVar(varObj.getTransitSchedule(), paretoResultFolderPath);
-               
-        }
-        
-        else {
-               
-               throw new IOException("type not supported");
-        }        
-                    
-    }
-
-    public static void runSimulation(int numSeeds, int numThreads) throws Exception {
-    	
-    	File checkPointFile = checkPoint("./output/logs/checkpoint.dat");
-    	String ResultFolder = "./output/optimisationResults/";
-    	
-    	List<NondominatedPopulation> result = new ArrayList<>();
-        List<Long> lstOfSeeds = new ArrayList<>();
-        Long seed = null; 
-    	
-    	ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
-    	Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");     
-        OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());  
-        // String[] algorithms = { "NSGAII" }; 
-        
-       
-        Instrumenter instrumenter = new Instrumenter();       	
-            instrumenter.withProblem(problem);
-        	instrumenter.withFrequency(5);
-        	instrumenter.attachApproximationSetCollector();
-        	instrumenter.attachElapsedTimeCollector();
-        		        		        	
-        for (int i=0; i < numSeeds; i++) {
-       
-        	//seed = (long)(PRNG.nextInt(Integer.MAX_VALUE-1)); 
-        	seed = (long)(PRNG.nextInt());       	      	
-	        PRNG.setSeed(seed);
-			NondominatedPopulation offSpring = new Executor()
-	        	.withSameProblemAs(instrumenter)
-	            .withAlgorithm("NSGAII")
-	            .withProperty("operator", "MyCrossover+MyMutation")
-	            .withProperty("MyCrossover.Rate", 0.75)
-	            .withProperty("MyMutation.Rate", 0.25)
-	            .withProperty("populationSize", 5)
-	            .withMaxEvaluations(MAX_MOEA_EVALUATIONS)  
-	            //.resetCheckpointFile()
-	            .withCheckpointFile(checkPointFile)		  
-	            .withCheckpointFrequency(5)
-	            .withInstrumenter(instrumenter)     
-	            //.distributeOn(numThreads)
-	            //.distributeOnAllCores()            
-	            .run();
-			
-			result.add(offSpring);
-			lstOfSeeds.add(seed);
-        }
-	      
-        for (int i = 0; i < lstOfSeeds.size(); i++) {
-        	
-        	SEED_FILE.write(String.format("Seed%d: %d ",i+1, lstOfSeeds.get(i)).getBytes());
-        	
-        }
-       
-        RunSimulationBasedTransitOptimisationProblem rwos = new RunSimulationBasedTransitOptimisationProblem();
-     
-        System.out.println("Evaluate called " + SimulationBasedTransitOptimizationProblem.callsToEvaluate + " times...");
-        
-        int folderIdx = 0;
-        
-          
-        //FileUtils.deleteDirectory(new File("./output/optimisationResults/"));
-        FileUtils.deleteDirectory(new File(ResultFolder));
-       	       
-        for (NondominatedPopulation pop: result) {
-        	
-        	folderIdx++;
-        	int fileIdx = 0;
-        	
-        	MOEA_LOG_FILE.write("\nObjective1  Objective2".getBytes());
-       	 	System.out.println("Size of Pareto front is:" + " " + pop.size());
-  
-        	for (Solution solution : pop) {
-        		 
-        		fileIdx++;
-        		 //rsbtop.decodeResult(solution.getVariable(0), DirectoryConfig.RESULTS_FILE, folderIdx, fileIdx);
-        		 rwos.decodeResult(solution.getVariable(0), ResultFolder, folderIdx, fileIdx);
-        		 //MOEA_LOG_FILE  = new FileOutputStream(new File("./output/logs/run_moea_log.txt"), true);
-	             System.out.format("%.4f      %.4f%n", solution.getObjective(0), solution.getObjective(1));	            
-	             MOEA_LOG_FILE.write(String.format("%.4f      %.4f", solution.getObjective(0), solution.getObjective(1)).getBytes());
-	             REFERENCE_SET_FILE.write(String.format("%.4f      %.4f", solution.getObjective(0), solution.getObjective(1)).getBytes());
-	             REFERENCE_SET_FILE_PF_FORMAT.write(String.format("%.4f      %.4f", solution.getObjective(0), solution.getObjective(1)).getBytes());
-             }
-        	
-        	Map<String, Accumulator> results = null;
-        	
-        	if (pop.size() == 1){
-	 					 				 
- 				 System.out.println("requires at least two solutions");
- 				 
- 			} else {
-        	
-        	results = new HashMap<String, Accumulator>();
- 				
- 			results.put("NSGAII", instrumenter.getLastAccumulator());
- 							
- 	        QualityIndicator qi = new QualityIndicator(problem, pop);
- 	        	        
-			Accumulator accumulator = results.get("NSGAII");
-			
-			//System.out.print(accumulator.toCSV());
-			try {
-				accumulator.saveCSV(new File("./output/optimisationResults/runtimeResults.csv"));
-			} catch (IOException e) {
-				
-				e.printStackTrace();
-			}
- 								
-			for (int i = 0; i < accumulator.size("NFE"); i++) {
-					
- 				List<Solution> approximationSet = (List<Solution>)accumulator.get("Approximation Set", i);
- 				qi.calculate(new NondominatedPopulation(approximationSet));
- 				
- 				//FOS = new FileOutputStream(new File("./output/logs/run_moea_log.txt"));
- 				System.out.print("    ");
- 				System.out.print(accumulator.get("NFE", i));
- 				System.out.print(" ");
- 				System.out.println();
- 		
- 				INDICATOR_FILE = new FileOutputStream(new File(ResultFolder+folderIdx + File.separator + "indicators.txt"), true);
- 				
- 				
- 				//INDICATOR_FILE.write("NFE    HV   GD    AEI    IGD    S    MPE".getBytes());	
- 				INDICATOR_FILE.write(String.format("\n%d    %.8f    %.8f    %10.8f    %10.8f   %10.8f    %10.8f", accumulator.get("NFE", i), qi.getHypervolume(), qi.getGenerationalDistance(), qi.getAdditiveEpsilonIndicator(), qi.getInvertedGenerationalDistance(), qi.getSpacing(), qi.getMaximumParetoFrontError()).getBytes());
- 				//INDICATOR_FILE.write(String.format("%n").getBytes());
- 				//INDICATOR_FILE.write(String.format(" ", qi.getHypervolume()).getBytes());
- 				//INDICATOR_FILE.write("Generational Distance".getBytes());
- 				//INDICATOR_FILE.write(String.format("\nGD%f ", qi.getGenerationalDistance()).getBytes());
- 				//INDICATOR_FILE.write("\nAdditive Epsilon Indicator".getBytes());
- 				//INDICATOR_FILE.write(String.format("\nAEI%fn", qi.getAdditiveEpsilonIndicator()).getBytes());
- 				//qi.getAdditiveEpsilonIndicator();
- 			}
-			
-				
-				System.out.println();
- 					
-			}
- 	            	
-      
-        }
-        
-        
-        System.out.println("Elapsed time: " + (System.currentTimeMillis() - start)/1000 + "s") ;
 	
-        Date endTime = new Date();        
-        long timeDiff = endTime.getTime() - startTime.getTime();   
-        int durationInMilliseconds = (int) (timeDiff);
-       
-        int seconds = (int) (durationInMilliseconds / 1000) % 60 ;
-        int minutes = (int) ((durationInMilliseconds / (1000*60)) % 60);
-        int hours   = (int) ((durationInMilliseconds / (1000*60*60)) % 24);
-       
-        System.out.println("hours: " + hours + " " + "minutes: " + minutes + " " +  "seconds: " + seconds);
-                    
-        MOEA_LOG_FILE.write("\nend time is:".getBytes());
-        MOEA_LOG_FILE.write(endTime.toString().getBytes());
-        MOEA_LOG_FILE.write(String.format("\nEvaluate is called %d times...", SimulationBasedTransitOptimizationProblem.callsToEvaluate).getBytes());
-        MOEA_LOG_FILE.write(String.format("\nDuration: %02d:%02d:%02d", hours, minutes, seconds).getBytes());
+	private void decodeResult(Variable variable, String resultFilePath, int folderNum, int fileNum) throws IOException {
+		if (variable instanceof  DecisionVariable) {
+			DecisionVariable varObj = (DecisionVariable) variable;               
+			String resultFileName = "Solution" + fileNum + ".xml";                   
+			String innerFolderStr = resultFilePath + folderNum + File.separator;             
+			Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));               
+			String paretoResultFolderPath = innerFolder + File.separator + resultFileName;
+			ProblemUtils.getXMLFromJSONDecisionVar(varObj.getTransitSchedule(), paretoResultFolderPath);
+		}
+		else {
+			throw new IOException("type not supported");
+		}        
+	}
 
-    }
+	
+	public static void runSimulation(int numThreads, long seed_base, int numberOfRuns) throws Exception {
+		setupOutput();
+		File checkPointFile = checkPoint("./output/logs/checkpoint.dat");
+		String ResultFolder = "./output/optimisationResults/";
 
+		List<NondominatedPopulation> allResults = new ArrayList<>();
+		List<Long> lstOfSeeds = new ArrayList<>();
+
+		ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
+		Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");  
+		
+		OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());  
+		// String[] algorithms = { "NSGAII" }; 
+
+
+		Instrumenter instrumenter = new Instrumenter();       	
+		instrumenter.withProblem(problem);
+		instrumenter.withFrequency(5);
+		instrumenter.attachApproximationSetCollector();
+		instrumenter.attachElapsedTimeCollector();
+
+
+		for(int run = 0; run < numberOfRuns; run++) {
+			long seed = seed_base*((long)run);
+			
+			PRNG.setSeed(seed);
+			LOG.info("Running population " + run + " (using seed "+ seed_base + ")... ");
+			NondominatedPopulation finalResult = new Executor()
+					.withSameProblemAs(instrumenter)
+					.withAlgorithm("NSGAII")
+					.withProperty("operator", "MyCrossover+MyMutation")
+					.withProperty("MyCrossover.Rate", 0.75)
+					.withProperty("MyMutation.Rate", 0.25)
+					.withProperty("populationSize", 3) // FIXME
+					.withMaxEvaluations(MAX_MOEA_EVALUATIONS)  
+					//.resetCheckpointFile()
+//					.withCheckpointFile(checkPointFile)		  
+//					.withCheckpointFrequency(5)
+					.withInstrumenter(instrumenter)     
+					.distributeOn(numThreads)
+					//.distributeOnAllCores()            
+					.run();
+			
+			allResults.add(finalResult);
+			lstOfSeeds.add(seed);
+
+			LOG.info("Completed run");
+		}
+
+		/* Write all the seeds to file (for record). */
+		SEED_FILE = IOUtils.getAppendingBufferedWriter("./output/logs/seeds.txt");
+		try {
+			for (int i = 0; i < lstOfSeeds.size(); i++) {
+				SEED_FILE.write(String.format("%d\t%d\n", i+1, lstOfSeeds.get(i)));
+			}
+		} finally {
+			SEED_FILE.close();
+		}
+
+		RunSimulationBasedTransitOptimisationProblem rwos = new RunSimulationBasedTransitOptimisationProblem();
+
+		int folderIdx = 0;
+		FileUtils.deleteDirectory(new File(ResultFolder));
+
+		for(int run = 0; run < allResults.size(); run++) {
+			NondominatedPopulation runResult = allResults.get(run);
+
+			folderIdx++;
+			int fileIdx = 0;
+			LOG.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
+
+			for(int solution = 0; solution < runResult.size(); solution++) {
+				Solution runSolution = runResult.get(solution);
+
+				fileIdx++;
+				//rsbtop.decodeResult(solution.getVariable(0), DirectoryConfig.RESULTS_FILE, folderIdx, fileIdx);
+				rwos.decodeResult(runSolution.getVariable(0), ResultFolder, folderIdx, fileIdx);
+				//MOEA_LOG_FILE  = new FileOutputStream(new File("./output/logs/run_moea_log.txt"), true);
+				LOG.info(String.format("%.4f\t%.4f%n", runSolution.getObjective(0), runSolution.getObjective(1)));
+				
+				BufferedWriter bw = IOUtils.getAppendingBufferedWriter("./output/logs/run_moea_log.txt");		
+				BufferedWriter bwRef = IOUtils.getAppendingBufferedWriter("./output/problemReferenceSet/referenceSet.txt");
+				BufferedWriter bwRefPf = IOUtils.getAppendingBufferedWriter("./output/problemReferenceSet/referenceSet.pf");
+
+				try {
+					bw.write(String.format("%d\t%d\t%.4f\t%.4f\n", 
+							(run+1), 
+							(solution+1), 
+							runSolution.getObjective(0), 
+							runSolution.getObjective(1)));
+					bwRef.write(String.format("%d\t%d\t%.4f\t%.4f\n",  
+							(run+1), 
+							(solution+1), 
+							runSolution.getObjective(0), 
+							runSolution.getObjective(1)));
+					bwRefPf.write(String.format("%.4f\t%.4f\n",  
+							runSolution.getObjective(0), 
+							runSolution.getObjective(1)));
+				} finally {
+					bw.close();
+					bwRef.close();
+					bwRefPf.close();
+				}
+			}
+
+			Map<String, Accumulator> results = null;
+
+			if (runResult.size() == 1){
+				LOG.error("requires at least two solutions");
+			} else {
+
+				results = new HashMap<String, Accumulator>();
+				results.put("NSGAII", instrumenter.getLastAccumulator());
+				QualityIndicator qi = new QualityIndicator(problem, runResult);
+				Accumulator accumulator = results.get("NSGAII");
+
+				try {
+					accumulator.saveCSV(new File("./output/optimisationResults/runtimeResults.csv"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+				for (int i = 0; i < accumulator.size("NFE"); i++) {
+					List<Solution> approximationSet = (List<Solution>)accumulator.get("Approximation Set", i);
+					qi.calculate(new NondominatedPopulation(approximationSet));
+
+					/* Write the header, but only the first time. */
+					File indicatorFile = new File(ResultFolder+folderIdx + File.separator + "indicators.txt");
+					BufferedWriter bwIndicator = null;
+					if(!indicatorFile.exists()) {
+						bwIndicator = IOUtils.getBufferedWriter(indicatorFile.getAbsolutePath());
+						try {
+							bwIndicator.write("NFE\tHV\tGD\tAEI\tIGD\tS\tMPE\n");
+						} finally {
+							bwIndicator.close();
+						}
+					}
+					bwIndicator = IOUtils.getAppendingBufferedWriter(indicatorFile.getAbsolutePath());
+					try {
+						bwIndicator.write(
+								String.format("\n%d\t%.8f\t%.8f\t%10.8f\t%10.8f\t%10.8f\t%10.8f\n", 
+										accumulator.get("NFE", i), 
+										qi.getHypervolume(), 
+										qi.getGenerationalDistance(), 
+										qi.getAdditiveEpsilonIndicator(), 
+										qi.getInvertedGenerationalDistance(), 
+										qi.getSpacing(), 
+										qi.getMaximumParetoFrontError())
+								);
+					} finally {
+						bwIndicator.close();
+					}
+					//INDICATOR_FILE.write(String.format("%n").getBytes());
+					//INDICATOR_FILE.write(String.format(" ", qi.getHypervolume()).getBytes());
+					//INDICATOR_FILE.write("Generational Distance".getBytes());
+					//INDICATOR_FILE.write(String.format("\nGD%f ", qi.getGenerationalDistance()).getBytes());
+					//INDICATOR_FILE.write("\nAdditive Epsilon Indicator".getBytes());
+					//INDICATOR_FILE.write(String.format("\nAEI%fn", qi.getAdditiveEpsilonIndicator()).getBytes());
+					//qi.getAdditiveEpsilonIndicator();
+				}
+			}
+		}
+
+		Date endTime = new Date();        
+		long timeDiff = endTime.getTime() - startTime.getTime();   
+		int durationInMilliseconds = (int) (timeDiff);
+
+		int seconds = (int) (durationInMilliseconds / 1000) % 60 ;
+		int minutes = (int) ((durationInMilliseconds / (1000*60)) % 60);
+		int hours   = (int) ((durationInMilliseconds / (1000*60*60)) % 24);
+
+		BufferedWriter bwMOEA = IOUtils.getAppendingBufferedWriter("./output/logs/run_moea_log.txt");
+		try {
+			bwMOEA.write(String.format("End time: %s\n", endTime.toString()));
+			bwMOEA.write(String.format("\nDuration: %02d:%02d:%02d\n", hours, minutes, seconds));
+		} finally {
+			bwMOEA.close();
+		}
+	}
 }

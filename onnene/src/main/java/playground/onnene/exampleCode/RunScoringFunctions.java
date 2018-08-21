@@ -56,14 +56,16 @@ public class RunScoringFunctions {
 		Scenario scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());			
 		new MatsimNetworkReader(scenario.getNetwork()).readFile(networkFile);
 		
-		EventsManager manager = new EventsManagerImpl();		
-		manager.addHandler(new NetworkUserScoringFunction(userScoreOutputFile));	
-		manager.addHandler(new NetworkOperatorScoringFunction(operatorScoreOutputFile, scenario.getNetwork()));
+		EventsManager manager = new EventsManagerImpl();
+		NetworkUserScoringFunction userFunction = new NetworkUserScoringFunction(userScoreOutputFile);
+		manager.addHandler(userFunction);	
+		NetworkOperatorScoringFunction operatorFunction = new NetworkOperatorScoringFunction(operatorScoreOutputFile, scenario.getNetwork());
+		manager.addHandler(operatorFunction);
 		
 		new MatsimEventsReader(manager).readFile(eventsFile);
 		
-		double aaa = NetworkUserScoringFunction.getUserScore();		
-		double bbb = NetworkOperatorScoringFunction.getOperatorScore();
+		double aaa = userFunction.getUserScore();		
+		double bbb = operatorFunction.getOperatorScore();
 
 		System.out.println("user score is " + aaa + " minutes");
 		System.out.println("operator score is " + bbb + " rands");

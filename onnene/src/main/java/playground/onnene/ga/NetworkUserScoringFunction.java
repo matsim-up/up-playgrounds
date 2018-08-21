@@ -51,8 +51,8 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 	private final Logger log = Logger.getLogger(NetworkUserScoringFunction.class);
 	private Map<Id<Person>, Double> personMap = new TreeMap<>();
 	private String output;
-	private static List<Double> totalTraveltime = new ArrayList<>();
-	private static double totalPersonTripDuration;
+	private List<Double> totalTraveltime = new ArrayList<>();
+	private double totalPersonTripDuration;
 	
 	public NetworkUserScoringFunction(String output) {
 		File file = new File(output);
@@ -130,7 +130,7 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 //			return totalTraveltime;
 //	}
 		
-		public static double getUserScore() {
+		public double getUserScore() {
 			
 			BigDecimal averagetripDur = new BigDecimal(totalPersonTripDuration/(15*60*totalTraveltime.size()));
 			BigDecimal userScore = averagetripDur.setScale(4, RoundingMode.CEILING);

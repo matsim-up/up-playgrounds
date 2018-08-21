@@ -60,15 +60,15 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 	LinkLeaveEventHandler, TransitDriverStartsEventHandler{
 	
 	private final Logger log = Logger.getLogger(NetworkOperatorScoringFunction.class);
-	private static Map<Id<Vehicle>, Double> vehicleMap = new TreeMap<>();
-	private static Map<Id<Vehicle>, Id<Link>> vehicleLinkMap = new TreeMap<>();
-	private static Map<Id<Vehicle>, Double> vkt = new TreeMap<>();
-	private static Map<Id<Vehicle>,Id<Person>> vehicleDriver = new HashMap<>();
+	private Map<Id<Vehicle>, Double> vehicleMap = new TreeMap<>();
+	private Map<Id<Vehicle>, Id<Link>> vehicleLinkMap = new TreeMap<>();
+	private Map<Id<Vehicle>, Double> vkt = new TreeMap<>();
+	private Map<Id<Vehicle>,Id<Person>> vehicleDriver = new HashMap<>();
 	private String freqOutput;
 	private Network network; 
 	
-	private static double totalvehTripDuration;
-	private static Double totalvehicleDistance;
+	private double totalvehTripDuration;
+	private Double totalvehicleDistance;
 
 	
 	public NetworkOperatorScoringFunction(String output, Network network) {
@@ -179,7 +179,7 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 
 	}
 	
-	public static double getOperatorScore() {
+	public double getOperatorScore() {
 		
 		double vehicleOpTimeCost = ((totalvehTripDuration/(3600)));
 		double vehicleOpDistanceCost = ((totalvehicleDistance/1000) * vehicleMap.size());

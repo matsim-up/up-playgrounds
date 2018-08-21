@@ -15,35 +15,29 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-  
+
 /**
  * 
  */
 package playground.onnene.ga;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-import org.matsim.api.core.v01.Scenario;
-import org.matsim.core.api.experimental.events.EventsManager;
-import org.matsim.core.config.Config;
-import org.matsim.core.config.ConfigUtils;
-import org.matsim.core.controler.Controler;
-import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
-import org.matsim.core.events.EventsManagerImpl;
-import org.matsim.core.events.MatsimEventsReader;
-import org.matsim.core.network.io.MatsimNetworkReader;
-import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.up.utils.Header;
+import org.matsim.core.utils.io.IOUtils;
+import org.matsim.up.utils.FileUtils;
 import org.moeaframework.core.Solution;
 import org.moeaframework.problem.AbstractProblem;
-
-import playground.onnene.exampleCode.RunScoringFunctions;
 
 /**
  * This class implements our simulation based optimisation problem
@@ -52,155 +46,205 @@ import playground.onnene.exampleCode.RunScoringFunctions;
  *
  */
 public class SimulationBasedTransitOptimizationProblem extends AbstractProblem {
-	
-	private Logger LOGGER = Logger.getLogger(SimulationBasedTransitOptimizationProblem.class.getName());   
-    private static FileOutputStream FOS;
-    public static int callsToEvaluate = 0;
-    
-    static {
-        try {
-        	FOS = new FileOutputStream(new File("./output/logs/transit_problem_log.txt"));
-          
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-     
-    public SimulationBasedTransitOptimizationProblem() throws FileNotFoundException {
-        super(1, 2);
-    }
+	/*TODO The following should be set once we have a good idea of what they need to be. */ 
+	final private static int SIMULATIONS_PER_EVALUATION = 2;
+	final private static int SIMULATIONS_PER_BLOCK = 5;
+	final private static int THREADS_PER_SIMULATION = 6;
+	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
+
+	/* Other variables. */
+	final private Logger log = Logger.getLogger(SimulationBasedTransitOptimizationProblem.class.getName());  
+	final private long seed_base = 20180820l;
+	private static AtomicInteger overallRunNumber = new AtomicInteger(0);
 
 
-    @Override
-    public void evaluate(Solution solution) {
-    
-    	DecisionVariable var = (DecisionVariable) solution.getVariable(0);
-        System.out.println("Number of MOEA Evaluations is " + callsToEvaluate++);        
-        JSONObject Jvar = var.getTransitSchedule();
-        String tScheduleFile = "./input/matsimInput/transitSchedule.xml";
-        String configFile = "./input/matsimInput/config.xml";
-        
-        try {
-        	
-				ProblemUtils.getXMLFromJSONDecisionVar(Jvar, tScheduleFile);
-				FOS.write("\nMOEA evaluate(...) function called".getBytes());
-			
-			} catch (IOException e2) {
-				
-				e2.printStackTrace();
+	public static synchronized int getOverallRunNumber() {
+		return overallRunNumber.get();
+	}
+
+
+	//	public SimulationBasedTransitOptimizationProblem(String inputFolder, String outputFolder, int runNumber) throws IOException, InterruptedException {
+	public SimulationBasedTransitOptimizationProblem(){
+		super(1, 2);
+	}
+
+
+	@Override
+	public void evaluate(Solution solution) {
+		DecisionVariable var = (DecisionVariable) solution.getVariable(0);
+		JSONObject Jvar = var.getTransitSchedule();
+
+		final int runNumber = overallRunNumber.getAndIncrement();
+		String inputFolder = "./input/";
+		String outputFolder = "./output/matsimOutput/" + runNumber + File.separator;
+		final String folder = outputFolder;
+		new File(outputFolder).mkdirs();
+		log.info("Starting evaluate() call... " + folder);
+		log.info("Output folder created. This run: " + runNumber + "; overall: " + (runNumber+1));
+
+		/* Copy all the necessary input files, JAR included */
+		log.info("Copying all required input files...");
+		try {
+			File configIn = new File(inputFolder + "matsimInput/config.xml");
+			if(!configIn.exists()) { throw new IOException("Cannot find " + configIn.getAbsolutePath()); }
+			FileUtils.copyFile(configIn, new File(outputFolder + "config.xml"));
+
+			File networkIn = new File(inputFolder + "matsimInput/network.xml");
+			if(!networkIn.exists()) { throw new IOException("Cannot find " + networkIn.getAbsolutePath()); }
+			FileUtils.copyFile(networkIn, new File(outputFolder + "network.xml"));
+
+			File plansIn = new File(inputFolder + "matsimInput/plans.xml");
+			if(!plansIn.exists()) { throw new IOException("Cannot find " + plansIn.getAbsolutePath()); }
+			FileUtils.copyFile(plansIn, new File(outputFolder + "plans.xml"));
+
+			File transitVehiclesIn = new File(inputFolder + "matsimInput/transitVehicles.xml");
+			if(!transitVehiclesIn.exists()) { throw new IOException("Cannot find " + transitVehiclesIn.getAbsolutePath()); }
+			FileUtils.copyFile(transitVehiclesIn, new File(outputFolder + "transitVehicles.xml"));
+
+			//    	File transitScheduleIn = new File(inputFolder + "matsimInput/transitSchedule.xml");
+			//    	if(!transitScheduleIn.exists()) { throw new IOException("Cannot find " + transitScheduleIn.getAbsolutePath()); }
+			//    	FileUtils.copyFile(transitScheduleIn, new File(outputFolder + "transitSchedule.xml"));
+
+			File release = new File(inputFolder + "matsimInput/release.zip");
+			if(!release.exists()) { throw new IOException("Cannot find " + release.getAbsolutePath()); }
+			FileUtils.copyFile(release, new File(outputFolder + "release.zip"));
+		} catch(Exception e) {
+			throw new RuntimeException("Cannot copy input file.");
+		}
+		log.info("Done copying input files.");
+
+		/* Translate schedule into input file for simulation */ 
+		try {
+			ProblemUtils.getXMLFromJSONDecisionVar(Jvar, folder + "transitSchedule.xml");
+		} catch (IOException e3) {
+			e3.printStackTrace();
+			throw new RuntimeException("Cannot convert JSON solution to MATSim transitSchedule.xml");
+		}
+
+		/* Set up the parallel MATSim evaluation infrastructure. */
+		List<Future<Double[]>> jobs = new ArrayList<Future<Double[]>>();
+		int totalSimulations = 0;
+		int simulationsInCurrentBlock = 0;
+		while(totalSimulations < SIMULATIONS_PER_EVALUATION) {
+			ExecutorService executor = Executors.newFixedThreadPool(THREADS_PER_SIMULATION*SIMULATIONS_PER_BLOCK);
+
+			while(simulationsInCurrentBlock < SIMULATIONS_PER_BLOCK && totalSimulations < SIMULATIONS_PER_EVALUATION) {
+				MatsimInstanceCallable mic = new MatsimInstanceCallable(folder, totalSimulations, seed_base);
+				Future<Double[]> job = executor.submit(mic);
+				jobs.add(job);
+
+				simulationsInCurrentBlock++;
+				totalSimulations++;
 			}
-        
-//        try {
-//        	
-//				FOS.write("\nMOEA evaluate(...) function called".getBytes());
-//			
-//			} catch (IOException e1) {
-//				
-//				e1.printStackTrace();
-//			
-//			}
-            
-        LOGGER.debug("\nMOEA evaluate(...) function called".getBytes());
-        
-        String matsimOutputFolderPath = "./output/matsimOutput/" + callsToEvaluate + "//";
-   
-        runMatsim(configFile, matsimOutputFolderPath);
-        try {
-        	
-            double[] objectives = processScoringFiles(matsimOutputFolderPath);
-            
-            for (int i = 0; i < objectives.length; i++) {
-            
-            	solution.setObjective(i, objectives[i]);
-          }
-                       
-        } catch (Exception e) {
-        	
-            try {
-                FOS.write(("\nError while processing outputFiles " + e.getMessage()).getBytes());
-                FOS.flush();
+			executor.shutdown();
+			while(!executor.isTerminated()) {
+			}
+		}
+		/* Consolidate the MATSim runs into single solution. */
+		double[] evaluatedSolution = consolidateMatsimRuns(outputFolder, jobs, solution.getNumberOfObjectives());
 
-            } catch (IOException e1) {
-               e1.printStackTrace();
-            }
-            System.err.println(e.getMessage());
+		for (int i = 0; i < solution.getNumberOfObjectives(); i++) {
+			solution.setObjective(i, evaluatedSolution[i]);
+		}
+		log.info("Completed evaluate() call on folder " + folder);
+	}
 
-        }
 
-    }
-    
+	@Override
+	public Solution newSolution() {
+		Solution solution = new Solution(1, 2);   	
+		solution.setVariable(0, new DecisionVariable());
+		return solution;
+	}
 
-    @Override
-    public Solution newSolution() {
-    	
-    	Solution solution = new Solution(1, 2);   	
-        solution.setVariable(0, new DecisionVariable());      
-        return solution;
-    }
-    
-    public void runMatsim(String configFile, String matsimOutputDirectory) {
+	private double[] consolidateMatsimRuns(String folder, List<Future<Double[]>> listOfJobs, int objectives) {
+		double[] result = new double[objectives];
+		String ensembleFilename = folder + "ensembleRuns.txt";
+		BufferedWriter bw = IOUtils.getBufferedWriter(ensembleFilename);
+		try {
+			bw.write("Run\tObj1\tObj2\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+			log.error("Could not write ensemble runs result.");
+		} finally {
+			try {
+				bw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				log.error("Could not write ensemble runs result.");
+			}
+		}
+		List<String> report = new ArrayList<>();
 
-        try {
-            FOS.write("\nrunMatsim(...) function called".getBytes());
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        
-        
-        Config config = ConfigUtils.loadConfig(configFile);
-        config.controler().setLastIteration(RunSimulationBasedTransitOptimisationProblem.MATSIM_ITERATION_NUMBER);       
-        config.controler().setOutputDirectory(matsimOutputDirectory);       
-        config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-        //config.controler().setWriteEventsInterval(50);
-       
+		/* Consolidate. */
+		switch (mech) {
+		case mean:
+			List<Double[]> listOfResults = new ArrayList<>();
+			for(Future<Double[]> job : listOfJobs) {
+				try {
+					listOfResults.add(job.get());
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+					throw new RuntimeException("Cannot get multi-MATSim-run results.");
+				}
+			}
+			
+			double[] sum = new double[objectives];
 
-        Scenario scenario = ScenarioUtils.loadScenario(config);
-        Controler controler = new Controler(scenario);
-        
-        /*Code stub to implement SBB Raptor router
-         * get back to it when the dependency is resolved
-         * */
-//        controler.addOverridingModule(new AbstractModule() {
-//			@Override
-//			public void install() {
-//				// To use the deterministic pt simulation:
-//				install(new SBBQSimModule());
-//
-//				// To use the fast pt router:
-//				install(new SwissRailRaptorModule());
-//			}
-//		});
-        
-        controler.run();
-    }
-       
-	private double[] processScoringFiles(String outputFolderPath) throws Exception {
+			int run = 0;
+			for(Double[] da : listOfResults) {
+				for(int obj = 0; obj < objectives; obj++) {
+					double oldSum = sum[obj];
+					sum[obj] = oldSum + da[obj];
+					
+					/* Report result */
+					String reportLine = String.format("%d\t%.4f\t%.4f\n", run++, da[0], da[1]);
+					report.add(reportLine);
+				}
+			}
+			
+			for(int obj = 0; obj < objectives; obj++) {
+				result[obj] = sum[obj] / ((double) listOfJobs.size());
+			}
+			String reportLine = String.format("Mean\t%.4f\t%.4f\n", result[0], result[1]);
+			report.add(reportLine);
+			break;
+		default:
+			throw new RuntimeException("Cannot consolidate multiple MATSim runs using mechanism '" + mech.toString() + "'");
+		}
+
+		bw = IOUtils.getAppendingBufferedWriter(ensembleFilename);
+		try {
+			for(String reportLine : report) {
+				bw.write(reportLine);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			log.error("Could not write ensemble runs result.");
+		} finally {
+			try {
+				bw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				log.error("Could not write ensemble runs result.");
+			}
+		}
 		
-		String eventsFile = outputFolderPath + "output_events.xml.gz";
-		String userScoreOutputFile = "./output/ScoringFunctionResults/user_score.csv";
-		String operatorScoreOutputFile = "./output/ScoringFunctionResults/operator_score.csv";
-		String networkFile = "./input/matsimInput/transitNetwork.xml";
-		
-		String[] str = {eventsFile, userScoreOutputFile, operatorScoreOutputFile, networkFile};
-		
-		Header.printHeader(RunScoringFunctions.class, str);
-		
-		Scenario scenario = ScenarioUtils.createScenario(ConfigUtils.createConfig());	
-		new MatsimNetworkReader(scenario.getNetwork()).readFile(networkFile);
-		
-		EventsManager manager = new EventsManagerImpl();		
-		manager.addHandler(new NetworkUserScoringFunction(userScoreOutputFile));	
-		manager.addHandler(new NetworkOperatorScoringFunction(operatorScoreOutputFile, scenario.getNetwork()));
-		new MatsimEventsReader(manager).readFile(eventsFile);
+		return result;
+	}
 
-		double[] obj = {NetworkUserScoringFunction.getUserScore(), NetworkOperatorScoringFunction.getOperatorScore()};
-		System.out.println(Arrays.toString(obj));
-	    	
-		Header.printFooter();
-		
-		return obj;
-  	  	
-	    }
-	
+	/**
+	 * Initially (21/8/2018|) we thought that 'best' and 'worst' might also be
+	 * possible consolidation mechanisms, but this will add some complications.
+	 * For example, what if the first ensemble run produces the 'best' value for
+	 * objective 1, but a very bad one for the other. Similarly, the third 
+	 * ensemble run might produce the 'best' value for objective two, but pretty
+	 * bad for objective one.
+	 *
+	 * @author jwjoubert
+	 */
+	private enum ConsolidateMechanism{
+		mean, median, best, worst;
+	}
 
 }
