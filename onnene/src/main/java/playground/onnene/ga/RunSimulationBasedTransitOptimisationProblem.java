@@ -57,8 +57,8 @@ import org.moeaframework.core.spi.ProblemFactory;
  */
 public class RunSimulationBasedTransitOptimisationProblem {
 	final private static Logger LOG = Logger.getLogger(RunSimulationBasedTransitOptimisationProblem.class);
-	private static final int MAX_MOEA_EVALUATIONS = 4; //FIXME was 20
-	public static final int MATSIM_ITERATION_NUMBER = 2; // FIXME was 10
+	private static final int MAX_MOEA_EVALUATIONS = 500; //FIXME was 20
+	public static final int MATSIM_ITERATION_NUMBER = 50; // FIXME was 10
 	private static BufferedWriter SEED_FILE;
 	static Calendar cal = Calendar.getInstance();
 	static SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss");   
@@ -184,14 +184,14 @@ public class RunSimulationBasedTransitOptimisationProblem {
 					.withProperty("operator", "MyCrossover+MyMutation")
 					.withProperty("MyCrossover.Rate", 0.75)
 					.withProperty("MyMutation.Rate", 0.25)
-					.withProperty("populationSize", 3) // FIXME
+					.withProperty("populationSize", 20) // FIXME
 					.withMaxEvaluations(MAX_MOEA_EVALUATIONS)  
 					//.resetCheckpointFile()
 //					.withCheckpointFile(checkPointFile)		  
 //					.withCheckpointFrequency(5)
 					.withInstrumenter(instrumenter)     
-					.distributeOn(numThreads)
-					//.distributeOnAllCores()            
+//					.distributeOn(numThreads)
+//					.distributeOnAllCores()            
 					.run();
 			
 			allResults.add(finalResult);
