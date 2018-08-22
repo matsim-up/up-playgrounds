@@ -206,10 +206,10 @@ public class SimulationBasedTransitOptimizationProblem extends AbstractProblem {
 					double oldSum = sum[obj];
 					sum[obj] = oldSum + da[obj];
 					
-					/* Report result */
-					String reportLine = String.format("%d\t%.4f\t%.4f\n", run++, da[0], da[1]);
-					report.add(reportLine);
 				}
+				/* Report result */
+				String reportLine = String.format("%d\t%.4f\t%.4f\n", run++, da[0], da[1]);
+				report.add(reportLine);
 			}
 			
 			for(int obj = 0; obj < objectives; obj++) {
