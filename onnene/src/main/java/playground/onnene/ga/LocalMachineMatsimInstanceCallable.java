@@ -49,9 +49,7 @@ public class LocalMachineMatsimInstanceCallable implements Callable<Double[]>{
 	
 	public LocalMachineMatsimInstanceCallable(String parentFolder, int run, long seed_base) {
 		parentFolder += parentFolder.endsWith("/") ? " " : File.separator;
-		System.out.println("parentfolder =" + parentFolder);
 		folder = new File(parentFolder + "output_" + run + File.separator);
-		System.out.println("folder =" + folder.getAbsolutePath());
 		boolean created = folder.mkdirs();
 		if(!created) {
 			throw new RuntimeException("Could not create the MATSim run folder " + folder.getAbsolutePath());
