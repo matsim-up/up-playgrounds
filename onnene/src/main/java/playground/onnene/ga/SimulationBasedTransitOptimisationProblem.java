@@ -45,7 +45,7 @@ import org.moeaframework.problem.AbstractProblem;
  * @author Onnene
  *
  */
-public class SimulationBasedTransitOptimizationProblem extends AbstractProblem {
+public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
 	final private static int SIMULATIONS_PER_EVALUATION = 20;
 	final private static int SIMULATIONS_PER_BLOCK = 20;
@@ -53,7 +53,7 @@ public class SimulationBasedTransitOptimizationProblem extends AbstractProblem {
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
 	/* Other variables. */
-	final private Logger log = Logger.getLogger(SimulationBasedTransitOptimizationProblem.class.getName());  
+	final private Logger log = Logger.getLogger(SimulationBasedTransitOptimisationProblem.class.getName());  
 	final private long seed_base = 20180820l;
 	private static AtomicInteger overallRunNumber = new AtomicInteger(0);
 
@@ -63,8 +63,7 @@ public class SimulationBasedTransitOptimizationProblem extends AbstractProblem {
 	}
 
 
-	//	public SimulationBasedTransitOptimizationProblem(String inputFolder, String outputFolder, int runNumber) throws IOException, InterruptedException {
-	public SimulationBasedTransitOptimizationProblem(){
+	public SimulationBasedTransitOptimisationProblem(){
 		super(1, 2);
 	}
 

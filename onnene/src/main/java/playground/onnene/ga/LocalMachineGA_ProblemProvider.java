@@ -15,7 +15,7 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-
+  
 /**
  * 
  */
@@ -31,15 +31,16 @@ import org.moeaframework.core.Problem;
 import org.moeaframework.core.spi.ProblemProvider;
 
 /**
- *
  * @author Onnene
+ *
  */
-public class GA_ProblemProvider extends ProblemProvider {
-
+public class LocalMachineGA_ProblemProvider extends ProblemProvider {
+	
 	@Override
 	public Problem getProblem(String name) {
-		if (name.equalsIgnoreCase("SimulationBasedTransitOptimizationProblem")) {
-			return new SimulationBasedTransitOptimisationProblem();				
+		if (name.equalsIgnoreCase("LocalMachineSimulationBasedTransitOptimisationProblem")) {
+			return new LocalMachineSimulationBasedTransitOptimisationProblem();			
+			
 		}
 		else {
 			return null;						
@@ -47,11 +48,10 @@ public class GA_ProblemProvider extends ProblemProvider {
 	}
 
 
-
 	@Override
 	public NondominatedPopulation getReferenceSet(String name) {
 
-		if (name.equalsIgnoreCase("SimulationBasedTransitOptimizationProblem")){
+		if (name.equalsIgnoreCase("LocalMachineSimulationBasedTransitOptimisationProblem")){
 
 			try {
 				return new NondominatedPopulation(PopulationIO.readObjectives(new File("./output/ProblemReferenceSet/problemRefSet.txt")));

@@ -96,7 +96,7 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 	public void handleEvent(VehicleEntersTrafficEvent event) {
 
 		if (vehicleMap.containsKey(event.getVehicleId())) {
-			log.warn("Oops, vehicle " + event.getVehicleId().toString() + " is already in our map.");
+			log.info("Oops, vehicle " + event.getVehicleId().toString() + " is already in our map.");
 		}
 		 
 		vehicleMap.put(event.getVehicleId(), event.getTime());

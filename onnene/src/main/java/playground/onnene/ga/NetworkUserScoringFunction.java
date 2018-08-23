@@ -76,7 +76,7 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 	@Override
 	public void handleEvent(PersonDepartureEvent event) {
 		if (personMap.containsKey(event.getPersonId())) {
-			log.warn("Oops, person " + event.getPersonId().toString() + " is already in our map.");
+			log.info("Oops, person " + event.getPersonId().toString() + " is already in our map.");
 		}
 		personMap.put(event.getPersonId(), event.getTime());
 		

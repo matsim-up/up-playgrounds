@@ -15,7 +15,7 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-
+  
 /**
  * 
  */
@@ -55,10 +55,11 @@ import org.moeaframework.core.spi.ProblemFactory;
  * @author Onnene
  *
  */
-public class RunSimulationBasedTransitOptimisationProblem {
-	final private static Logger LOG = Logger.getLogger(RunSimulationBasedTransitOptimisationProblem.class);
-	private static final int MAX_MOEA_EVALUATIONS = 500; //FIXME was 20
-	public static final int MATSIM_ITERATION_NUMBER = 50; // FIXME was 10
+public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
+	
+	final private static Logger LOG = Logger.getLogger(LocalMachineRunSimulationBasedTransitOptimisationProblem.class);
+	private static final int MAX_MOEA_EVALUATIONS = 5; //FIXME was 20
+	public static final int MATSIM_ITERATION_NUMBER = 100; // FIXME was 10
 	private static BufferedWriter SEED_FILE;
 	static Calendar cal = Calendar.getInstance();
 	static SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss");   
@@ -70,7 +71,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {	
-		Header.printHeader(RunSimulationBasedTransitOptimisationProblem.class, args);
+		Header.printHeader(LocalMachineRunSimulationBasedTransitOptimisationProblem.class, args);
 
 		int numThreads = Integer.parseInt(args[0]);
 		long seed_base = Long.parseLong(args[1]);
@@ -159,8 +160,8 @@ public class RunSimulationBasedTransitOptimisationProblem {
 		List<NondominatedPopulation> allResults = new ArrayList<>();
 		List<Long> lstOfSeeds = new ArrayList<>();
 
-		ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
-		Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");  
+		ProblemFactory.getInstance().addProvider(new LocalMachineGA_ProblemProvider());
+		Problem problem = ProblemFactory.getInstance().getProblem("LocalMachineSimulationBasedTransitOptimisationProblem");  
 		
 		OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());  
 		// String[] algorithms = { "NSGAII" }; 
@@ -184,7 +185,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 					.withProperty("operator", "MyCrossover+MyMutation")
 					.withProperty("MyCrossover.Rate", 0.75)
 					.withProperty("MyMutation.Rate", 0.25)
-					.withProperty("populationSize", 20) // FIXME
+					.withProperty("populationSize", 5) // FIXME
 					.withMaxEvaluations(MAX_MOEA_EVALUATIONS)  
 					//.resetCheckpointFile()
 //					.withCheckpointFile(checkPointFile)		  
@@ -210,7 +211,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 			SEED_FILE.close();
 		}
 
-		RunSimulationBasedTransitOptimisationProblem rwos = new RunSimulationBasedTransitOptimisationProblem();
+		LocalMachineRunSimulationBasedTransitOptimisationProblem lmrsbtop = new LocalMachineRunSimulationBasedTransitOptimisationProblem();
 
 		int folderIdx = 0;
 		FileUtils.deleteDirectory(new File(ResultFolder));
@@ -226,7 +227,9 @@ public class RunSimulationBasedTransitOptimisationProblem {
 				Solution runSolution = runResult.get(solution);
 
 				fileIdx++;
-				rwos.decodeResult(runSolution.getVariable(0), ResultFolder, folderIdx, fileIdx);
+				//rsbtop.decodeResult(solution.getVariable(0), DirectoryConfig.RESULTS_FILE, folderIdx, fileIdx);
+				lmrsbtop.decodeResult(runSolution.getVariable(0), ResultFolder, folderIdx, fileIdx);
+				//MOEA_LOG_FILE  = new FileOutputStream(new File("./output/logs/run_moea_log.txt"), true);
 				LOG.info(String.format("%.4f\t%.4f%n", runSolution.getObjective(0), runSolution.getObjective(1)));
 				
 				BufferedWriter bw = IOUtils.getAppendingBufferedWriter("./output/logs/run_moea_log.txt");		
@@ -301,7 +304,13 @@ public class RunSimulationBasedTransitOptimisationProblem {
 					} finally {
 						bwIndicator.close();
 					}
-
+					//INDICATOR_FILE.write(String.format("%n").getBytes());
+					//INDICATOR_FILE.write(String.format(" ", qi.getHypervolume()).getBytes());
+					//INDICATOR_FILE.write("Generational Distance".getBytes());
+					//INDICATOR_FILE.write(String.format("\nGD%f ", qi.getGenerationalDistance()).getBytes());
+					//INDICATOR_FILE.write("\nAdditive Epsilon Indicator".getBytes());
+					//INDICATOR_FILE.write(String.format("\nAEI%fn", qi.getAdditiveEpsilonIndicator()).getBytes());
+					//qi.getAdditiveEpsilonIndicator();
 				}
 			}
 		}
@@ -322,4 +331,5 @@ public class RunSimulationBasedTransitOptimisationProblem {
 			bwMOEA.close();
 		}
 	}
+
 }
