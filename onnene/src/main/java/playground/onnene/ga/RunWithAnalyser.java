@@ -39,11 +39,11 @@ public class RunWithAnalyser {
 	
 		 OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());   
 		 ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
-		 ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");
+		 ProblemFactory.getInstance().getProblem("LocalMachineSimulationBasedTransitOptimisationProblem");
 		 
 		 Settings.PROPERTIES.setString(Settings.KEY_DIAGNOSTIC_TOOL_ALGORITHMS, "NSGAII");
 		 
-		 Settings.PROPERTIES.setString(Settings.KEY_DIAGNOSTIC_TOOL_PROBLEMS, "SimulationBasedTransitOptimizationProblem");
+		 Settings.PROPERTIES.setString(Settings.KEY_DIAGNOSTIC_TOOL_PROBLEMS, "LocalMachineSimulationBasedTransitOptimisationProblem");
 		 
 		 try {
 			LaunchDiagnosticTool.main(args);
