@@ -38,7 +38,7 @@ public class RunWithAnalyser {
 	public static void main(String[] args) {
 	
 		 OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());   
-		 ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
+		 ProblemFactory.getInstance().addProvider(new LocalMachineGA_ProblemProvider());
 		 ProblemFactory.getInstance().getProblem("LocalMachineSimulationBasedTransitOptimisationProblem");
 		 
 		 Settings.PROPERTIES.setString(Settings.KEY_DIAGNOSTIC_TOOL_ALGORITHMS, "NSGAII");
