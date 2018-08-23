@@ -46,8 +46,7 @@ public class GA_ProblemProvider extends ProblemProvider {
 		}
 	}
 
-
-
+	
 	@Override
 	public NondominatedPopulation getReferenceSet(String name) {
 
