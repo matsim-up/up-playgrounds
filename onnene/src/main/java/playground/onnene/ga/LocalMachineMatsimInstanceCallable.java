@@ -46,9 +46,8 @@ public class LocalMachineMatsimInstanceCallable implements Callable<Double[]>{
 	final private File innerOutputFolder;
 	final private long seed;
 
-	
 	public LocalMachineMatsimInstanceCallable(String parentFolder, int run, long seed_base) {
-		parentFolder += parentFolder.endsWith("/") ? " " : File.separator;
+		parentFolder += parentFolder.endsWith(File.separator) ? " " : File.separator;
 		folder = new File(parentFolder + "output_" + run + File.separator);
 		boolean created = folder.mkdirs();
 		if(!created) {
