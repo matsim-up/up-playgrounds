@@ -54,23 +54,33 @@ public class BnDataPrepper {
 	 */
 	public static void main(String[] args) {
 		Header.printHeader(BnDataPrepper.class, args);
-
+		runTwo(args);
+		Header.printFooter();
+	}
+	
+	/**
+	 * First try to parse the activity chains. Here I simply convert the 
+	 * sequential activities into a long, flat file format.
+	 * 
+	 * @param args
+	 */
+	private static void runOne(String[] args) {
 		String population = args[0];
 		String household = args[1];
 		String output = args[2];
-
+		
 		Scenario sc = ScenarioUtils.createScenario(ConfigUtils.createConfig());
 		new PopulationReader(sc).readFile(population);
 		new HouseholdsReaderV10(sc.getHouseholds()).readFile(household);
-
+		
 		int single = 0;
 		int multiple = 0;
-
+		
 		BufferedWriter bw = IOUtils.getBufferedWriter(output);
 		try {
 			bw.write("pId,trip,fromType,mode,toType,gender,birth,employment,edu,travelForWork,workFromHome,licCar,licHeavy,licMc,dwelling,hhSize,assetOne,carAccess,carOwned,mcAccess,mcOwned");
 			bw.newLine();
-
+			
 			for(Id<Person> pId : sc.getPopulation().getPersons().keySet()) {
 				Person person = sc.getPopulation().getPersons().get(pId);
 				Id<Household> hId = Id.create(pId.toString().split("_")[0], Household.class);
@@ -78,7 +88,7 @@ public class BnDataPrepper {
 				if(hh == null) {
 					throw new RuntimeException("Cannot find household for person " + pId.toString());
 				}
-
+				
 				List<PlanElement> list = person.getSelectedPlan().getPlanElements();
 				if(list.size() == 1) {
 					Activity act = (Activity)list.get(0);
@@ -148,9 +158,113 @@ public class BnDataPrepper {
 				throw new RuntimeException("Cannot close " + output);
 			}
 		}
-
+		
 		LOG.info("Single: " + single + "; Multiple: " + multiple);
-		Header.printFooter();
 	}
 
+	
+	private static void runTwo(String[] args) {
+		String population = args[0];
+		String household = args[1];
+		String output = args[2];
+		
+		Scenario sc = ScenarioUtils.createScenario(ConfigUtils.createConfig());
+		new PopulationReader(sc).readFile(population);
+		new HouseholdsReaderV10(sc.getHouseholds()).readFile(household);
+		
+		/* Before writing, create the necessary attributes from the activity chain. */
+		int maxTrips = 0;
+		for(Person person : sc.getPopulation().getPersons().values()) {
+			double trips = ((double)person.getSelectedPlan().getPlanElements().size()-1) / 2.0;
+			maxTrips = Math.max(maxTrips, (int) trips);
+		}
+		LOG.info("Maximum number of trips: " + maxTrips);
+
+//		BufferedWriter bw = IOUtils.getBufferedWriter(output);
+//		try {
+//			bw.write("pId,trip,fromType,mode,toType,gender,birth,employment,edu,travelForWork,workFromHome,licCar,licHeavy,licMc,dwelling,hhSize,assetOne,carAccess,carOwned,mcAccess,mcOwned");
+//			bw.newLine();
+//
+//			for(Id<Person> pId : sc.getPopulation().getPersons().keySet()) {
+//				Person person = sc.getPopulation().getPersons().get(pId);
+//				Id<Household> hId = Id.create(pId.toString().split("_")[0], Household.class);
+//				Household hh = sc.getHouseholds().getHouseholds().get(hId);
+//				if(hh == null) {
+//					throw new RuntimeException("Cannot find household for person " + pId.toString());
+//				}
+//
+//				List<PlanElement> list = person.getSelectedPlan().getPlanElements();
+//				if(list.size() == 1) {
+//					Activity act = (Activity)list.get(0);
+//					bw.write(String.format("%s,%d,%s,NA,NA,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", 
+//							pId.toString(), 1, 
+//							act.getType(),
+//							/* Individual */
+//							person.getAttributes().getAttribute("gender").toString(),
+//							person.getAttributes().getAttribute("yearOfBirth").toString(),
+//							person.getAttributes().getAttribute("employment").toString(),
+//							person.getAttributes().getAttribute("education").toString().replaceAll(",", ""),
+//							person.getAttributes().getAttribute("travelForWork").toString(),
+//							person.getAttributes().getAttribute("workFromHome").toString(),
+//							person.getAttributes().getAttribute("license_car").toString(),
+//							person.getAttributes().getAttribute("license_heavyVehicle").toString(),
+//							person.getAttributes().getAttribute("license_motorcycle").toString(),
+//							/* Household */
+//							hh.getAttributes().getAttribute("dwellingType").toString(),
+//							hh.getAttributes().getAttribute("householdSize").toString(),
+//							hh.getAttributes().getAttribute("assetClassMethod1").toString(),
+//							hh.getAttributes().getAttribute("numberOfHouseholdCarsAccessTo").toString(),
+//							hh.getAttributes().getAttribute("numberOfHouseholdCarsOwned").toString(),
+//							hh.getAttributes().getAttribute("numberOfHouseholdMotorcyclesAccessTo").toString(),
+//							hh.getAttributes().getAttribute("numberOfHouseholdMotorcyclesOwned").toString()
+//							));
+//				} else {
+//					int counter = 1;
+//					for(int i = 0; i < list.size()-2; i+=2) {
+//						Activity from = (Activity) list.get(i);
+//						Leg leg = (Leg) list.get(i+1);
+//						Activity to = (Activity) list.get(i+2);
+//						bw.write(String.format("%s,%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", 
+//								pId.toString(), counter++, 
+//								from.getType(),
+//								leg.getMode(),
+//								to.getType(),
+//								/* Individual */
+//								person.getAttributes().getAttribute("gender").toString(),
+//								person.getAttributes().getAttribute("yearOfBirth").toString(),
+//								person.getAttributes().getAttribute("employment").toString(),
+//								person.getAttributes().getAttribute("education").toString().replaceAll(",", ""),
+//								person.getAttributes().getAttribute("travelForWork").toString(),
+//								person.getAttributes().getAttribute("workFromHome").toString(),
+//								person.getAttributes().getAttribute("license_car").toString(),
+//								person.getAttributes().getAttribute("license_heavyVehicle").toString(),
+//								person.getAttributes().getAttribute("license_motorcycle").toString(),
+//								/* Household */
+//								hh.getAttributes().getAttribute("dwellingType").toString(),
+//								hh.getAttributes().getAttribute("householdSize").toString(),
+//								hh.getAttributes().getAttribute("assetClassMethod1").toString(),
+//								hh.getAttributes().getAttribute("numberOfHouseholdCarsAccessTo").toString(),
+//								hh.getAttributes().getAttribute("numberOfHouseholdCarsOwned").toString(),
+//								hh.getAttributes().getAttribute("numberOfHouseholdMotorcyclesAccessTo").toString(),
+//								hh.getAttributes().getAttribute("numberOfHouseholdMotorcyclesOwned").toString()
+//								));
+//					}
+//				}
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			throw new RuntimeException("Cannot write to " + output);
+//		} finally {
+//			try {
+//				bw.close();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//				throw new RuntimeException("Cannot close " + output);
+//			}
+//		}
+//
+		
+	}
+	
+	
 }
