@@ -64,7 +64,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 	static SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss");   
 	static Date startTime = new Date();
 
-	
+
 	/**
 	 * @param args
 	 * @throws Exception 
@@ -75,12 +75,13 @@ public class RunSimulationBasedTransitOptimisationProblem {
 		int numThreads = Integer.parseInt(args[0]);
 		long seed_base = Long.parseLong(args[1]);
 		int numberOfRuns = Integer.parseInt(args[2]);
+		int startEvaluate = Integer.parseInt(args[3]);
 
-		runSimulation(numThreads, seed_base, numberOfRuns);
+		runSimulation(numThreads, seed_base, numberOfRuns, startEvaluate);
 		Header.printFooter();
 	}
 
-	
+
 	/**
 	 * Creates all the necessary output folders and sets up the log files.
 	 */
@@ -95,7 +96,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 				throw new RuntimeException("Cannot delete the old output folder.");
 			}
 		}
-		
+
 		/* Set up output folders. */
 		new File("./output/logs/").mkdirs();
 		new File("./output/matsimOutput/").mkdirs();
@@ -105,7 +106,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 		BufferedWriter bwSeed = IOUtils.getBufferedWriter("./output/logs/seeds.txt");
 		BufferedWriter bwMoea = IOUtils.getBufferedWriter("./output/logs/run_moea_log.txt");
 		BufferedWriter bwRef = IOUtils.getBufferedWriter("./output/problemReferenceSet/referenceSet.txt");
-		
+
 		try {
 			bwSeed.write("Run\tSeed\n");
 			bwMoea.write("Run\tPareto\tObj1\tOb2\n");
@@ -125,7 +126,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 			}
 		}
 	}
-	
+
 
 	private static File checkPoint(String checkPointFile) {
 		File checkpointFile = new File (checkPointFile);
@@ -135,7 +136,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 		return checkpointFile;
 	} 
 
-	
+
 	private void decodeResult(Variable variable, String resultFilePath, int folderNum, int fileNum) throws IOException {
 		if (variable instanceof  DecisionVariable) {
 			DecisionVariable varObj = (DecisionVariable) variable;               
@@ -150,9 +151,12 @@ public class RunSimulationBasedTransitOptimisationProblem {
 		}        
 	}
 
-	
-	public static void runSimulation(int numThreads, long seed_base, int numberOfRuns) throws Exception {
-		setupOutput();
+
+	public static void runSimulation(int numThreads, long seed_base, int numberOfRuns, int startEvaluate) throws Exception {
+		/* Only delete the output folder if a new run is initiated. */
+		if(startEvaluate == 0) {
+			setupOutput();
+		}
 		File checkPointFile = checkPoint("./output/logs/checkpoint.dat");
 		String ResultFolder = "./output/optimisationResults/";
 
@@ -161,21 +165,20 @@ public class RunSimulationBasedTransitOptimisationProblem {
 
 		ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
 		Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");  
-		
+
 		OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());  
 		// String[] algorithms = { "NSGAII" }; 
 
 
-		Instrumenter instrumenter = new Instrumenter();       	
-		instrumenter.withProblem(problem);
-		instrumenter.withFrequency(5);
-		instrumenter.attachApproximationSetCollector();
-		instrumenter.attachElapsedTimeCollector();
-
+		Instrumenter instrumenter = new Instrumenter()
+				.withProblem(problem)		
+				.withFrequency(5)
+				.attachApproximationSetCollector()
+				.attachElapsedTimeCollector();
 
 		for(int run = 0; run < numberOfRuns; run++) {
 			long seed = seed_base*((long)run);
-			
+
 			PRNG.setSeed(seed);
 			LOG.info("Running population " + run + " (using seed "+ seed_base + ")... ");
 			NondominatedPopulation finalResult = new Executor()
@@ -187,13 +190,13 @@ public class RunSimulationBasedTransitOptimisationProblem {
 					.withProperty("populationSize", 20) // FIXME
 					.withMaxEvaluations(MAX_MOEA_EVALUATIONS)  
 					//.resetCheckpointFile()
-//					.withCheckpointFile(checkPointFile)		  
-//					.withCheckpointFrequency(5)
+					//					.withCheckpointFile(checkPointFile)		  
+					//					.withCheckpointFrequency(5)
 					.withInstrumenter(instrumenter)     
-//					.distributeOn(numThreads)
-//					.distributeOnAllCores()            
+					//					.distributeOn(numThreads)
+					//					.distributeOnAllCores()            
 					.run();
-			
+
 			allResults.add(finalResult);
 			lstOfSeeds.add(seed);
 
@@ -228,7 +231,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 				fileIdx++;
 				rwos.decodeResult(runSolution.getVariable(0), ResultFolder, folderIdx, fileIdx);
 				LOG.info(String.format("%.4f\t%.4f%n", runSolution.getObjective(0), runSolution.getObjective(1)));
-				
+
 				BufferedWriter bw = IOUtils.getAppendingBufferedWriter("./output/logs/run_moea_log.txt");		
 				BufferedWriter bwRef = IOUtils.getAppendingBufferedWriter("./output/problemReferenceSet/referenceSet.txt");
 				BufferedWriter bwRefPf = IOUtils.getAppendingBufferedWriter("./output/problemReferenceSet/referenceSet.pf");
