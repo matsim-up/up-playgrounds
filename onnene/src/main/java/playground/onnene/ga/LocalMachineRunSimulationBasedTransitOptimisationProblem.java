@@ -58,8 +58,8 @@ import org.moeaframework.core.spi.ProblemFactory;
 public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 	
 	final private static Logger LOG = Logger.getLogger(LocalMachineRunSimulationBasedTransitOptimisationProblem.class);
-	private static final int MAX_MOEA_EVALUATIONS = 5; //FIXME was 20
-	public static final int MATSIM_ITERATION_NUMBER = 100; // FIXME was 10
+	private static final int MAX_MOEA_EVALUATIONS = 20; //FIXME was 20
+	public static final int MATSIM_ITERATION_NUMBER = 10; // FIXME was 10
 	private static BufferedWriter SEED_FILE;
 	static Calendar cal = Calendar.getInstance();
 	static SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss");   
@@ -131,7 +131,7 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 	private static File checkPoint(String checkPointFile) {
 		File checkpointFile = new File (checkPointFile);
 		if (checkpointFile.exists()) {
-			LOG.error("Checkpoint file exists, will resume from prior run!");
+			LOG.info("Checkpoint file exists, will resume from prior run!");
 		}
 		return checkpointFile;
 	} 
@@ -154,7 +154,8 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 	
 	public static void runSimulation(int numThreads, long seed_base, int numberOfRuns) throws Exception {
 		setupOutput();
-		File checkPointFile = checkPoint("./output/logs/checkpoint.dat");
+		//File checkPointFile = checkPoint("./output/logs/checkpoint.dat");
+		File checkPointFile = checkPoint("./input/checkpoint.dat");
 		String ResultFolder = "./output/optimisationResults/";
 
 		List<NondominatedPopulation> allResults = new ArrayList<>();
@@ -188,8 +189,8 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 					.withProperty("populationSize", 5) // FIXME
 					.withMaxEvaluations(MAX_MOEA_EVALUATIONS)  
 					//.resetCheckpointFile()
-//					.withCheckpointFile(checkPointFile)		  
-//					.withCheckpointFrequency(5)
+					.withCheckpointFile(checkPointFile)		  
+					.withCheckpointFrequency(5)
 					.withInstrumenter(instrumenter)     
 //					.distributeOn(numThreads)
 //					.distributeOnAllCores()            
@@ -292,7 +293,7 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 					bwIndicator = IOUtils.getAppendingBufferedWriter(indicatorFile.getAbsolutePath());
 					try {
 						bwIndicator.write(
-								String.format("\n%d\t%.8f\t%.8f\t%10.8f\t%10.8f\t%10.8f\t%10.8f\n", 
+								String.format("\n%d\t%.8f\t%.8f\t%10.8f\t%10.8f\t%10.8f\t%10.8f", 
 										accumulator.get("NFE", i), 
 										qi.getHypervolume(), 
 										qi.getGenerationalDistance(), 

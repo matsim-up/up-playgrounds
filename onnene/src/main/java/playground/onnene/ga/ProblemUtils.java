@@ -52,9 +52,9 @@ import playground.onnene.transitScheduleMaker.TransitSchedule;
  * @author Onnene
  *
  */
-public class ProblemUtils {
+public class ProblemUtils{
 	
-    private List<File> transitScheduleFiles;
+	private List<File> transitScheduleFiles;
 	
 	public ProblemUtils() {
 		this.transitScheduleFiles = fetchTransitScheduleFilesPath();

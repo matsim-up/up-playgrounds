@@ -47,9 +47,9 @@ import org.moeaframework.problem.AbstractProblem;
 public class LocalMachineSimulationBasedTransitOptimisationProblem extends AbstractProblem{
 	
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
-	final private static int SIMULATIONS_PER_EVALUATION = 2;
-	final private static int SIMULATIONS_PER_BLOCK = 2;
-	final private static int THREADS_PER_SIMULATION = 2;
+	final private static int SIMULATIONS_PER_EVALUATION = 1;
+	final private static int SIMULATIONS_PER_BLOCK = 1;
+	final private static int THREADS_PER_SIMULATION = 1;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
 	/* Other variables. */

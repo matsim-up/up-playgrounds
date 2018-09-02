@@ -21,6 +21,11 @@
  */
 package playground.onnene.ga;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.moeaframework.core.Variable;
 
@@ -47,6 +52,20 @@ public class DecisionVariable implements Variable{
 		this();
 		this.transitSchedule = transitSchedule;
     }
+    
+    /* Added to make the decision variable serializable for use in the checkpoint file */
+    private void writeObject(ObjectOutputStream out) throws IOException {
+		out.writeObject(this.getTransitSchedule().toString());
+	}
+
+    /* Added to make the decision variable serializable for use in the checkpoint file */
+	private void readObject(ObjectInputStream in) throws IOException  {
+		try {
+			this.setTransitSchedule(new JSONObject((String)in.readObject()));
+		} catch (JSONException | ClassNotFoundException e) {
+			throw new IOException(e);
+		}
+	}
     
     public JSONObject getTransitSchedule() {
         return transitSchedule;
