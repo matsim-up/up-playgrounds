@@ -37,8 +37,6 @@ import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.up.utils.FileUtils;
 
-import playground.onnene.transitScheduleMaker.UnzipUtility;
-
 
 /**
  * @author jwjoubert
@@ -100,27 +98,27 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 		//fu.unGunzipFile(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
 		//fu.unZip(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
 				
-		UnzipUtility u = new UnzipUtility();
-		u.unZipTest(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
-		
-//		ProcessBuilder zipBuilder = new ProcessBuilder(
-//				"unzip", 
-//				String.format("%s/release.zip", folder.getAbsolutePath()), 
-//				"-d", 
-//				String.format("%s", folder.getAbsolutePath()));
-//		Process zipProcess = null;
-//		int zipExitCode = 1;
-//		try {
-//			zipProcess = zipBuilder.start();
-//			zipExitCode = zipProcess.waitFor();
-//		} catch (IOException e4) {
-//			e4.printStackTrace();
-//		} catch (InterruptedException e4) {
-//			e4.printStackTrace();
-//		}
-//		if(zipExitCode != 0) {
-//			throw new RuntimeException("Could not unzip release for MATSim run " + folder.getAbsolutePath());
-//		}
+//		UnzipUtility u = new UnzipUtility();
+//		u.unZipTest(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
+//		
+		ProcessBuilder zipBuilder = new ProcessBuilder(
+				"unzip", 
+				String.format("%s/release.zip", folder.getAbsolutePath()), 
+				"-d", 
+				String.format("%s", folder.getAbsolutePath()));
+		Process zipProcess = null;
+		int zipExitCode = 1;
+		try {
+			zipProcess = zipBuilder.start();
+			zipExitCode = zipProcess.waitFor();
+		} catch (IOException e4) {
+			e4.printStackTrace();
+		} catch (InterruptedException e4) {
+			e4.printStackTrace();
+		}
+		if(zipExitCode != 0) {
+			throw new RuntimeException("Could not unzip release for MATSim run " + folder.getAbsolutePath());
+		}
 		
 		/* Execute the MATSim run */
 		ProcessBuilder equilBuilder = new ProcessBuilder(
