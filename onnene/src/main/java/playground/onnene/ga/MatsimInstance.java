@@ -66,7 +66,7 @@ public class MatsimInstance{
 		config.plans().setInputFile("./plans.xml");
 		config.parallelEventHandling().setNumberOfThreads(6);
 		config.qsim().setNumberOfThreads(6);
-		config.controler().setWriteEventsInterval(10); //FIXME
+		config.controler().setWriteEventsInterval(RunSimulationBasedTransitOptimisationProblem.MATSIM_ITERATION_NUMBER); //FIXME
 		config.network().setInputFile("./network.xml");
 		config.transit().setVehiclesFile("./transitVehicles.xml");
 		config.transit().setTransitScheduleFile("./transitSchedule.xml");

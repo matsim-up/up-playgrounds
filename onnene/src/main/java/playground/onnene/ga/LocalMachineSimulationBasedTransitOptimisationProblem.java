@@ -49,12 +49,12 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
 	final private static int SIMULATIONS_PER_EVALUATION = 1;
 	final private static int SIMULATIONS_PER_BLOCK = 1;
-	final private static int THREADS_PER_SIMULATION = 1;
+	final private static int THREADS_PER_SIMULATION = 6;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
 	/* Other variables. */
 	final private Logger log = Logger.getLogger(LocalMachineSimulationBasedTransitOptimisationProblem.class.getName());  
-	final private long seed_base = 20180820l;
+	final private long seedBase = 20180920l;
 	private static AtomicInteger overallRunNumber = new AtomicInteger(0);
 
 
@@ -129,7 +129,7 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 			ExecutorService executor = Executors.newFixedThreadPool(THREADS_PER_SIMULATION*SIMULATIONS_PER_BLOCK);
 
 			while(simulationsInCurrentBlock < SIMULATIONS_PER_BLOCK && totalSimulations < SIMULATIONS_PER_EVALUATION) {
-				LocalMachineMatsimInstanceCallable mic = new LocalMachineMatsimInstanceCallable(folder, totalSimulations, seed_base);
+				LocalMachineMatsimInstanceCallable mic = new LocalMachineMatsimInstanceCallable(folder, totalSimulations, seedBase);
 				Future<Double[]> job = executor.submit(mic);
 				jobs.add(job);
 
@@ -168,21 +168,30 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 
 	private double[] consolidateMatsimRuns(String folder, List<Future<Double[]>> listOfJobs, int objectives) {
 		double[] result = new double[objectives];
+		
+		//log.info("folder: " + folder);
+		//String matsimEvalNum = new File(folder).getParentFile().getName();
 		String ensembleFilename = folder + "ensembleRuns.txt";
+		//String ensembleFilename = "./input/output/matsimOutput/" + "ensembleRuns.txt";
+		//BufferedWriter bw = IOUtils.getBufferedWriter(ensembleFilename);
 		BufferedWriter bw = IOUtils.getBufferedWriter(ensembleFilename);
 		try {
 			bw.write("Run\tObj1\tObj2\n");
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			log.error("Could not write ensemble runs result.");
 		} finally {
 			try {
 				bw.close();
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 				log.error("Could not write ensemble runs result.");
 			}
 		}
+		
+		
 		List<String> report = new ArrayList<>();
 
 		/* Consolidate. */
@@ -237,6 +246,36 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 				e.printStackTrace();
 				log.error("Could not write ensemble runs result.");
 			}
+		}
+		
+		try {
+			
+			//Paths.get(folder);
+			//Paths.get("./input/output/matsimOutput/");
+			
+			File ensembleIn = new File(folder);
+			File ensembleOut = new File("./input/output/matsimOutput/");
+			
+			//File currentFolder = new File (ensembleOut.getAbsolutePath() + File.separator + ensembleIn.getName());
+			
+//			if (currentFolder.exists()){
+//				//FileUtils.delete(ensembleIn);
+//				org.apache.commons.io.FileUtils.cleanDirectory(currentFolder);
+//			} 
+			
+			
+			org.apache.commons.io.FileUtils.copyDirectoryToDirectory(ensembleIn, ensembleOut);
+//			for(File file: ensembleOut.listFiles()) 
+//				if (file.isDirectory()) {
+//					for(File f: file.listFiles()) 
+//						if (!f.getName().equals("ensembleRuns.txt")) 
+//							f.delete();
+//		    
+//				}
+			//FileUtils.copyDirectoryStructure(ensembleIn, new File("./input/output/matsimOutput/"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		
 		return result;

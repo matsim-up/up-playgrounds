@@ -50,7 +50,7 @@ import org.matsim.vehicles.Vehicle;
 
 /**
  * This class is used to estimate the total cost incurred 
- * by the network operator in the optimization problem.
+ * by the network operator in the optimisation problem.
  * 
  * @author Onnene
  *

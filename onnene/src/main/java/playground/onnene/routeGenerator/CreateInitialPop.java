@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.routeGenerator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,6 +34,7 @@ import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
+import playground.onnene.ga.ProblemUtils;
 import playground.onnene.transitScheduleMaker.TransitSchedule;
 
 /**
@@ -57,7 +58,7 @@ public class CreateInitialPop {
 		
 		try {
 			
-			String InitialPopFolder = "./input/initialPop1/";
+			String InitialPopFolder = "./input/initialPop/";
 			String feasibleRoutes = "./input/routeGenInput/feasibleRoutes.txt";
 	    	cfs.makeInitialPop(feasibleRoutes, numLines, InitialPopFolder);
 	    	

@@ -46,8 +46,8 @@ public class LocalMachineMatsimInstanceCallable implements Callable<Double[]>{
 	final private File innerOutputFolder;
 	final private long seed;
 
-	public LocalMachineMatsimInstanceCallable(String parentFolder, int run, long seed_base) {
-		parentFolder += parentFolder.endsWith(File.separator) ? " " : File.separator;
+	public LocalMachineMatsimInstanceCallable(String parentFolder, int run, long seedBase) {
+		parentFolder += parentFolder.endsWith(File.separator) ? "" : File.separator;
 		folder = new File(parentFolder + "output_" + run + File.separator);
 		boolean created = folder.mkdirs();
 		if(!created) {
@@ -60,7 +60,7 @@ public class LocalMachineMatsimInstanceCallable implements Callable<Double[]>{
 			throw new RuntimeException("Could not create the MATSim run inneroutput folder " + innerOutputFolder.getAbsolutePath());
 		}
 		
-		seed = seed_base*run;
+		seed = seedBase*run;
 	}
 
 	
@@ -138,11 +138,29 @@ public class LocalMachineMatsimInstanceCallable implements Callable<Double[]>{
 		
 		/* Clean up. */
 		
-		//FileUtils.delete(folder);
+		FileUtils.delete(folder);
 		
-		for(File file: folder.listFiles()) 
-		    if (!file.isDirectory()) 
-		        file.delete();
+//		for(File file: folder.listFiles()) 
+//	    if (!file.getName().endsWith("txt")) 
+//	        file.delete();
+		
+//		try {
+//			//File ensembleIn = new File(folder.getParent());
+//			File ensembleIn = new File("./output/matsimOutput/");
+//			File ensembleOut = new File("./input/output/matsimOutput/");
+//						
+//			//if(!ensembleIn.exists()) { throw new IOException("Cannot find " + ensembleIn.getAbsolutePath()); }
+//			org.apache.commons.io.FileUtils.copyDirectoryToDirectory(ensembleIn, ensembleOut);
+////			for(File file: ensembleOut.listFiles()) 
+////			    if (!file.getName().endsWith("txt")) 
+////			        file.delete();
+//			//FileUtils.copyDirectoryStructure(ensembleIn, new File("./input/output/matsimOutput/"));
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		
+
 		
 		return scoringArray;
 	}

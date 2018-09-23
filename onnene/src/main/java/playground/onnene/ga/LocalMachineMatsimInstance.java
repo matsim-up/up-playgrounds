@@ -56,7 +56,7 @@ public class LocalMachineMatsimInstance {
 		config.plans().setInputFile(folder + "./plans.xml");
 		config.parallelEventHandling().setNumberOfThreads(2);
 		config.qsim().setNumberOfThreads(2);
-		config.controler().setWriteEventsInterval(10); //FIXME
+		config.controler().setWriteEventsInterval(LocalMachineRunSimulationBasedTransitOptimisationProblem.MATSIM_ITERATION_NUMBER); //FIXME
 		config.network().setInputFile(folder + "./network.xml");
 		config.transit().setVehiclesFile(folder + "./transitVehicles.xml");
 		config.transit().setTransitScheduleFile(folder + "./transitSchedule.xml");

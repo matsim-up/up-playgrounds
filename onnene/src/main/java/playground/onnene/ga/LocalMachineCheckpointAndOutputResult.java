@@ -15,7 +15,7 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-
+  
 /**
  * 
  */
@@ -23,47 +23,50 @@ package playground.onnene.ga;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
+import org.moeaframework.algorithm.Checkpoints;
+import org.moeaframework.analysis.sensitivity.ResultEntry;
+import org.moeaframework.analysis.sensitivity.ResultFileWriter;
+import org.moeaframework.core.Algorithm;
 import org.moeaframework.core.FrameworkException;
-import org.moeaframework.core.NondominatedPopulation;
-import org.moeaframework.core.PopulationIO;
-import org.moeaframework.core.Problem;
-import org.moeaframework.core.spi.ProblemProvider;
 
 /**
- *
  * @author Onnene
+ *
  */
-public class GA_ProblemProvider extends ProblemProvider {
-
-	@Override
-	public Problem getProblem(String name) {
-		if (name.equalsIgnoreCase("SimulationBasedTransitOptimisationProblem")) {
-			return new SimulationBasedTransitOptimisationProblem();				
-		}
-		else {
-			return null;						
-		}
-	}
-
+public class LocalMachineCheckpointAndOutputResult extends Checkpoints{
 	
-	@Override
-	public NondominatedPopulation getReferenceSet(String name) {
+	    private final ResultFileWriter writer;
+		
+		public LocalMachineCheckpointAndOutputResult(Algorithm algorithm, File stateFile, File outputFile,
+				int frequency) throws IOException {
+			super(algorithm, stateFile, frequency);
+			writer = new ResultFileWriter(algorithm.getProblem(), outputFile, true);
+		}
+		
 
-		if (name.equalsIgnoreCase("SimulationBasedTransitOptimisationProblem")){
-
+		@Override
+		public void doAction() {
+			// Write the result to the output file
 			try {
-				return new NondominatedPopulation(PopulationIO.readObjectives(new File("./input/ProblemReferenceSet/problemRefSet.txt")));
-			} catch (IOException e) {
+				Properties resultInfo = new Properties();
+				resultInfo.setProperty("NFE", Integer.toString(algorithm.getNumberOfEvaluations()));
+				writer.append(new ResultEntry(algorithm.getResult(), resultInfo));
+			}
+			catch (IOException e) {
 				throw new FrameworkException(e);
 			}
-
+			
+			// Call super to save the checkpoint file
+			super.doAction();
 		}
-		else {
-
-			return null;
+	
+		@Override
+		public void terminate() {
+			super.terminate();
+			writer.close();
 		}
-	}
-
+		
 
 }

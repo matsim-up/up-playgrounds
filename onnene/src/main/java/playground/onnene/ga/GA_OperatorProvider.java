@@ -56,10 +56,12 @@ public class GA_OperatorProvider extends OperatorProvider {
 	            return new Crossover(typedProperties.getDouble("MyCrossover.Rate", 0.75));
 	        } else if (name.equalsIgnoreCase("MyMutation")) {
 	            return new Mutation(typedProperties.getDouble("MyMutation.Rate", 0.25));
-	        }
+	        } else {
 
 	        // No match, return null
-	        return null;
+	        
+	        	return null;
+	        }
 	    }
 
 }

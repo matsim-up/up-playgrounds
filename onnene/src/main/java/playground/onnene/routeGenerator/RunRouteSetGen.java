@@ -34,9 +34,8 @@ public class RunRouteSetGen {
 	public static void main(String[] args) throws Exception {
 		
 		//int numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
-		//int numLines = FileMakerUtils.count("./input/transitScheduleMakerHelperFiles/transitLineList.txt");
-		//List<List<String>> temp = RouteSetGen.getFeasibleRoutesByStratifiedSampling();
-		//int numOfSplit = temp.size()/numLines;
+		//int numLines = FileMakerUtils.count("./input/transitScheduleMakerHelperFiles/transitLineList.txt");		
+		
 
 		
 		String transitNetworkXml = "./input/gtfsInputs/gtfsOutput/transitNetwork.xml";
@@ -54,7 +53,7 @@ public class RunRouteSetGen {
 				
 		MatsimNetworkAndScheduleExtractor mnse = new MatsimNetworkAndScheduleExtractor();
 		MatsimNetwork2Graphml mng = new MatsimNetwork2Graphml();	
-		//RouteSetGen rag = new RouteSetGen();	
+			
 
 		// Step1: Extract link details from transitNetwork.xml
 		mnse.LinkExtractor(linkStyle, transitNetworkXml, outputFolder);
@@ -72,8 +71,12 @@ public class RunRouteSetGen {
 		mng.Network2Graphml(graphStyle, transitNetworkXml, networkGraphml);
 		
 		
-//		//Step 6: Create create feasible Routes		
-//		RouteSetGen.splitPopulationIntoIndividuals(temp, numOfSplit);
+		//Step 6: Create create feasible Routes	
+		
+		RouteSetGen rsg = new RouteSetGen();
+		//List<List<String>> temp = rsg.getFeasibleRoutesByStratifiedSampling();
+		//int numOfSplit = temp.size()/numLines;
+		//rsg.splitPopulationIntoIndividuals(temp, numOfSplit);
 		
 	}
 

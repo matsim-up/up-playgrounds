@@ -75,9 +75,10 @@ public class RunSimulationBasedTransitOptimisationProblem {
 		int numThreads = Integer.parseInt(args[0]);
 		long seed_base = Long.parseLong(args[1]);
 		int numberOfRuns = Integer.parseInt(args[2]);
-		int startEvaluate = Integer.parseInt(args[3]);
+		//int startEvaluate = Integer.parseInt(args[3]);
 
-		runSimulation(numThreads, seed_base, numberOfRuns, startEvaluate);
+		//runSimulation(numThreads, seed_base, numberOfRuns, startEvaluate);
+		runSimulation(numThreads, seed_base, numberOfRuns);
 		Header.printFooter();
 	}
 
@@ -151,12 +152,13 @@ public class RunSimulationBasedTransitOptimisationProblem {
 		}        
 	}
 
-
-	public static void runSimulation(int numThreads, long seed_base, int numberOfRuns, int startEvaluate) throws Exception {
+	//public static void runSimulation(int numThreads, long seed_base, int numberOfRuns, int startEvaluate) throws Exception {
+	public static void runSimulation(int numThreads, long seed_base, int numberOfRuns) throws Exception {
 		/* Only delete the output folder if a new run is initiated. */
-		if(startEvaluate == 0) {
-			setupOutput();
-		}
+//		if(startEvaluate == 0) {
+//			setupOutput();
+//		}
+		setupOutput();
 		File checkPointFile = checkPoint("./output/logs/checkpoint.dat");
 		String ResultFolder = "./output/optimisationResults/";
 
@@ -164,7 +166,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 		List<Long> lstOfSeeds = new ArrayList<>();
 
 		ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
-		Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimizationProblem");  
+		Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimisationProblem");  
 
 		OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());  
 		// String[] algorithms = { "NSGAII" }; 

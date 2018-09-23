@@ -35,17 +35,18 @@ public class RouteSetGen {
 	static int numLines = ProblemUtils.numberOfLines();
 
 	public static void main(String[] args) throws IOException {
+		RouteSetGen rsg = new RouteSetGen();
 	
-		List<List<String>> temp = getFeasibleRoutesByStratifiedSampling();
+		List<List<String>> temp = rsg.getFeasibleRoutesByStratifiedSampling();
 		
 		int numOfSplit = temp.size()/numLines;
 		
-		System.out.print(splitPopulationIntoIndividuals(temp, numOfSplit));
+		System.out.print(rsg.splitPopulationIntoIndividuals(temp, numOfSplit));
 			
 	}
 
 		
-	public static <T> List<List<T>> splitPopulationIntoIndividuals(List<T> list, int size) throws NullPointerException, IllegalArgumentException, IOException {
+	public <T> List<List<T>> splitPopulationIntoIndividuals(List<T> list, int size) throws NullPointerException, IllegalArgumentException, IOException {
 		
 		
 	    if (list == null) {
@@ -82,7 +83,7 @@ public class RouteSetGen {
 	}
 	
 	
-	public static List<List<String>> getFeasibleRoutesByStratifiedSampling() throws IOException {
+	public List<List<String>> getFeasibleRoutesByStratifiedSampling() throws IOException {
 		
 		System.out.println("Generating Feasible Routes...");
 		
@@ -197,7 +198,7 @@ public class RouteSetGen {
 	
 	
 	
-	public static List<List<String>> getFeasibleRoutesByRandomSampling() throws IOException {
+	public List<List<String>> getFeasibleRoutesByRandomSampling() throws IOException {
 		
 		Graph<CustomVertex, CustomEdge> graph;
 		List<GraphPath<CustomVertex, CustomEdge>> totalPaths = new ArrayList<>();

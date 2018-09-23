@@ -58,7 +58,7 @@ import org.moeaframework.core.spi.ProblemFactory;
 public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 	
 	final private static Logger LOG = Logger.getLogger(LocalMachineRunSimulationBasedTransitOptimisationProblem.class);
-	private static final int MAX_MOEA_EVALUATIONS = 20; //FIXME was 20
+	private static final int MAX_MOEA_EVALUATIONS = 1; //FIXME was 20
 	public static final int MATSIM_ITERATION_NUMBER = 10; // FIXME was 10
 	private static BufferedWriter SEED_FILE;
 	static Calendar cal = Calendar.getInstance();
@@ -152,7 +152,7 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 	}
 
 	
-	public static void runSimulation(int numThreads, long seed_base, int numberOfRuns) throws Exception {
+	public static void runSimulation(int numThreads, long seedBase, int numberOfRuns) throws Exception {
 		setupOutput();
 		//File checkPointFile = checkPoint("./output/logs/checkpoint.dat");
 		File checkPointFile = checkPoint("./input/checkpoint.dat");
@@ -167,40 +167,58 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 		OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());  
 		// String[] algorithms = { "NSGAII" }; 
 
-
 		Instrumenter instrumenter = new Instrumenter();       	
 		instrumenter.withProblem(problem);
-		instrumenter.withFrequency(5);
+		instrumenter.withFrequency(2);
 		instrumenter.attachApproximationSetCollector();
 		instrumenter.attachElapsedTimeCollector();
-
-
+		//instrumenter.attachAll();
+		
+		Accumulator acc = new Accumulator();
+		
 		for(int run = 0; run < numberOfRuns; run++) {
-			long seed = seed_base*((long)run);
+			long seed = seedBase*((long)run);
 			
 			PRNG.setSeed(seed);
-			LOG.info("Running population " + run + " (using seed "+ seed_base + ")... ");
+			LOG.info("Running population " + run + " (using seed "+ seedBase + ")... ");
 			NondominatedPopulation finalResult = new Executor()
 					.withSameProblemAs(instrumenter)
 					.withAlgorithm("NSGAII")
 					.withProperty("operator", "MyCrossover+MyMutation")
 					.withProperty("MyCrossover.Rate", 0.75)
 					.withProperty("MyMutation.Rate", 0.25)
-					.withProperty("populationSize", 5) // FIXME
+					.withProperty("populationSize", 2) // FIXME
 					.withMaxEvaluations(MAX_MOEA_EVALUATIONS)  
 					//.resetCheckpointFile()
 					.withCheckpointFile(checkPointFile)		  
-					.withCheckpointFrequency(5)
+					.withCheckpointFrequency(1)
 					.withInstrumenter(instrumenter)     
-//					.distributeOn(numThreads)
+					//.distributeOn(numThreads)
 //					.distributeOnAllCores()            
 					.run();
 			
 			allResults.add(finalResult);
 			lstOfSeeds.add(seed);
-
+			
+			//Population dominated = new Population();
+			
+//			Accumulator accumulator = instrumenter.getLastAccumulator();
+//			
+//			List<Solution> approximationSet = null;
+//			
+//			for (int i = 0; i < finalResult.size(); i++) {
+//			
+//			approximationSet = (List<Solution>)accumulator.get("Approximation Set", i);
+//			
+//			}
+//	
+//				 PopulationIO.write(new File("approximationSet.dat"), approximationSet);
+//				 System.out.println("Saved " + approximationSet.size() + " solutions!");
+				
 			LOG.info("Completed run");
 		}
+		
+		
 
 		/* Write all the seeds to file (for record). */
 		SEED_FILE = IOUtils.getAppendingBufferedWriter("./output/logs/seeds.txt");
@@ -268,7 +286,8 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 				results.put("NSGAII", instrumenter.getLastAccumulator());
 				QualityIndicator qi = new QualityIndicator(problem, runResult);
 				Accumulator accumulator = results.get("NSGAII");
-
+				
+				
 				try {
 					accumulator.saveCSV(new File("./output/optimisationResults/runtimeResults.csv"));
 				} catch (IOException e) {

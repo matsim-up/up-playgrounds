@@ -47,14 +47,14 @@ import org.moeaframework.problem.AbstractProblem;
  */
 public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
-	final private static int SIMULATIONS_PER_EVALUATION = 20;
-	final private static int SIMULATIONS_PER_BLOCK = 20;
+	final private static int SIMULATIONS_PER_EVALUATION = 2;
+	final private static int SIMULATIONS_PER_BLOCK = 2;
 	final private static int THREADS_PER_SIMULATION = 6;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
 	/* Other variables. */
 	final private Logger log = Logger.getLogger(SimulationBasedTransitOptimisationProblem.class.getName());  
-	final private long seed_base = 20180820l;
+	final private long seedBase = 20180820l;
 	private static AtomicInteger overallRunNumber = new AtomicInteger(0);
 
 
@@ -128,7 +128,7 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 			ExecutorService executor = Executors.newFixedThreadPool(THREADS_PER_SIMULATION*SIMULATIONS_PER_BLOCK);
 
 			while(simulationsInCurrentBlock < SIMULATIONS_PER_BLOCK && totalSimulations < SIMULATIONS_PER_EVALUATION) {
-				MatsimInstanceCallable mic = new MatsimInstanceCallable(folder, totalSimulations, seed_base);
+				MatsimInstanceCallable mic = new MatsimInstanceCallable(folder, totalSimulations, seedBase);
 				Future<Double[]> job = executor.submit(mic);
 				jobs.add(job);
 
