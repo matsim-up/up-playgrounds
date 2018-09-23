@@ -59,8 +59,9 @@ import org.moeaframework.util.TypedProperties;
 public class TestRun {
 	
 	private static final Logger LOG = Logger.getLogger(TestRun.class);
-    private static final int MAX_NFE = 3;   
+    private static final int MAX_NFE = 60;   
 	private static final int CHECKPOINT_FREQ = 3;
+	private static final int POP_SIZE = 10;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
 
     /**
@@ -186,7 +187,7 @@ public class TestRun {
 		properties.setString("operator", "MyCrossover+MyMutation");
 		properties.setDouble("MyCrossover.Rate", 0.75);
 		properties.setDouble("MyMutation.Rate", 0.25);
-		properties.setInt("populationSize", 3);
+		properties.setInt("populationSize", POP_SIZE);
 		
 		
 		String[] algorithmNames = new String[] { "NSGAII", "NSGAIII" };
