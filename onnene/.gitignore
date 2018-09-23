@@ -1,6 +1,7 @@
 .classpath
 .project
 .settings
+.zip
 target
 bin
 input
