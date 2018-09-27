@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.localMachineGA;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -38,6 +38,9 @@ import org.matsim.core.utils.io.IOUtils;
 import org.matsim.up.utils.FileUtils;
 import org.moeaframework.core.Solution;
 import org.moeaframework.problem.AbstractProblem;
+
+import playground.onnene.ga.DecisionVariable;
+import playground.onnene.ga.ProblemUtils;
 
 /**
  * This class is a version of the simulation based 

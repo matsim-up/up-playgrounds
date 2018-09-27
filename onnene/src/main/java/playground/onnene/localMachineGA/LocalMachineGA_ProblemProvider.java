@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.localMachineGA;
 
 import java.io.File;
 import java.io.IOException;

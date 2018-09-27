@@ -76,7 +76,7 @@ public class TransitSchedule {
         int transitsize = 0, vref = 0, id = 0;
 
         //departure hours
-        int [] hours = {4,4,4,4,3,3,3,3,3,3,4,4,4,2,2,2,1,1};
+        int [] hours = {4,4,4,4,3,3,3,3,3,3,4,4,4,2,2,2};
         
         //System.out.println("Current decision variable has " + f2.size() + " routes...");
 

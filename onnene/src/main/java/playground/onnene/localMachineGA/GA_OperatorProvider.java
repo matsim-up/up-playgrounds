@@ -19,54 +19,49 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.localMachineGA;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Properties;
 
-import org.moeaframework.algorithm.Checkpoints;
-import org.moeaframework.analysis.sensitivity.ResultEntry;
-import org.moeaframework.analysis.sensitivity.ResultFileWriter;
-import org.moeaframework.core.Algorithm;
-import org.moeaframework.core.FrameworkException;
+import org.moeaframework.core.Problem;
+import org.moeaframework.core.Variation;
+import org.moeaframework.core.spi.OperatorProvider;
+import org.moeaframework.util.TypedProperties;
 
 /**
+ * This is a utility class for the GA, it specifies the 
+ * variation operators to be used and their probabilities
+ * 
  * @author Onnene
  *
  */
-public class LocalMachineCheckpointAndOutputResult extends Checkpoints{
+public class GA_OperatorProvider extends OperatorProvider {
 	
-	    private final ResultFileWriter writer;
-		
-		public LocalMachineCheckpointAndOutputResult(Algorithm algorithm, File stateFile, File outputFile,
-				int frequency) throws IOException {
-			super(algorithm, stateFile, frequency);
-			writer = new ResultFileWriter(algorithm.getProblem(), outputFile, true);
-		}
-		
+	    @Override
+	    public String getMutationHint(Problem problem) {
+	        return "MyMutation";
+	    }
 
-		@Override
-		public void doAction() {
-			// Write the result to the output file
-			try {
-				Properties resultInfo = new Properties();
-				resultInfo.setProperty("NFE", Integer.toString(algorithm.getNumberOfEvaluations()));
-				writer.append(new ResultEntry(algorithm.getResult(), resultInfo));
-			}
-			catch (IOException e) {
-				throw new FrameworkException(e);
-			}
-			
-			// Call super to save the checkpoint file
-			super.doAction();
-		}
-	
-		@Override
-		public void terminate() {
-			super.terminate();
-			writer.close();
-		}
-		
+	    @Override
+	    public String getVariationHint(Problem problem) {
+	        return "MyCrossOver+MyMutation";
+	    }
+
+	    @Override
+	    public Variation getVariation(String name, Properties properties, Problem problem) {
+	        
+	        TypedProperties typedProperties = new TypedProperties(properties);
+
+	        if (name.equalsIgnoreCase("MyCrossover")) {
+	            return new Crossover(typedProperties.getDouble("MyCrossover.Rate", 0.75));
+	        } else if (name.equalsIgnoreCase("MyMutation")) {
+	            return new Mutation(typedProperties.getDouble("MyMutation.Rate", 0.25));
+	        } else {
+
+	        // No match, return null
+	        
+	        	return null;
+	        }
+	    }
 
 }

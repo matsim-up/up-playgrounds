@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.localMachineGA;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -52,6 +52,10 @@ import org.moeaframework.core.spi.AlgorithmFactory;
 import org.moeaframework.core.spi.OperatorFactory;
 import org.moeaframework.core.spi.ProblemFactory;
 import org.moeaframework.util.TypedProperties;
+
+import playground.onnene.ga.DecisionVariable;
+import playground.onnene.ga.GA_OperatorProvider;
+import playground.onnene.ga.ProblemUtils;
 
 /**
  * @author Onnene

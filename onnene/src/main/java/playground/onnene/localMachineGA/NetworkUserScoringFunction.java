@@ -17,7 +17,7 @@
  * *********************************************************************** */
 
 
-package playground.onnene.ga;
+package playground.onnene.localMachineGA;
 
 import java.io.BufferedWriter;
 import java.io.File;

@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.localMachineGA;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -50,8 +50,7 @@ import org.moeaframework.core.spi.OperatorFactory;
 import org.moeaframework.core.spi.ProblemFactory;
 import org.moeaframework.util.TypedProperties;
 
-import playground.onnene.localMachineGA.LocalMachineCheckpointAndOutputResult;
-
+import playground.onnene.ga.GA_OperatorProvider;
 
 /**
  * This class is used to run the simulation based transit optimisation problem
@@ -182,7 +181,7 @@ public class TestRun {
 		REFSET_PF = new FileOutputStream(new File("./input/output/problemReferenceSet/refSet.pf"), true);
   		
 		// Step 1 - Run the algorithm(s).  If running multiple algorithms, save to separate files.
-		ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
+		ProblemFactory.getInstance().addProvider(new LocalMachineGA_ProblemProvider());
 		Problem problem = ProblemFactory.getInstance().getProblem("LocalMachineSimulationBasedTransitOptimisationProblem");
 		
 		

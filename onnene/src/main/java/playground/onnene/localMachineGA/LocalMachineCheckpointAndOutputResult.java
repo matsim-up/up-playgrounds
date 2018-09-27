@@ -19,40 +19,54 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.localMachineGA;
 
-import org.moeaframework.analysis.diagnostics.LaunchDiagnosticTool;
-import org.moeaframework.core.Settings;
-import org.moeaframework.core.spi.OperatorFactory;
-import org.moeaframework.core.spi.ProblemFactory;
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
 
-import playground.onnene.localMachineGA.LocalMachineGA_ProblemProvider;
+import org.moeaframework.algorithm.Checkpoints;
+import org.moeaframework.analysis.sensitivity.ResultEntry;
+import org.moeaframework.analysis.sensitivity.ResultFileWriter;
+import org.moeaframework.core.Algorithm;
+import org.moeaframework.core.FrameworkException;
 
 /**
  * @author Onnene
  *
  */
-public class RunWithAnalyser {
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
+public class LocalMachineCheckpointAndOutputResult extends Checkpoints{
 	
-		 OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());   
-		 ProblemFactory.getInstance().addProvider(new LocalMachineGA_ProblemProvider());
-		 ProblemFactory.getInstance().getProblem("LocalMachineSimulationBasedTransitOptimisationProblem");
-		 
-		 Settings.PROPERTIES.setString(Settings.KEY_DIAGNOSTIC_TOOL_ALGORITHMS, "NSGAII");
-		 
-		 Settings.PROPERTIES.setString(Settings.KEY_DIAGNOSTIC_TOOL_PROBLEMS, "LocalMachineSimulationBasedTransitOptimisationProblem");
-		 
-		 try {
-			LaunchDiagnosticTool.main(args);
-		} catch (Exception e) {
-			
-			e.printStackTrace();
+	    private final ResultFileWriter writer;
+		
+		public LocalMachineCheckpointAndOutputResult(Algorithm algorithm, File stateFile, File outputFile,
+				int frequency) throws IOException {
+			super(algorithm, stateFile, frequency);
+			writer = new ResultFileWriter(algorithm.getProblem(), outputFile, true);
 		}
-	}
+		
+
+		@Override
+		public void doAction() {
+			// Write the result to the output file
+			try {
+				Properties resultInfo = new Properties();
+				resultInfo.setProperty("NFE", Integer.toString(algorithm.getNumberOfEvaluations()));
+				writer.append(new ResultEntry(algorithm.getResult(), resultInfo));
+			}
+			catch (IOException e) {
+				throw new FrameworkException(e);
+			}
+			
+			// Call super to save the checkpoint file
+			super.doAction();
+		}
+	
+		@Override
+		public void terminate() {
+			super.terminate();
+			writer.close();
+		}
+		
 
 }

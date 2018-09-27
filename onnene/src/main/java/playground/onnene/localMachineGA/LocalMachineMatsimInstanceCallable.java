@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.localMachineGA;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +34,9 @@ import org.matsim.core.events.MatsimEventsReader;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.up.utils.FileUtils;
+
+import playground.onnene.ga.NetworkOperatorScoringFunction;
+import playground.onnene.ga.NetworkUserScoringFunction;
 
 /**
  * @author Onnene
