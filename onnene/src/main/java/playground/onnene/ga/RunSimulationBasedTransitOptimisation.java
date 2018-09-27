@@ -59,12 +59,13 @@ import playground.onnene.localMachineGA.LocalMachineCheckpointAndOutputResult;
  * @author Onnene
  *
  */
-public class TestRun {
+public class RunSimulationBasedTransitOptimisation {
 	
-	private static final Logger LOG = Logger.getLogger(TestRun.class);
-    private static final int MAX_NFE = 10;   
-	private static final int CHECKPOINT_FREQ = 2;
-	private static final int POP_SIZE = 5;
+	private static final Logger LOG = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
+    private static final int MAX_NFE = 1000;   
+	private static final int CHECKPOINT_FREQ = 100;
+	private static final int POP_SIZE = 100;
+	public static final int MATSIM_ITERATION_NUMBER = 75;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
 
     /**
@@ -72,7 +73,7 @@ public class TestRun {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {	
-		Header.printHeader(TestRun.class, args);
+		Header.printHeader(RunSimulationBasedTransitOptimisation.class, args);
 
 		//int numThreads = Integer.parseInt(args[0]);
 		long seedBase = Long.parseLong(args[0]);
@@ -318,7 +319,7 @@ public class TestRun {
 	private static void processResults(List<NondominatedPopulation> allResults, String algorithmResultDir) throws IOException{
 			
 		String resultFolder = "./input/output/optimisationResults/";
-		TestRun tr = new TestRun();	
+		RunSimulationBasedTransitOptimisation tr = new RunSimulationBasedTransitOptimisation();	
 				
 		int folderIdx = 0;
 		
