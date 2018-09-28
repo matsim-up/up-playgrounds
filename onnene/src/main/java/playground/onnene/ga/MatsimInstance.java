@@ -64,7 +64,7 @@ public class MatsimInstance{
 		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 		
 		config.plans().setInputFile("./plans.xml");
-		config.parallelEventHandling().setNumberOfThreads(20);
+		config.parallelEventHandling().setNumberOfThreads(6);
 		config.qsim().setNumberOfThreads(6);
 		config.controler().setWriteEventsInterval(RunSimulationBasedTransitOptimisation.MATSIM_ITERATION_NUMBER); //FIXME
 		config.network().setInputFile("./network.xml");
