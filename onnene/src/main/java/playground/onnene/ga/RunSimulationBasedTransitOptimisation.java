@@ -50,8 +50,6 @@ import org.moeaframework.core.spi.OperatorFactory;
 import org.moeaframework.core.spi.ProblemFactory;
 import org.moeaframework.util.TypedProperties;
 
-import playground.onnene.localMachineGA.LocalMachineCheckpointAndOutputResult;
-
 
 /**
  * This class is used to run the simulation based transit optimisation problem
@@ -218,7 +216,7 @@ public class RunSimulationBasedTransitOptimisation {
 			
 			long seed = seedBase + PRNG.nextInt(POP_SIZE);
 		
-			LocalMachineCheckpointAndOutputResult wrapper = new LocalMachineCheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
+			CheckpointAndOutputResult wrapper = new CheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
 			
 			for(int run = 0; run < numberOfRuns; run++) {
 				
