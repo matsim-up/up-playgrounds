@@ -192,7 +192,7 @@ public class RunSimulationBasedTransitOptimisation {
 		properties.setInt("populationSize", POP_SIZE);
 		
 		
-		String[] algorithmNames = new String[] { "NSGAII", "NSGAIII", "DBEA" };
+		String[] algorithmNames = new String[] {"NSGAII"};
 		List<File> outputFiles = new ArrayList<File>();
 		List<Long> allSeeds = new ArrayList<>();
 			
