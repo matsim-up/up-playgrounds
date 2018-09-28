@@ -62,7 +62,7 @@ import playground.onnene.localMachineGA.LocalMachineCheckpointAndOutputResult;
 public class RunSimulationBasedTransitOptimisation {
 	
 	private static final Logger LOG = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
-    private static final int MAX_NFE = 1000;   
+    private static final int MAX_NFE = 1500;   
 	private static final int CHECKPOINT_FREQ = 100;
 	private static final int POP_SIZE = 100;
 	public static final int MATSIM_ITERATION_NUMBER = 75;
@@ -184,7 +184,7 @@ public class RunSimulationBasedTransitOptimisation {
   		
 		// Step 1 - Run the algorithm(s).  If running multiple algorithms, save to separate files.
 		ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
-		Problem problem = ProblemFactory.getInstance().getProblem("LocalMachineSimulationBasedTransitOptimisationProblem");
+		Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimisationProblem");
 		
 		
 		TypedProperties properties = new TypedProperties();
