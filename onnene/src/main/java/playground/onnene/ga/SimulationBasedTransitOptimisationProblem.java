@@ -104,7 +104,7 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 			//    	if(!transitScheduleIn.exists()) { throw new IOException("Cannot find " + transitScheduleIn.getAbsolutePath()); }
 			//    	FileUtils.copyFile(transitScheduleIn, new File(outputFolder + "transitSchedule.xml"));
 
-			File release = new File(inputFolder + "./release.zip");
+			File release = new File(inputFolder + "matsimInput/release.zip");
 			if(!release.exists()) { throw new IOException("Cannot find " + release.getAbsolutePath()); }
 			FileUtils.copyFile(release, new File(outputFolder + "release.zip"));
 		} catch(Exception e) {
