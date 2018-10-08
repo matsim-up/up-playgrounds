@@ -84,6 +84,11 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 		/* Copy all the necessary input files, JAR included */
 		log.info("Copying all required input files...");
 		try {
+			File IitialRelease = new File(inputFolder + "release.zip");
+			if(!IitialRelease.exists()) { throw new IOException("Cannot find " + IitialRelease.getAbsolutePath()); }
+			FileUtils.copyFile(IitialRelease, new File(inputFolder + "matsimInput/"));
+
+			
 			File configIn = new File(inputFolder + "matsimInput/config.xml");
 			if(!configIn.exists()) { throw new IOException("Cannot find " + configIn.getAbsolutePath()); }
 			FileUtils.copyFile(configIn, new File(outputFolder + "config.xml"));
