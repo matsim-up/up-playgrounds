@@ -48,7 +48,7 @@ import org.moeaframework.problem.AbstractProblem;
 public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
 	final private static int SIMULATIONS_PER_EVALUATION = 20;
-	final private static int SIMULATIONS_PER_BLOCK = 20;
+	final private static int SIMULATIONS_PER_BLOCK = 10;
 	final private static int THREADS_PER_SIMULATION = 10;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
@@ -84,7 +84,7 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 		/* Copy all the necessary input files, JAR included */
 		log.info("Copying all required input files...");
 		try {
-			File InitialRelease = new File("release.zip");
+			File InitialRelease = new File( "release.zip");
 			if(!InitialRelease.exists()) { throw new IOException("Cannot find " + InitialRelease.getAbsolutePath()); }
 			FileUtils.copyFile(InitialRelease, new File(inputFolder + "matsimInput/" + "release.zip"));
 
