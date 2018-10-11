@@ -34,7 +34,7 @@ import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.io.IOUtils;
 import org.matsim.facilities.ActivityFacility;
-import org.matsim.facilities.FacilitiesReaderMatsimV1;
+import org.matsim.facilities.MatsimFacilitiesReader;
 import org.matsim.up.utils.Header;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -81,7 +81,7 @@ public class HullConverter {
 
 				/* PArse the facilities */
 				Scenario sc = ScenarioUtils.createScenario(ConfigUtils.createConfig());
-				FacilitiesReaderMatsimV1 fr = new FacilitiesReaderMatsimV1(sc);
+				MatsimFacilitiesReader fr = new MatsimFacilitiesReader(sc);
 				fr.putAttributeConverter(Point.class, new org.matsim.up.freight.clustering.HullConverter());
 				fr.putAttributeConverter(LineString.class, new org.matsim.up.freight.clustering.HullConverter());
 				fr.putAttributeConverter(Polygon.class, new org.matsim.up.freight.clustering.HullConverter());
