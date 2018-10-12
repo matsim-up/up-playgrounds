@@ -175,6 +175,8 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 		//log.info("folder: " + folder);
 		//String matsimEvalNum = new File(folder).getParentFile().getName();
 		String ensembleFilename = folder + "ensembleRuns.txt";
+		
+		
 		//String ensembleFilename = "./input/output/matsimOutput/" + "ensembleRuns.txt";
 		//BufferedWriter bw = IOUtils.getBufferedWriter(ensembleFilename);
 		BufferedWriter bw = IOUtils.getBufferedWriter(ensembleFilename);
@@ -251,13 +253,20 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 			}
 		}
 		
+		
+		
+		/* Copy consolidated result to a folder outside the output folder
+		 * where it wont be deleted in subsequent restarts */	
 		try {
+			
+			
+			File ensembleIn = new File(folder);
+			File ensembleOut = new File("./input/output/matsimOutput/");
 			
 			//Paths.get(folder);
 			//Paths.get("./input/output/matsimOutput/");
 			
-			File ensembleIn = new File(folder);
-			File ensembleOut = new File("./input/output/matsimOutput/");
+			
 			
 			//File currentFolder = new File (ensembleOut.getAbsolutePath() + File.separator + ensembleIn.getName());
 			
@@ -280,6 +289,16 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		
+		
+//		File matsimOutput = new File("./input/output/matsimOutput/");
+//		for(File file: matsimOutput.listFiles()) 
+//			if (file.isDirectory()) {
+//				for(File f: file.listFiles()) 					
+//						if (!f.getName().equals("ensembleRuns.txt")) 
+//							f.delete();
+//				
+//		}
 		
 		return result;
 	}

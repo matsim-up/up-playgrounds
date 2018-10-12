@@ -61,9 +61,9 @@ import playground.onnene.ga.ProblemUtils;
  * @author Onnene
  *
  */
-public class LocalMachineProblemRunner {
+public class LocalMachineRunSimulOptProb {
 	
-	private static final Logger LOG = Logger.getLogger(LocalMachineProblemRunner.class);
+	private static final Logger LOG = Logger.getLogger(LocalMachineRunSimulOptProb.class);
     private static final int MAX_NFE = 3;
     public static int callsToEvaluate = 0;   
 	private static final int CHECKPOINT_FREQ = 3;
@@ -81,7 +81,7 @@ public class LocalMachineProblemRunner {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {	
-		Header.printHeader(LocalMachineRunner.class, args);
+		Header.printHeader(LocalMachineRunSimulOptProb.class, args);
 
 		//int numThreads = Integer.parseInt(args[0]);
 		long seed_base = Long.parseLong(args[0]);
@@ -163,9 +163,9 @@ public class LocalMachineProblemRunner {
     	
     	Files.createDirectories(Paths.get("./input/output/logs/"));
 		//Files.createDirectories(Paths.get("./input/output/optimisationResults/"));
-    	Files.createDirectories(Paths.get("./input/output/problemReferenceSet/"));
-    	Files.createDirectories(Paths.get("./input/output/checkpoint/"));
-    	Files.createDirectories(Paths.get("./input/output/indicator/"));
+//    	Files.createDirectories(Paths.get("./input/output/problemReferenceSet/"));
+//    	Files.createDirectories(Paths.get("./input/output/checkpoint/"));
+//    	Files.createDirectories(Paths.get("./input/output/indicator/"));
     	//Files.createDirectories(Paths.get("./input/output/matsimOutput/"));
     	
     	MOEA_LOG = new FileOutputStream(new File("./input/output/logs/run_moea_log.txt"));
@@ -207,13 +207,27 @@ public class LocalMachineProblemRunner {
 			
 			System.out.println("Evaluating " + algorithmName + "...");
 			
+			
+			
+			Path algorithmOutputFolder = Files.createDirectories(Paths.get("./input/output" + File.separator + algorithmName + File.separator));
+			Path checkPointFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() +  File.separator + "checkPoint" + File.separator));
+			Path refsetFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"referenceSet" + File.separator));
+			
+
 			OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
 			Algorithm algorithm = AlgorithmFactory.getInstance().getAlgorithm(algorithmName, properties.getProperties(), problem);
+			
+			
+			
+			File checkpointFile = new File(checkPointFolder.toAbsolutePath() + File.separator + "checkpoint_" + algorithmName + ".dat");
+			File outputFile = new File(refsetFolder.toAbsolutePath() + File.separator + "approximationset_" + algorithmName + ".set");
+			
+			
 
 			//File checkpointFile = new File("./output/SBO_input/" + "checkpoint_" + algorithmName + ".chkpt");
-			File checkpointFile = new File("./input/output/checkpoint/" + "checkpoint_" + algorithmName + ".dat");
+			//File checkpointFile = new File("./input/output/checkpoint/" + "checkpoint_" + algorithmName + ".dat");
 			//File outputFile = new File("./output/SBO_input/" + "output_" + algorithmName + ".set"); TODO
-			File outputFile = new File("./input/output/problemReferenceSet/" + algorithmName + "output_" + ".set");
+			//File outputFile = new File("./input/output/problemReferenceSet/" + algorithmName + "output_" + ".set");
 			//File outputFile = new File("./input/output/problemReferenceSet/" + algorithmName + "output_" + i + ".set");
 			
 			//File checkpointFile = new File("./output/SBO_input/" + "checkpoint_" + algorithmName + ".dat");
@@ -362,7 +376,7 @@ public class LocalMachineProblemRunner {
 	public static void processResults(List<List<NondominatedPopulation>> allResultsLst) throws IOException{
 			
 			String resultFolder = "./input/output/optimisationResults/";
-			LocalMachineProblemRunner lmpr = new LocalMachineProblemRunner();
+			LocalMachineRunSimulOptProb lmpr = new LocalMachineRunSimulOptProb();
 			
 			//int AlgorithmIdx = 0;			
 			

@@ -49,14 +49,14 @@ public class LocalMachineMatsimInstance {
 		ConfigUtils.loadConfig(config, folder + "./config.xml");
 		config.global().setRandomSeed(seed);
 		config.global().setNumberOfThreads(2);
-		config.controler().setLastIteration(LocalMachineRunSimulationBasedTransitOptimisationProblem.MATSIM_ITERATION_NUMBER);       
+		config.controler().setLastIteration(LocalMachineProblemRunner.MATSIM_ITERATION_NUMBER);       
 		config.controler().setOutputDirectory(output);       
 		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 		
 		config.plans().setInputFile(folder + "./plans.xml");
 		config.parallelEventHandling().setNumberOfThreads(2);
 		config.qsim().setNumberOfThreads(2);
-		config.controler().setWriteEventsInterval(LocalMachineRunSimulationBasedTransitOptimisationProblem.MATSIM_ITERATION_NUMBER); //FIXME
+		config.controler().setWriteEventsInterval(LocalMachineProblemRunner.MATSIM_ITERATION_NUMBER); //FIXME
 		config.network().setInputFile(folder + "./network.xml");
 		config.transit().setVehiclesFile(folder + "./transitVehicles.xml");
 		config.transit().setTransitScheduleFile(folder + "./transitSchedule.xml");

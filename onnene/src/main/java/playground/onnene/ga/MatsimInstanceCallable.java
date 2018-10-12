@@ -43,6 +43,7 @@ import org.matsim.up.utils.FileUtils;
  *
  */
 public class MatsimInstanceCallable implements Callable<Double[]> {
+	
 	final private Logger log = Logger.getLogger(MatsimInstanceCallable.class);
 	final private File folder;
 	final private long seed;
@@ -100,7 +101,7 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 				
 //		UnzipUtility u = new UnzipUtility();
 //		u.unZipTest(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
-//		
+		
 		ProcessBuilder zipBuilder = new ProcessBuilder(
 				"unzip", 
 				String.format("%s/release.zip", folder.getAbsolutePath()), 

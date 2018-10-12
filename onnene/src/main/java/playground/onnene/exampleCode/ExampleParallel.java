@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.exampleCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +30,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
-
-import playground.onnene.exampleCode.ExampleParallelRunnable;
 
 /**
  * Class to demonstrate two possible implementations of parallelization. The 

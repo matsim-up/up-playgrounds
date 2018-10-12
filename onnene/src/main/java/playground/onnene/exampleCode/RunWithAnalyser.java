@@ -19,36 +19,41 @@
 /**
  * 
  */
-package playground.onnene.ga;
+package playground.onnene.exampleCode;
 
-import java.util.concurrent.Callable;
+import org.moeaframework.analysis.diagnostics.LaunchDiagnosticTool;
+import org.moeaframework.core.Settings;
+import org.moeaframework.core.spi.OperatorFactory;
+import org.moeaframework.core.spi.ProblemFactory;
+
+import playground.onnene.ga.GA_OperatorProvider;
+import playground.onnene.localMachineGA.LocalMachineGA_ProblemProvider;
 
 /**
- * Example implementation class for {@link Callable}.
- * 
- * @author jwjoubert
+ * @author Onnene
+ *
  */
-public class ExampleParallelCallable implements Callable<Integer> {
+public class RunWithAnalyser {
 
-	private final int run;
-	private int total = 0;
-	
-	
-	public ExampleParallelCallable(int run) {
-		this.run = run;
-	}
-
-	
 	/**
-	 * Class to basically just run some code. In this example we just run 
-	 * through a loop and increment some total value;
+	 * @param args
 	 */
-	@Override
-	public Integer call() throws Exception {
-		for(int i = 0; i < this.run*100; i++) {
-			total += 1;
+	public static void main(String[] args) {
+	
+		 OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());   
+		 ProblemFactory.getInstance().addProvider(new LocalMachineGA_ProblemProvider());
+		 ProblemFactory.getInstance().getProblem("LocalMachineSimulationBasedTransitOptimisationProblem");
+		 
+		 Settings.PROPERTIES.setString(Settings.KEY_DIAGNOSTIC_TOOL_ALGORITHMS, "NSGAII");
+		 
+		 Settings.PROPERTIES.setString(Settings.KEY_DIAGNOSTIC_TOOL_PROBLEMS, "LocalMachineSimulationBasedTransitOptimisationProblem");
+		 
+		 try {
+			LaunchDiagnosticTool.main(args);
+		} catch (Exception e) {
+			
+			e.printStackTrace();
 		}
-		return total;
 	}
 
 }

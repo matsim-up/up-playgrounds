@@ -92,6 +92,8 @@ public class LocalMachineRunner {
 	}
 	
 	 private void decodeResult(Variable variable, String resultFilePath, int folderNum, int fileNum) throws IOException {
+		 
+		 LOG.info(variable instanceof  DecisionVariable);
 			if (variable instanceof  DecisionVariable) {
 				DecisionVariable varObj = (DecisionVariable) variable;               
 				String resultFileName = "Solution" + fileNum + ".xml";                   

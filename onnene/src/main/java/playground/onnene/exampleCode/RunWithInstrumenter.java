@@ -1,4 +1,4 @@
-package playground.onnene.ga;
+package playground.onnene.exampleCode;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -14,6 +14,9 @@ import org.moeaframework.core.Solution;
 import org.moeaframework.core.indicator.QualityIndicator;
 import org.moeaframework.core.spi.OperatorFactory;
 import org.moeaframework.core.spi.ProblemFactory;
+
+import playground.onnene.ga.GA_OperatorProvider;
+import playground.onnene.ga.GA_ProblemProvider;
 
 /* *********************************************************************** *
  * project: org.matsim.*

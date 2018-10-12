@@ -61,9 +61,10 @@ import playground.onnene.ga.GA_OperatorProvider;
 public class TestRun {
 	
 	private static final Logger LOG = Logger.getLogger(TestRun.class);
-    private static final int MAX_NFE = 10;   
+    private static final int MAX_NFE = 4;   
 	private static final int CHECKPOINT_FREQ = 2;
-	private static final int POP_SIZE = 5;
+	private static final int POP_SIZE = 4;
+	public static final int MATSIM_ITERATION_NUMBER = 10;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
 
     /**
@@ -84,6 +85,33 @@ public class TestRun {
 	}
 	
 	
+//	 /**
+//	  * This method is used to convert from solutions from JSON to XML
+//	  * 
+//	 * @param variable decision variable representation of the solution that is to be decoded
+//	 * @param resultFilePath root directory of the optimisation results
+//	 * @param algorithmNameFolder specific folder for the result of each specific algorithms
+//	 * @param folderNum number of the result folder
+//	 * @param fileNum number of the result file
+//	 * @throws IOException
+//	 */
+//	private void decodeResult(Variable variable, String resultFilePath, String algorithmNameFolder,  int folderNum, int fileNum) throws IOException {
+//			if (variable instanceof  DecisionVariable) {
+//				DecisionVariable varObj = (DecisionVariable) variable;         
+//				//Path algorithmFolder = Files.createDirectories(Paths.get(algorithmNameFolder)); 				
+//				String resultFileName = "Solution" + fileNum + ".xml";                   
+//				String innerFolderStr = resultFilePath + algorithmNameFolder + File.separator +  folderNum + File.separator;             
+//				Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));               
+//				String paretoResultFolderPath = innerFolder + File.separator + resultFileName;
+//				ProblemUtils.getXMLFromJSONDecisionVar(varObj.getTransitSchedule(), paretoResultFolderPath);
+//			}
+//			else {
+//				throw new IOException("type not supported");
+//			}        
+//		}
+	
+	
+	
 	 /**
 	  * This method is used to convert from solutions from JSON to XML
 	  * 
@@ -94,20 +122,56 @@ public class TestRun {
 	 * @param fileNum number of the result file
 	 * @throws IOException
 	 */
-	private void decodeResult(Variable variable, String resultFilePath, String algorithmNameFolder,  int folderNum, int fileNum) throws IOException {
-			if (variable instanceof  DecisionVariable) {
-				DecisionVariable varObj = (DecisionVariable) variable;         
-				//Path algorithmFolder = Files.createDirectories(Paths.get(algorithmNameFolder)); 				
-				String resultFileName = "Solution" + fileNum + ".xml";                   
-				String innerFolderStr = resultFilePath + algorithmNameFolder + File.separator +  folderNum + File.separator;             
-				Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));               
-				String paretoResultFolderPath = innerFolder + File.separator + resultFileName;
-				ProblemUtils.getXMLFromJSONDecisionVar(varObj.getTransitSchedule(), paretoResultFolderPath);
+	private void decodeResult(Variable variable, String resultFilePath,  int folderNum, int fileNum) throws IOException {
+		
+		
+		if (variable instanceof  DecisionVariable) {
+			
+			try {
+			DecisionVariable varObj = (DecisionVariable) variable;         
+			//Path algorithmFolder = Files.createDirectories(Paths.get(resultFilePath)); 				
+			String resultFileName = "Solution" + fileNum + ".xml";                   
+			String innerFolderStr = resultFilePath + File.separator +  folderNum + File.separator;             
+			Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));               
+			String paretoResultFolderPath = innerFolder + File.separator + resultFileName;
+			ProblemUtils.getXMLFromJSONDecisionVar(varObj.getTransitSchedule(), paretoResultFolderPath);
+			
 			}
-			else {
-				throw new IOException("type not supported");
-			}        
-		}
+			
+			catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Something is wrong here");
+			}
+			
+		}else {
+			throw new IOException("type not supported");
+		}        
+	}
+	
+//	/**
+//	  * This method is used to convert from solutions from JSON to XML
+//	  * 
+//	 * @param variable decision variable representation of the solution that is to be decoded
+//	 * @param resultFilePath root directory of the optimisation results
+//	 * @param algorithmNameFolder specific folder for the result of each specific algorithms
+//	 * @param folderNum number of the result folder
+//	 * @param fileNum number of the result file
+//	 * @throws IOException
+//	 */
+//	private void decodeResult(Variable variable, String resultFilePath,  int folderNum, int fileNum) throws IOException {
+//			if (variable instanceof DecisionVariable) {
+//				DecisionVariable varObj = (DecisionVariable) variable;         
+//				Path algorithmFolder = Files.createDirectories(Paths.get(resultFilePath)); 				
+//				String resultFileName = "Solution" + fileNum + ".xml";    
+//				String innerFolderStr = resultFilePath + File.separator +  folderNum + File.separator;             
+//				Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));               
+//				String paretoResultFolderPath = innerFolder + File.separator + resultFileName;
+//				ProblemUtils.getXMLFromJSONDecisionVar(varObj.getTransitSchedule(), paretoResultFolderPath);
+//			}
+//			else {
+//				throw new IOException("type not supported");
+//			}        
+//		}
 	 
 	
 	/**
@@ -170,9 +234,9 @@ public class TestRun {
     	
     	Files.createDirectories(Paths.get("./input/output/logs/"));
 		//Files.createDirectories(Paths.get("./input/output/optimisationResults/"));
-    	Files.createDirectories(Paths.get("./input/output/problemReferenceSet/"));
-    	Files.createDirectories(Paths.get("./input/output/checkpoint/"));
-    	Files.createDirectories(Paths.get("./input/output/indicator/"));
+//    	Files.createDirectories(Paths.get("./input/output/problemReferenceSet/"));
+//    	Files.createDirectories(Paths.get("./input/output/checkpoint/"));
+//    	Files.createDirectories(Paths.get("./input/output/indicator/"));
     	//Files.createDirectories(Paths.get("./input/output/matsimOutput/"));
     	
     	MOEA_LOG = new FileOutputStream(new File("./input/output/logs/run_moea_log.txt"));
@@ -192,22 +256,30 @@ public class TestRun {
 		properties.setInt("populationSize", POP_SIZE);
 		
 		
-		String[] algorithmNames = new String[] { "NSGAII", "NSGAIII", "DBEA" };
+		String[] algorithmNames = new String[] { "NSGAII"};
 		List<File> outputFiles = new ArrayList<File>();
-		List<Long> allSeeds = new ArrayList<>();
+		
 			
 		
 		for (int i = 0; i < algorithmNames.length; i++) {
 			
 			List<NondominatedPopulation> allResults = new ArrayList<>();
+			List<Long> allSeeds = new ArrayList<>();
 			String algorithmName = algorithmNames[i];
 			LOG.info("Evaluating " + algorithmName + "...");
+			
+			Path algorithmOutputFolder = Files.createDirectories(Paths.get("./input/output" + File.separator + algorithmName + File.separator));
+			Path checkPointFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toAbsolutePath() +  File.separator + "checkPoint" + File.separator));
+			Path refsetFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toAbsolutePath() + File.separator +"referenceSet" + File.separator));
 		
 			OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
 			Algorithm algorithm = AlgorithmFactory.getInstance().getAlgorithm(algorithmName, properties.getProperties(), problem);
 
-			File checkpointFile = new File("./input/output/checkpoint/" + "checkpoint_" + algorithmName + ".dat");
-			File outputFile = new File("./input/output/problemReferenceSet/" + algorithmName + "output_" + ".set");
+//			File checkpointFile = new File("./input/output/checkpoint/" + "checkpoint_" + algorithmName + ".dat");
+//			File outputFile = new File("./input/output/problemReferenceSet/" + algorithmName + "output_" + ".set");
+			
+			File checkpointFile = new File(checkPointFolder.toAbsolutePath() + File.separator + "checkpoint_" + algorithmName + ".dat");
+			File outputFile = new File(refsetFolder.toAbsolutePath() + File.separator + "approximationset_" + algorithmName + ".set");
 			
 			if (checkpointFile.exists()) {
 				LOG.info("Using checkpoint file for " + algorithmName + "!");
@@ -237,13 +309,42 @@ public class TestRun {
 				
 			}
 		
-			computeRefSet(problem, outputFiles);			
-			writeSeeds(allSeeds, algorithmName);			
-			processResults(allResults, algorithmName);			
+//			computeRefSet(problem, outputFiles);			
+//			writeSeeds(allSeeds, algorithmName);			
+//			processResults(allResults, algorithmName);	
+			
+			computeRefSet(problem, outputFiles, algorithmOutputFolder);			
+			writeSeeds(allSeeds, algorithmOutputFolder);			
+			processResults(allResults, algorithmOutputFolder);		
 			
 		}		
 
 	}
+	
+//	/**
+//	 * A method to write the seeds used in each run of the algorithm.
+//	 * Each algorithm is run n-times and each individual run is seeded.
+//	 * 
+//	 * @param seeds the seed for each run that is written to file
+//	 * @param algorithmSeedDir Directory where the seed file is stored
+//	 * @throws IOException
+//	 */
+//	private static void writeSeeds(List<Long> seeds, String algorithmSeedDir) throws IOException {
+//		
+//		/* Write all the seeds to file (for record). */
+//	
+//		Path seedFolder = Files.createDirectories(Paths.get("./input/output/seeds/" + algorithmSeedDir + File.separator));
+//		String seedFile = seedFolder + File.separator + "seed.txt";
+//
+//		SEED_FILE = new FileOutputStream(new File(seedFile));
+//		SEED_FILE.write(String.format("Run\tSeed\n").getBytes());
+//
+//		for (int seed = 0; seed < seeds.size(); seed++) {
+//			
+//			SEED_FILE.write(String.format("%d\t%d\n", seed+1, seeds.get(seed)).getBytes());
+//		}
+//	}
+	
 	
 	/**
 	 * A method to write the seeds used in each run of the algorithm.
@@ -253,11 +354,19 @@ public class TestRun {
 	 * @param algorithmSeedDir Directory where the seed file is stored
 	 * @throws IOException
 	 */
-	private static void writeSeeds(List<Long> seeds, String algorithmSeedDir) throws IOException {
+	private static void writeSeeds(List<Long> seeds, Path folder) throws IOException {
 		
 		/* Write all the seeds to file (for record). */
+		
+		
 	
-		Path seedFolder = Files.createDirectories(Paths.get("./input/output/seeds/" + algorithmSeedDir + File.separator));
+		//Path seedFolder = Files.createDirectories(Paths.get("./output/SBO_input/seeds/" + algorithmSeedDir + File.separator));
+		
+		
+		//Files.createDirectories(Paths.get(seedFolder+));
+		
+		
+		Path seedFolder = Files.createDirectories(Paths.get(folder + "./seeds/"));
 		String seedFile = seedFolder + File.separator + "seed.txt";
 
 		SEED_FILE = new FileOutputStream(new File(seedFile));
@@ -269,7 +378,8 @@ public class TestRun {
 		}
 	}
 	
-		
+	
+	
 	/**
 	 * Method to compute the metrics of the algorithm run and write them to file.
 	 * 
@@ -277,11 +387,11 @@ public class TestRun {
 	 * @param outputFiles output files
 	 * @throws Exception
 	 */
-	private static void computeRefSet(Problem problem, List<File> outputFiles) throws Exception {
+	private static void computeRefSet(Problem problem, List<File> outputFiles, Path folder) throws Exception {
 		
 		// Step 1 - Compute the reference set.
 		LOG.info("Computing reference set...");
-		File referenceSetFile = new File("./input/output/problemReferenceSet/output_refset.ref");
+		File referenceSetFile = new File(folder.normalize() + File.separator + "referenceSet/refset.ref");
 		
 		ResultFileMerger.main(
 				ArrayUtils.addAll(
@@ -293,7 +403,20 @@ public class TestRun {
 		
 		// Step 2 - Evaluate the metrics.
 		for (File outputFile : outputFiles) {
+			
 			LOG.info("Calculating metrics for " + outputFile + "...");
+		
+			
+//			File indicator = new File("metrics.set");
+//			
+//			if (outputFile.renameTo(indicator)) {
+//				
+//				LOG.info("Rename successful");
+//				
+//			} else {
+//				
+//				LOG.info("Rename unsuccessful");
+//			}
 			
 			ResultFileEvaluator.main(new String[] {
 					"--dimension", Integer.toString(problem.getNumberOfObjectives()),
@@ -304,8 +427,95 @@ public class TestRun {
 			});
 		}
 	}
-		
-		
+	
+//		
+//	/**
+//	 * Method to compute the metrics of the algorithm run and write them to file.
+//	 * 
+//	 * @param problem the optimisation problem to be solved
+//	 * @param outputFiles output files
+//	 * @throws Exception
+//	 */
+//	private static void computeRefSet(Problem problem, List<File> outputFiles) throws Exception {
+//		
+//		// Step 1 - Compute the reference set.
+//		LOG.info("Computing reference set...");
+//		File referenceSetFile = new File("./input/output/problemReferenceSet/output_refset.ref");
+//		
+//		ResultFileMerger.main(
+//				ArrayUtils.addAll(
+//					new String[] {
+//						"--dimension", Integer.toString(problem.getNumberOfObjectives()),
+//						"--output", referenceSetFile.getAbsolutePath()
+//					},
+//					outputFiles.stream().map(f -> f.getAbsolutePath()).collect(Collectors.toList()).toArray(new String[0])));
+//		
+//		// Step 2 - Evaluate the metrics.
+//		for (File outputFile : outputFiles) {
+//			LOG.info("Calculating metrics for " + outputFile + "...");
+//			
+//			ResultFileEvaluator.main(new String[] {
+//					"--dimension", Integer.toString(problem.getNumberOfObjectives()),
+//					"--input", outputFile.getAbsolutePath(),
+//					"--output", new File(outputFile.getParentFile(), outputFile.getName().replace(".set", ".metrics")).getAbsolutePath(),
+//					"--reference", referenceSetFile.getAbsolutePath(),
+//					"--force"
+//			});
+//		}
+//	}
+	
+//	/**
+//	 * This method to call @decodeResult() (convert from JSON to XML) on the 
+//	 * final optimisation results contained in the Pareto front of the 
+//	 * algorithm and write them to file.	 
+//	 * 
+//	 * @param allResults List of results obtained from runSimulation()
+//	 * @throws IOException
+//	 */
+//	private static void processResults(List<NondominatedPopulation> allResults, Path algorithmNameDirectory) throws IOException{
+//		
+//		//LOG.info("is " +algorithmNameDirectory.normalize());
+//		
+//		String resultFolder =  algorithmNameDirectory.toAbsolutePath() +  File.separator + "optimisationResults" + File.separator;
+//		
+//		//File matsimOutputFolder = new File(resultFolder);
+//		
+//		//FileUtils.delete(matsimOutputFolder);
+//		
+//		//FileUtils.cleanDirectory(new File(resultFolder));
+//		
+//		TestRun tr = new TestRun();	
+//				
+//		int folderIdx = 0;
+//		
+//		for(int run = 0; run < allResults.size(); run++) {
+//			
+//			NondominatedPopulation runResult = allResults.get(run);
+//
+//			folderIdx++;
+//			int fileIdx = 0;
+//			LOG.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
+//
+//			for(int solution = 0; solution < runResult.size(); solution++) {				
+//				Solution runSolution = runResult.get(solution);
+//
+//				fileIdx++;
+//				tr.decodeResult(runSolution.getVariable(0), resultFolder, folderIdx, fileIdx);
+//				LOG.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
+//				
+//				MOEA_LOG.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
+//				REFSET_TXT.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
+//				REFSET_PF.write(String.format("%.4f\t%.4f\n", runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
+//							
+//			}
+//
+//		}
+//		
+//		cleanMatsimFolder();		
+//		
+//	}
+	
+	
 	/**
 	 * This method to call @decodeResult() (convert from JSON to XML) on the 
 	 * final optimisation results contained in the Pareto front of the 
@@ -314,9 +524,26 @@ public class TestRun {
 	 * @param allResults List of results obtained from runSimulation()
 	 * @throws IOException
 	 */
-	private static void processResults(List<NondominatedPopulation> allResults, String algorithmResultDir) throws IOException{
+	private static void processResults(List<NondominatedPopulation> allResults, Path algorithmNameDirectory) throws IOException{
+		
+		LOG.info("is " +algorithmNameDirectory.toAbsolutePath());
+		
+		String resultFolder =  algorithmNameDirectory.toAbsolutePath() +  File.separator + "optimisationResults" + File.separator;
+		
+		//File matsimOutputFolder = new File(resultFolder);
+		
+		//FileUtils.delete(matsimOutputFolder);
+		
+		if (Files.exists(Paths.get(resultFolder))){
 			
-		String resultFolder = "./input/output/optimisationResults/";
+			FileUtils.cleanDirectory(new File(resultFolder));
+			
+		}  else {
+			
+			Files.createDirectories(Paths.get(resultFolder));
+		}
+		
+		
 		TestRun tr = new TestRun();	
 				
 		int folderIdx = 0;
@@ -333,7 +560,7 @@ public class TestRun {
 				Solution runSolution = runResult.get(solution);
 
 				fileIdx++;
-				tr.decodeResult(runSolution.getVariable(0), resultFolder, algorithmResultDir, folderIdx, fileIdx);
+				tr.decodeResult(runSolution.getVariable(0), resultFolder, folderIdx, fileIdx);
 				LOG.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
 				
 				MOEA_LOG.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
@@ -347,6 +574,113 @@ public class TestRun {
 		cleanMatsimFolder();		
 		
 	}
+	
+	
+//	/**
+//	 * This method to call @decodeResult() (convert from JSON to XML) on the 
+//	 * final optimisation results contained in the Pareto front of the 
+//	 * algorithm and write them to file.	 
+//	 * 
+//	 * @param allResults List of results obtained from runSimulation()
+//	 * @throws IOException
+//	 */
+//	private static void processResults(List<NondominatedPopulation> allResults, Path algorithmNameDirectory) throws IOException{
+//		
+//		//LOG.info("is " +algorithmNameDirectory.normalize());
+//		//LOG.info("is " +algorithmNameDirectory.toAbsolutePath());
+//		LOG.info("is " + algorithmNameDirectory.toString());
+//		
+//		String resultFolder =  algorithmNameDirectory.toAbsolutePath() +  File.separator + "optimisationResults" +  File.separator;
+//		
+//		LOG.info("is " + resultFolder);
+//		
+//		if (Files.exists(Paths.get(resultFolder))){
+//					
+//			FileUtils.cleanDirectory(new File(resultFolder));
+//					
+//			}  
+//		
+//		//String resultFolder = "./input/output/optimisationResults/";
+//		
+//		//File matsimOutputFolder = new File(resultFolder);
+//		
+//		//FileUtils.delete(matsimOutputFolder);
+//		
+//		//FileUtils.cleanDirectory(new File(resultFolder));
+//		
+//		TestRun tr = new TestRun();	
+//				
+//		int folderIdx = 0;
+//		
+//		for(int run = 0; run < allResults.size(); run++) {
+//			
+//			NondominatedPopulation runResult = allResults.get(run);
+//
+//			folderIdx++;
+//			int fileIdx = 0;
+//			LOG.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
+//
+//			for(int solution = 0; solution < runResult.size(); solution++) {				
+//				Solution runSolution = runResult.get(solution);
+//
+//				fileIdx++;
+//				tr.decodeResult(runSolution.getVariable(0), resultFolder, folderIdx, fileIdx);
+//				LOG.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
+//				
+//				MOEA_LOG.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
+//				REFSET_TXT.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
+//				REFSET_PF.write(String.format("%.4f\t%.4f\n", runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
+//							
+//			}
+//
+//		}
+//		
+//		cleanMatsimFolder();		
+//		
+//	}
+		
+		
+//	/**
+//	 * This method to call @decodeResult() (convert from JSON to XML) on the 
+//	 * final optimisation results contained in the Pareto front of the 
+//	 * algorithm and write them to file.	 
+//	 * 
+//	 * @param allResults List of results obtained from runSimulation()
+//	 * @throws IOException
+//	 */
+//	private static void processResults(List<NondominatedPopulation> allResults, String algorithmResultDir) throws IOException{
+//			
+//		String resultFolder = "./input/output/optimisationResults/";
+//		TestRun tr = new TestRun();	
+//				
+//		int folderIdx = 0;
+//		
+//		for(int run = 0; run < allResults.size(); run++) {
+//			
+//			NondominatedPopulation runResult = allResults.get(run);
+//
+//			folderIdx++;
+//			int fileIdx = 0;
+//			LOG.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
+//
+//			for(int solution = 0; solution < runResult.size(); solution++) {				
+//				Solution runSolution = runResult.get(solution);
+//
+//				fileIdx++;
+//				tr.decodeResult(runSolution.getVariable(0), resultFolder, algorithmResultDir, folderIdx, fileIdx);
+//				LOG.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
+//				
+//				MOEA_LOG.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
+//				REFSET_TXT.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
+//				REFSET_PF.write(String.format("%.4f\t%.4f\n", runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
+//							
+//			}
+//
+//		}
+//		
+//		cleanMatsimFolder();		
+//		
+//	}
 
 
 	/**
