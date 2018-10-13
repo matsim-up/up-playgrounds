@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.exampleCode;
+package playground.onnene.ga;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -51,17 +51,12 @@ import org.moeaframework.core.indicator.QualityIndicator;
 import org.moeaframework.core.spi.OperatorFactory;
 import org.moeaframework.core.spi.ProblemFactory;
 
-import playground.onnene.ga.DecisionVariable;
-import playground.onnene.ga.GA_OperatorProvider;
-import playground.onnene.ga.GA_ProblemProvider;
-import playground.onnene.ga.ProblemUtils;
-
 /**
  * @author Onnene
  *
  */
-public class RunSimulationBasedTransitOptimisationProblem {
-	final private static Logger LOG = Logger.getLogger(RunSimulationBasedTransitOptimisationProblem.class);
+public class RunSimulationBasedTransitOptimisationProblemWithExecutor {
+	final private static Logger LOG = Logger.getLogger(RunSimulationBasedTransitOptimisationProblemWithExecutor.class);
 	private static final int MAX_MOEA_EVALUATIONS = 500; //FIXME was 20
 	public static final int MATSIM_ITERATION_NUMBER = 50; // FIXME was 10
 	private static BufferedWriter SEED_FILE;
@@ -75,7 +70,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {	
-		Header.printHeader(RunSimulationBasedTransitOptimisationProblem.class, args);
+		Header.printHeader(RunSimulationBasedTransitOptimisationProblemWithExecutor.class, args);
 
 		int numThreads = Integer.parseInt(args[0]);
 		long seed_base = Long.parseLong(args[1]);
@@ -220,7 +215,7 @@ public class RunSimulationBasedTransitOptimisationProblem {
 			SEED_FILE.close();
 		}
 
-		RunSimulationBasedTransitOptimisationProblem rwos = new RunSimulationBasedTransitOptimisationProblem();
+		RunSimulationBasedTransitOptimisationProblemWithExecutor rwos = new RunSimulationBasedTransitOptimisationProblemWithExecutor();
 
 		int folderIdx = 0;
 		FileUtils.deleteDirectory(new File(ResultFolder));

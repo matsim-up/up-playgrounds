@@ -100,39 +100,45 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 		//FileMakerUtils fu = new FileMakerUtils();	
 		//fu.unGunzipFile(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
 		if (System.getProperty("os.name").startsWith("Windows")){
-		UnzipUtility unzipper = new UnzipUtility();
-        try {
-            unzipper.unzip(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
-        } catch (Exception ex) {
-            // some errors occurred
-            ex.printStackTrace();
-        }
+			
+			UnzipUtility unzipper = new UnzipUtility();
+	        try {
+	            unzipper.unzip(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
+	        } catch (Exception ex) {
+	            // some errors occurred
+	            ex.printStackTrace();
+	        }
         
-		}else {
+		} else {
 		//fu.unGunzipFile(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
 		//fu.unZip(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
 				
 //		UnzipUtility u = new UnzipUtility();
 //		u.unZipTest(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
 		
-		ProcessBuilder zipBuilder = new ProcessBuilder(
-				"unzip", 
-				String.format("%s/release.zip", folder.getAbsolutePath()), 
-				"-d", 
-				String.format("%s", folder.getAbsolutePath()));
-		Process zipProcess = null;
-		int zipExitCode = 1;
-		try {
-			zipProcess = zipBuilder.start();
-			zipExitCode = zipProcess.waitFor();
-		} catch (IOException e4) {
-			e4.printStackTrace();
-		} catch (InterruptedException e4) {
-			e4.printStackTrace();
-		}
-		if(zipExitCode != 0) {
-			throw new RuntimeException("Could not unzip release for MATSim run " + folder.getAbsolutePath());
-		}
+			ProcessBuilder zipBuilder = new ProcessBuilder(
+					"unzip", 
+					String.format("%s%srelease.zip", folder.getAbsolutePath(),File.separator), 
+					"-d", 
+					String.format("%s", folder.getAbsolutePath()));
+			Process zipProcess = null;
+			int zipExitCode = 1;
+			try {
+				zipProcess = zipBuilder.start();
+				zipExitCode = zipProcess.waitFor();
+			} 
+			
+			catch (IOException e4) {
+				e4.printStackTrace();
+			}
+			
+			catch (InterruptedException e4) {
+				e4.printStackTrace();
+			}
+			
+			if(zipExitCode != 0) {
+				throw new RuntimeException("Could not unzip release for MATSim run " + folder.getAbsolutePath());
+			}
 		
         }
 		
@@ -142,10 +148,11 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 				"java",
 				"-Xmx5g",
 				"-cp",
-				String.format(".%s./onnene-0.10.0-SNAPSHOT/onnene-0.10.0-SNAPSHOT.jar", File.pathSeparatorChar),
+				String.format(".%s./onnene-0.10.0-SNAPSHOT/onnene-0.10.0-SNAPSHOT.jar", File.pathSeparator),
 				"playground.onnene.ga.MatsimInstance",
 				"config.xml",
-				"output/",
+				"/output/",
+				//"output/",
 				String.valueOf(seed)
 				);
 		equilBuilder.directory(folder);

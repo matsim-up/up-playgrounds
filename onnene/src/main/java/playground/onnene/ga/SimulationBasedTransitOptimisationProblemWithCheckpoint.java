@@ -46,15 +46,15 @@ import org.moeaframework.problem.AbstractProblem;
  * @author Onnene
  *
  */
-public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
+public class SimulationBasedTransitOptimisationProblemWithCheckpoint extends AbstractProblem {
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
-	final private static int SIMULATIONS_PER_EVALUATION = 30;
-	final private static int SIMULATIONS_PER_BLOCK = 10;
+	final private static int SIMULATIONS_PER_EVALUATION = 1;
+	final private static int SIMULATIONS_PER_BLOCK = 1;
 	final private static int THREADS_PER_SIMULATION = 10;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
 	/* Other variables. */
-	final private Logger log = Logger.getLogger(SimulationBasedTransitOptimisationProblem.class.getName());  
+	final private Logger log = Logger.getLogger(SimulationBasedTransitOptimisationProblemWithCheckpoint.class.getName());  
 	final private long seedBase = 20180820l;
 	private static AtomicInteger overallRunNumber = new AtomicInteger(0);
 
@@ -64,7 +64,7 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 	}
 
 
-	public SimulationBasedTransitOptimisationProblem(){
+	public SimulationBasedTransitOptimisationProblemWithCheckpoint(){
 		super(1, 2);
 	}
 
