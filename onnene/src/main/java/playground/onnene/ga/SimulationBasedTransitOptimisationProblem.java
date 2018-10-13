@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,7 +48,7 @@ import org.moeaframework.problem.AbstractProblem;
  */
 public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
-	final private static int SIMULATIONS_PER_EVALUATION = 10;
+	final private static int SIMULATIONS_PER_EVALUATION = 30;
 	final private static int SIMULATIONS_PER_BLOCK = 10;
 	final private static int THREADS_PER_SIMULATION = 10;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
@@ -158,6 +159,31 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 		FileUtils.delete(new File(folder + "transitSchedule.xml"));
 		FileUtils.delete(new File(folder + "transitVehicles.xml"));
 		
+		
+		/* Copy consolidated result to a folder outside the output folder
+		 * where it wont be deleted in subsequent restarts */
+		try {
+			
+			File ensembleToCopy = new File(folder);
+			File ensembleDest = new File("./input/output/matsimOutput/");
+						
+			if (new File(folder).exists()) {
+			
+				File dest = new File(ensembleToCopy.getAbsolutePath() + "_" + UUID.randomUUID().toString());			
+				ensembleToCopy.renameTo(dest);				
+				org.apache.commons.io.FileUtils.copyDirectoryToDirectory(dest, ensembleDest);
+								
+			} else {
+					
+					org.apache.commons.io.FileUtils.copyDirectoryToDirectory(ensembleToCopy, ensembleDest);
+			}
+				
+
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		log.info("Completed evaluate() call on folder " + folder);
 	}
 
@@ -242,39 +268,7 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 			}
 		}
 		
-		/* Copy consolidated result to a folder outside the output folder
-		 * where it wont be deleted in subsequent restarts */
-		try {
-			
-			//Paths.get(folder);
-			//Paths.get("./input/output/matsimOutput/");
-			
-			File ensembleIn = new File(folder);
-			File ensembleOut = new File("./input/output/matsimOutput/");
-			
-			//File currentFolder = new File (ensembleOut.getAbsolutePath() + File.separator + ensembleIn.getName());
-			
-//			if (currentFolder.exists()){
-//				//FileUtils.delete(ensembleIn);
-//				org.apache.commons.io.FileUtils.cleanDirectory(currentFolder);
-//			} 
-			
-			
-			org.apache.commons.io.FileUtils.copyDirectoryToDirectory(ensembleIn, ensembleOut);
-			
-//			for(File file: ensembleOut.listFiles()) 
-//				if (file.isDirectory()) {
-//					for(File f: file.listFiles()) 
-//						if (!f.getName().equals("ensembleRuns.txt")) 
-//							f.delete();
-//		    
-//				}
-			//FileUtils.copyDirectoryStructure(ensembleIn, new File("./input/output/matsimOutput/"));
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
+
 		return result;
 	}
 

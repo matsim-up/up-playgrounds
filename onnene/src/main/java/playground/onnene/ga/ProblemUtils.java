@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -201,6 +203,15 @@ public class ProblemUtils{
     		}
     	
 		return numlines;
+    }
+    
+    public static String generateRandomStringToken(int byteLength) {
+    	
+    	SecureRandom sr = new SecureRandom();
+    	byte[] token = new byte[byteLength];
+    	sr.nextBytes(token);
+    	
+    	return new BigInteger(1, token).toString(16);
     }
     
 }

@@ -32,17 +32,13 @@ import org.moeaframework.core.Algorithm;
 import org.moeaframework.core.FrameworkException;
 
 /**
- * This class run several algorithms saving their Pareto sets to a file, 
- * compute a reference set from those files, and calculating the metrics 
- * using that reference set:
+ * This class makes it possible to save the results and 
+ * other computed metrics of the algorithms run.
  * 
  * @author Onnene
  */
 public class CheckpointAndOutputResult extends Checkpoints{
 
-	/**
-	 * 
-	 */
 	
 	private final ResultFileWriter writer;
 	

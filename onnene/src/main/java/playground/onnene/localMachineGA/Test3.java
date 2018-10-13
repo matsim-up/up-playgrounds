@@ -90,20 +90,30 @@ public class Test3 {
 	 * @param fileNum number of the result file
 	 * @throws IOException
 	 */
-	private void decodeResult(Variable variable, String resultFilePath,  int folderNum, int fileNum) throws IOException {
+	private void decodeResult(Variable variable, String resultFilePath,  int folderNum, int fileNum) throws IOException  {
+		
+		
 //			LOG.info(variable instanceof DecisionVariable);
 //			LOG.info(variable.getClass().toGenericString());
+//			LOG.info(DecisionVariable.class.toGenericString());
+			
 			if (variable instanceof  DecisionVariable) {
+				
+
 				DecisionVariable varObj = (DecisionVariable) variable;         
 				//Path algorithmFolder = Files.createDirectories(Paths.get(resultFilePath)); 				
 				String resultFileName = "Solution" + fileNum + ".xml";                   
 				String innerFolderStr = resultFilePath + File.separator +  folderNum + File.separator;             
-				Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));               
+				Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));			
 				String paretoResultFolderPath = innerFolder + File.separator + resultFileName;
+				
 				ProblemUtils.getXMLFromJSONDecisionVar(varObj.getTransitSchedule(), paretoResultFolderPath);
+
 			}
 			else {
-				throw new IOException("type not supported");
+				
+				throw new IOException("Type not supported");
+				
 			}        
 		}
 	 
@@ -125,7 +135,7 @@ public class Test3 {
 		
 		/* Set up output folders. */
 		new File("./output/logs/").mkdirs();
-		//new File("./output/matsimOutput/").mkdirs();
+		new File("./output/matsimOutput/").mkdirs();
 		new File("./output/optimisationResults/").mkdirs();
 		new File("./output/problemReferenceSet/").mkdirs();
 
@@ -165,6 +175,8 @@ public class Test3 {
 	private static void runSimulation(long seedBase, int numberOfRuns) throws Exception {
 				
 		setupOutput();
+		
+		//cleanMatsimFolder();
     	
     	Files.createDirectories(Paths.get("./input/output/logs/"));
 		//Files.createDirectories(Paths.get("./input/output/optimisationResults/"));
@@ -244,8 +256,8 @@ public class Test3 {
 					
 				}
 				
-				//NondominatedPopulation finalResult = algorithm.getResult();
-				allResults.add(wrapper.getResult());
+				NondominatedPopulation finalResult = algorithm.getResult();
+				allResults.add(finalResult);
 				allSeeds.add(seed);
 				outputFiles.add(outputFile);
 				
@@ -396,7 +408,7 @@ public class Test3 {
 
 		}
 		
-		cleanMatsimFolder();		
+				
 		
 	}
 

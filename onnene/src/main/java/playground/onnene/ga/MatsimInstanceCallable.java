@@ -37,6 +37,8 @@ import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.up.utils.FileUtils;
 
+import playground.onnene.transitScheduleMaker.UnzipUtility;
+
 
 /**
  * @author jwjoubert
@@ -49,7 +51,7 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 	final private long seed;
 	
 	public MatsimInstanceCallable(String parentFolder, int run, long seedBase) {
-		parentFolder += parentFolder.endsWith("/") ? "" : File.separator;
+		parentFolder += parentFolder.endsWith(File.separator) ? "" : File.separator;
 		folder = new File(parentFolder + "output_" + run + File.separator);
 		boolean created = folder.mkdirs();
 		if(!created) {
@@ -97,6 +99,17 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 		
 		//FileMakerUtils fu = new FileMakerUtils();	
 		//fu.unGunzipFile(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
+		if (System.getProperty("os.name").startsWith("Windows")){
+		UnzipUtility unzipper = new UnzipUtility();
+        try {
+            unzipper.unzip(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
+        } catch (Exception ex) {
+            // some errors occurred
+            ex.printStackTrace();
+        }
+        
+		}else {
+		//fu.unGunzipFile(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
 		//fu.unZip(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
 				
 //		UnzipUtility u = new UnzipUtility();
@@ -121,13 +134,15 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 			throw new RuntimeException("Could not unzip release for MATSim run " + folder.getAbsolutePath());
 		}
 		
+        }
+		
+		
 		/* Execute the MATSim run */
 		ProcessBuilder equilBuilder = new ProcessBuilder(
 				"java",
 				"-Xmx5g",
 				"-cp",
-				".:./onnene-0.10.0-SNAPSHOT/onnene-0.10.0-SNAPSHOT.jar",
-				//"playground.onnene.ga.RunSimulationBasedTransitOptimisationProblem",
+				String.format(".%s./onnene-0.10.0-SNAPSHOT/onnene-0.10.0-SNAPSHOT.jar", File.pathSeparatorChar),
 				"playground.onnene.ga.MatsimInstance",
 				"config.xml",
 				"output/",
