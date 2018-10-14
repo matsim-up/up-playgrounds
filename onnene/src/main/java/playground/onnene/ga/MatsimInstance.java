@@ -63,13 +63,13 @@ public class MatsimInstance{
 		config.controler().setOutputDirectory(output);       
 		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 		
-		config.plans().setInputFile("plans.xml");
+		config.plans().setInputFile("./plans.xml");
 		config.parallelEventHandling().setNumberOfThreads(20);
 		config.qsim().setNumberOfThreads(6);
 		config.controler().setWriteEventsInterval(RunSimulationBasedTransitOptimisation.MATSIM_ITERATION_NUMBER); //FIXME
-		config.network().setInputFile("network.xml");
-		config.transit().setVehiclesFile("transitVehicles.xml");
-		config.transit().setTransitScheduleFile("transitSchedule.xml");
+		config.network().setInputFile("./network.xml");
+		config.transit().setVehiclesFile("./transitVehicles.xml");
+		config.transit().setTransitScheduleFile("./transitSchedule.xml");
 
 		Scenario scenario = ScenarioUtils.loadScenario(config);
 		Controler controler = new Controler(scenario);

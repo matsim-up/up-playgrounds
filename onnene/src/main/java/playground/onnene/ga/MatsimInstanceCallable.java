@@ -150,7 +150,7 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 				"-cp",
 				String.format(".%s./onnene-0.10.0-SNAPSHOT/onnene-0.10.0-SNAPSHOT.jar", File.pathSeparator),
 				"playground.onnene.ga.MatsimInstance",
-				"config.xml",
+				"./config.xml",
 				String.format("%s", folder.getAbsolutePath()+File.separator+"output"),
 				//"./output/",
 				//"output/",
@@ -158,6 +158,7 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 				);
 		equilBuilder.directory(folder);
 		equilBuilder.redirectErrorStream(true);
+		
 		Process equilProcess;
 		try {
 			equilProcess = equilBuilder.start();
