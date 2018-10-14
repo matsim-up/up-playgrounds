@@ -39,7 +39,7 @@ public class GA_ProblemProvider extends ProblemProvider {
 	@Override
 	public Problem getProblem(String name) {
 		if (name.equalsIgnoreCase("SimulationBasedTransitOptimisationProblem")) {
-			return new SimulationBasedTransitOptimisationProblemWithCheckpoint();				
+			return new SimulationBasedTransitOptimisationProblem();				
 		}
 		else {
 			return null;						

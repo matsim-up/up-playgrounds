@@ -146,13 +146,12 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 		/* Execute the MATSim run */
 		ProcessBuilder equilBuilder = new ProcessBuilder(
 				"java",
-				"-Xmx5g",
+				"-Xmx12g",
 				"-cp",
 				String.format(".%s./onnene-0.10.0-SNAPSHOT/onnene-0.10.0-SNAPSHOT.jar", File.pathSeparator),
 				"playground.onnene.ga.MatsimInstance",
-				"./config.xml",
+				"config.xml",
 				String.format("%s", folder.getAbsolutePath()+File.separator+"output"),
-				//"./output/",
 				//"output/",
 				String.valueOf(seed)
 				);

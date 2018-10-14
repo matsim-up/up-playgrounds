@@ -46,16 +46,16 @@ import org.moeaframework.problem.AbstractProblem;
  * @author Onnene
  *
  */
-public class SimulationBasedTransitOptimisationProblemWithCheckpoint extends AbstractProblem {
+public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
-	final private static int SIMULATIONS_PER_EVALUATION = 4;
-	final private static int SIMULATIONS_PER_BLOCK = 2;
+	final private static int SIMULATIONS_PER_EVALUATION = 20;
+	final private static int SIMULATIONS_PER_BLOCK = 20;
 	final private static int THREADS_PER_SIMULATION = 10;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
 	/* Other variables. */
-	final private Logger log = Logger.getLogger(SimulationBasedTransitOptimisationProblemWithCheckpoint.class.getName());  
-	final private long seedBase = 20181013l;
+	final private Logger log = Logger.getLogger(SimulationBasedTransitOptimisationProblem.class.getName());  
+	final private long seedBase = 20181014l;
 	private static AtomicInteger overallRunNumber = new AtomicInteger(0);
 
 
@@ -64,14 +64,14 @@ public class SimulationBasedTransitOptimisationProblemWithCheckpoint extends Abs
 	}
 
 
-	public SimulationBasedTransitOptimisationProblemWithCheckpoint(){
+	public SimulationBasedTransitOptimisationProblem(){
 		super(1, 2);
 	}
 
 
 	@Override
 	public void evaluate(Solution solution) {
-		DecisionVariable var = (DecisionVariable) solution.getVariable(0);
+		DecisionVariable var =  (DecisionVariable)solution.getVariable(0);
 		JSONObject Jvar = var.getTransitSchedule();
 
 		final int runNumber = overallRunNumber.getAndIncrement();
@@ -178,9 +178,8 @@ public class SimulationBasedTransitOptimisationProblemWithCheckpoint extends Abs
 					org.apache.commons.io.FileUtils.copyDirectoryToDirectory(ensembleToCopy, ensembleDest);
 			}
 				
-
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+
 			e1.printStackTrace();
 		}
 		

@@ -54,7 +54,7 @@ import playground.onnene.ga.DecisionVariable;
 import playground.onnene.ga.GA_OperatorProvider;
 import playground.onnene.ga.GA_ProblemProvider;
 import playground.onnene.ga.ProblemUtils;
-import playground.onnene.ga.SimulationBasedTransitOptimisationProblemWithCheckpoint;
+import playground.onnene.ga.SimulationBasedTransitOptimisationProblem;
 
 /**
  * @author Onnene
@@ -202,7 +202,7 @@ static long start = System.currentTimeMillis();
      
       //CallableTestRun ctr = new CallableTestRun();
    
-      System.out.println("Evaluate called " + SimulationBasedTransitOptimisationProblemWithCheckpoint.getOverallRunNumber() + " times...");
+      System.out.println("Evaluate called " + SimulationBasedTransitOptimisationProblem.getOverallRunNumber() + " times...");
       
       int folderIdx = 0;
       
@@ -308,7 +308,7 @@ static long start = System.currentTimeMillis();
 		              
 		  MOEA_LOG_FILE.write("\nend time is:".getBytes());
 		  MOEA_LOG_FILE.write(endTime.toString().getBytes());
-		  MOEA_LOG_FILE.write(String.format("\nEvaluate is called %d times...", SimulationBasedTransitOptimisationProblemWithCheckpoint.getOverallRunNumber()).getBytes());
+		  MOEA_LOG_FILE.write(String.format("\nEvaluate is called %d times...", SimulationBasedTransitOptimisationProblem.getOverallRunNumber()).getBytes());
 		  MOEA_LOG_FILE.write(String.format("\nDuration: %02d:%02d:%02d", hours, minutes, seconds).getBytes());
 	}
 

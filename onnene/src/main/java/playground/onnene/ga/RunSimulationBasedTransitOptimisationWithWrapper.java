@@ -50,17 +50,20 @@ import org.moeaframework.core.spi.OperatorFactory;
 import org.moeaframework.core.spi.ProblemFactory;
 import org.moeaframework.util.TypedProperties;
 
+
 /**
+ * This class is used to run the simulation based transit optimisation problem
+ * 
  * @author Onnene
  *
  */
-public class RunSimulationBasedTransitOptimisation {
+public class RunSimulationBasedTransitOptimisationWithWrapper {
 	
-	private static final Logger LOG = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
+	private static final Logger LOG = Logger.getLogger(RunSimulationBasedTransitOptimisationWithWrapper.class);
     private static final int MAX_NFE = 2000;   
-	private static final int CHECKPOINT_FREQ = 70;
-	private static final int POP_SIZE = 70;
-	public static final int MATSIM_ITERATION_NUMBER = 80;
+	private static final int CHECKPOINT_FREQ = 100;
+	private static final int POP_SIZE = 100;
+	public static final int MATSIM_ITERATION_NUMBER = 100;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
 
     /**
@@ -68,8 +71,9 @@ public class RunSimulationBasedTransitOptimisation {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {	
-		Header.printHeader(RunSimulationBasedTransitOptimisation.class, args);
+		Header.printHeader(RunSimulationBasedTransitOptimisationWithWrapper.class, args);
 
+		//int numThreads = Integer.parseInt(args[0]);
 		long seedBase = Long.parseLong(args[0]);
 		int numberOfRuns = Integer.parseInt(args[1]);
 
@@ -81,8 +85,8 @@ public class RunSimulationBasedTransitOptimisation {
 	
 	
 	 /**
-	 * This method is used to convert from solutions from JSON to XML
-	 * 
+	  * This method is used to convert from solutions from JSON to XML
+	  * 
 	 * @param variable decision variable representation of the solution that is to be decoded
 	 * @param resultFilePath root directory of the optimisation results
 	 * @param algorithmNameFolder specific folder for the result of each specific algorithms
@@ -90,24 +94,18 @@ public class RunSimulationBasedTransitOptimisation {
 	 * @param fileNum number of the result file
 	 * @throws IOException
 	 */
-	private void decodeResult(Variable variable, String resultFilePath,  int folderNum, int fileNum) throws IOException  {
-			
+	private void decodeResult(Variable variable, String resultFilePath, String algorithmNameFolder,  int folderNum, int fileNum) throws IOException {
 			if (variable instanceof  DecisionVariable) {
-				
 				DecisionVariable varObj = (DecisionVariable) variable;         
-				//Path algorithmFolder = Files.createDirectories(Paths.get(resultFilePath)); 				
+				//Path algorithmFolder = Files.createDirectories(Paths.get(algorithmNameFolder)); 				
 				String resultFileName = "Solution" + fileNum + ".xml";                   
-				String innerFolderStr = resultFilePath + File.separator +  folderNum + File.separator;             
-				Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));			
+				String innerFolderStr = resultFilePath + algorithmNameFolder + File.separator +  folderNum + File.separator;             
+				Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));               
 				String paretoResultFolderPath = innerFolder + File.separator + resultFileName;
-				
 				ProblemUtils.getXMLFromJSONDecisionVar(varObj.getTransitSchedule(), paretoResultFolderPath);
-
 			}
 			else {
-				
-				throw new IOException("Type not supported");
-				
+				throw new IOException("type not supported");
 			}        
 		}
 	 
@@ -171,11 +169,16 @@ public class RunSimulationBasedTransitOptimisation {
 		setupOutput();
     	
     	Files.createDirectories(Paths.get("./input/output/logs/"));
+		//Files.createDirectories(Paths.get("./input/output/optimisationResults/"));
+    	Files.createDirectories(Paths.get("./input/output/problemReferenceSet/"));
+    	Files.createDirectories(Paths.get("./input/output/checkpoint/"));
+    	Files.createDirectories(Paths.get("./input/output/indicator/"));
+    	//Files.createDirectories(Paths.get("./input/output/matsimOutput/"));
     	
     	MOEA_LOG = new FileOutputStream(new File("./input/output/logs/run_moea_log.txt"));
 		MOEA_LOG.write(String.format("Run\tPareto\tObjective1\tObjective2\n").getBytes());
-		REFSET_TXT = new FileOutputStream(new File("./input/output/logs/refSet.txt"), true);
-		REFSET_PF = new FileOutputStream(new File("./input/output/logs/refSet.pf"), true);
+		REFSET_TXT = new FileOutputStream(new File("./input/output/problemReferenceSet/refSet.txt"), true);
+		REFSET_PF = new FileOutputStream(new File("./input/output/problemReferenceSet/refSet.pf"), true);
   		
 		// Step 1 - Run the algorithm(s).  If running multiple algorithms, save to separate files.
 		ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
@@ -189,51 +192,42 @@ public class RunSimulationBasedTransitOptimisation {
 		properties.setInt("populationSize", POP_SIZE);
 		
 		
-		String[] algorithmNames = new String[] { "NSGAII" };
-		
+		String[] algorithmNames = new String[] {"NSGAII"};
 		List<File> outputFiles = new ArrayList<File>();
-		
+		List<Long> allSeeds = new ArrayList<>();
+			
 		
 		for (int i = 0; i < algorithmNames.length; i++) {
 			
 			List<NondominatedPopulation> allResults = new ArrayList<>();
-			List<Long> allSeeds = new ArrayList<>();
-			
 			String algorithmName = algorithmNames[i];
 			LOG.info("Evaluating " + algorithmName + "...");
-			
-			Path algorithmOutputFolder = Files.createDirectories(Paths.get("./input/output" + File.separator + algorithmName + File.separator));
-			Path checkPointFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() +  File.separator + "checkPoint" + File.separator));
-			Path refsetFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"referenceSet" + File.separator));
-
+		
 			OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
 			Algorithm algorithm = AlgorithmFactory.getInstance().getAlgorithm(algorithmName, properties.getProperties(), problem);
 
-			File checkpointFile = new File(checkPointFolder.toAbsolutePath() + File.separator + "checkpoint_" + algorithmName + ".dat");
-			File outputFile = new File(refsetFolder.toAbsolutePath() + File.separator + "approximationset_" + algorithmName + ".set");
+			File checkpointFile = new File("./input/output/checkpoint/" + "checkpoint_" + algorithmName + ".dat");
+			File outputFile = new File("./input/output/problemReferenceSet/" + algorithmName + "output_" + ".set");
 			
 			if (checkpointFile.exists()) {
 				LOG.info("Using checkpoint file for " + algorithmName + "!");
 				
 			}
 			
-			long seed_base = seedBase + PRNG.nextInt(1000, 10000);
+			long seed = seedBase + PRNG.nextInt(POP_SIZE);
 		
 			CheckpointAndOutputResult wrapper = new CheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
 			
 			for(int run = 0; run < numberOfRuns; run++) {
 				
-				long seed = seed_base*run;
-				
-				PRNG.setSeed(seed);
-				
 				LOG.info("Running population " + run + " (using seed "+ seed + ")... ");	
 				
+				PRNG.setSeed((long)(seed*run));
 			
 				while (wrapper.getNumberOfEvaluations() < MAX_NFE) {
 					
-					wrapper.step();				
-					
+					wrapper.step();					
+
 				}
 				
 				NondominatedPopulation finalResult = algorithm.getResult();
@@ -243,9 +237,9 @@ public class RunSimulationBasedTransitOptimisation {
 				
 			}
 		
-			computeRefSet(problem, outputFiles, algorithmOutputFolder);			
-			writeSeeds(allSeeds, algorithmOutputFolder);			
-			processResults(allResults, algorithmOutputFolder);			
+			computeRefSet(problem, outputFiles);			
+			writeSeeds(allSeeds, algorithmName);			
+			processResults(allResults, algorithmName);			
 			
 		}		
 
@@ -259,11 +253,11 @@ public class RunSimulationBasedTransitOptimisation {
 	 * @param algorithmSeedDir Directory where the seed file is stored
 	 * @throws IOException
 	 */
-	private static void writeSeeds(List<Long> seeds, Path folder) throws IOException {
+	private static void writeSeeds(List<Long> seeds, String algorithmSeedDir) throws IOException {
 		
 		/* Write all the seeds to file (for record). */
-		
-		Path seedFolder = Files.createDirectories(Paths.get(folder + "./seeds/"));
+	
+		Path seedFolder = Files.createDirectories(Paths.get("./input/output/seeds/" + algorithmSeedDir + File.separator));
 		String seedFile = seedFolder + File.separator + "seed.txt";
 
 		SEED_FILE = new FileOutputStream(new File(seedFile));
@@ -283,11 +277,11 @@ public class RunSimulationBasedTransitOptimisation {
 	 * @param outputFiles output files
 	 * @throws Exception
 	 */
-	private static void computeRefSet(Problem problem, List<File> outputFiles, Path folder) throws Exception {
+	private static void computeRefSet(Problem problem, List<File> outputFiles) throws Exception {
 		
 		// Step 1 - Compute the reference set.
 		LOG.info("Computing reference set...");
-		File referenceSetFile = new File(folder.normalize() + File.separator + "referenceSet/refset.ref");
+		File referenceSetFile = new File("./input/output/problemReferenceSet/output_refset.ref");
 		
 		ResultFileMerger.main(
 				ArrayUtils.addAll(
@@ -299,7 +293,6 @@ public class RunSimulationBasedTransitOptimisation {
 		
 		// Step 2 - Evaluate the metrics.
 		for (File outputFile : outputFiles) {
-			
 			LOG.info("Calculating metrics for " + outputFile + "...");
 			
 			ResultFileEvaluator.main(new String[] {
@@ -321,21 +314,10 @@ public class RunSimulationBasedTransitOptimisation {
 	 * @param allResults List of results obtained from runSimulation()
 	 * @throws IOException
 	 */
-	private static void processResults(List<NondominatedPopulation> allResults, Path algorithmNameDirectory) throws IOException{
-
-		String resultFolder =  algorithmNameDirectory.toAbsolutePath() +  File.separator + "optimisationResults" + File.separator;
-		
-		if (Files.exists(Paths.get(resultFolder))){
+	private static void processResults(List<NondominatedPopulation> allResults, String algorithmResultDir) throws IOException{
 			
-			FileUtils.cleanDirectory(new File(resultFolder));
-			
-		} else {
-		
-			Files.createDirectories(Paths.get(resultFolder));
-		
-		}
-		
-		RunSimulationBasedTransitOptimisation tr = new RunSimulationBasedTransitOptimisation();	
+		String resultFolder = "./input/output/optimisationResults/";
+		RunSimulationBasedTransitOptimisationWithWrapper tr = new RunSimulationBasedTransitOptimisationWithWrapper();	
 				
 		int folderIdx = 0;
 		
@@ -351,7 +333,7 @@ public class RunSimulationBasedTransitOptimisation {
 				Solution runSolution = runResult.get(solution);
 
 				fileIdx++;
-				tr.decodeResult(runSolution.getVariable(0), resultFolder, folderIdx, fileIdx);
+				tr.decodeResult(runSolution.getVariable(0), resultFolder, algorithmResultDir, folderIdx, fileIdx);
 				LOG.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
 				
 				MOEA_LOG.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
@@ -362,6 +344,25 @@ public class RunSimulationBasedTransitOptimisation {
 
 		}
 		
+		//cleanMatsimFolder();		
+		
 	}
+
+
+	/**
+	 * Utility method to clean the MATSIM output folder
+	 */
+	private static void cleanMatsimFolder() {
+		
+		File matsimOutput = new File("./input/output/matsimOutput/");
+		for(File file: matsimOutput.listFiles()) 
+			if (file.isDirectory()) {
+				for(File f: file.listFiles()) 					
+						if (!f.getName().equals("ensembleRuns.txt")) 
+							f.delete();
+			}
+	}
+	
+	
 
 }
