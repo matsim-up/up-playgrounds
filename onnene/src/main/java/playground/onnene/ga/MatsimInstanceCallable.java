@@ -148,12 +148,12 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 				"java",
 				"-Xmx5g",
 				"-cp",
-				String.format(".%s/onnene-0.10.0-SNAPSHOT/onnene-0.10.0-SNAPSHOT.jar", File.pathSeparator),
+				String.format(".%s./onnene-0.10.0-SNAPSHOT/onnene-0.10.0-SNAPSHOT.jar", File.pathSeparator),
 				"playground.onnene.ga.MatsimInstance",
 				"config.xml",
-				//String.format("%s", folder.getAbsolutePath()+File.separator+"output"),
+				String.format("%s", folder.getAbsolutePath()+File.separator+"output"),
 				//"./output/",
-				"output/",
+				//"output/",
 				String.valueOf(seed)
 				);
 		equilBuilder.directory(folder);
