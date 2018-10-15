@@ -15,7 +15,7 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-
+  
 /**
  * 
  */
@@ -33,43 +33,33 @@ import ch.sbb.matsim.mobsim.qsim.SBBQSimModule;
 import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
 
 /**
- * Class to execute a single MATSim run in its own virtual machine.
- * 
- * @author jwjoubert
+ * @author Onnene
+ *
  */
-public class MatsimInstance{
-	private static String configFile;
-	private static String output;
-	private static long seed;
+public class WindowsMatsimInstance {
+
+	
 	/**
-	 * 
+	 * Modified version of class to make the MATSim instance run on its own virtual machine
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		configFile = args[0];
-		output = args[1];
-		seed = Long.parseLong(args[2]);
-		runInstance();
-	}
 	
-
-	private static void runInstance() {
+	public static void run(String folder, String output, long seed) {
 		Config config = ConfigUtils.createConfig();
-		ConfigUtils.loadConfig(config, configFile);
-				
+		ConfigUtils.loadConfig(config, folder + "./config.xml");
 		config.global().setRandomSeed(seed);
-		config.global().setNumberOfThreads(6);
+		config.global().setNumberOfThreads(2);
 		config.controler().setLastIteration(RunSimulationBasedTransitOptimisation.MATSIM_ITERATION_NUMBER);       
 		config.controler().setOutputDirectory(output);       
 		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 		
-		config.plans().setInputFile("./plans.xml");
-		config.parallelEventHandling().setNumberOfThreads(20);
-		config.qsim().setNumberOfThreads(6);
+		config.plans().setInputFile(folder + "./plans.xml");
+		config.parallelEventHandling().setNumberOfThreads(2);
+		config.qsim().setNumberOfThreads(2);
 		config.controler().setWriteEventsInterval(RunSimulationBasedTransitOptimisation.MATSIM_ITERATION_NUMBER); //FIXME
-		config.network().setInputFile("./network.xml");
-		config.transit().setVehiclesFile("./transitVehicles.xml");
-		config.transit().setTransitScheduleFile("./transitSchedule.xml");
+		config.network().setInputFile(folder + "./network.xml");
+		config.transit().setVehiclesFile(folder + "./transitVehicles.xml");
+		config.transit().setTransitScheduleFile(folder + "./transitSchedule.xml");
 
 		Scenario scenario = ScenarioUtils.loadScenario(config);
 		Controler controler = new Controler(scenario);
@@ -84,6 +74,8 @@ public class MatsimInstance{
 				install(new SwissRailRaptorModule());
 			}
 		});
+		
+		
 
 		controler.run();
 	}

@@ -97,8 +97,6 @@ public class Testing {
 //		}
 //		
 		
-		
-		
 //		File matsimOutput = new File("./input/output/matsimOutput/");
 //		for(File file: matsimOutput.listFiles()) 
 //			if (file.isDirectory()) {
@@ -120,6 +118,30 @@ public class Testing {
     	sr.nextBytes(token);
     	return new BigInteger(1, token).toString(16);
     }
+	
+	
+	/* Copy consolidated result to a folder outside the output folder
+	 * where it wont be deleted in subsequent restarts */
+//	try {
+//		
+//		File ensembleToCopy = new File(folder + File.separator + "ensembleRuns_" + runNumber + ".txt");
+//		//File ensembleDest = new File("./input/output/matsimOutput/");
+//		File ensembleDest = new File(RunSimulationBasedTransitOptimisation.matsimOutput.toString());
+//					
+//		if (new File(ensembleDest+File.separator+ensembleToCopy.getName()).exists()) {
+//		
+//			File dest = new File(ensembleToCopy.getAbsolutePath() + "_" + UUID.randomUUID().toString());			
+//			ensembleToCopy.renameTo(dest);				
+//			org.apache.commons.io.FileUtils.copyDirectoryToDirectory(dest, ensembleDest);
+//							
+//		} else {
+//				
+//			
+//				org.apache.commons.io.FileUtils.copyDirectoryToDirectory(ensembleToCopy, ensembleDest);
+//		}
+//	} catch (IOException e1) {
+//		e1.printStackTrace();
+//	}
 	
 	
 

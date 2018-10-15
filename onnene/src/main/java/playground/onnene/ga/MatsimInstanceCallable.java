@@ -49,6 +49,7 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 	final private Logger log = Logger.getLogger(MatsimInstanceCallable.class);
 	final private File folder;
 	final private long seed;
+	final private File innerOutputFolder;
 	
 	public MatsimInstanceCallable(String parentFolder, int run, long seedBase) {
 		parentFolder += parentFolder.endsWith(File.separator) ? "" : File.separator;
@@ -56,6 +57,12 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 		boolean created = folder.mkdirs();
 		if(!created) {
 			throw new RuntimeException("Could not create the MATSim run folder " + folder.getAbsolutePath());
+		}
+		
+		innerOutputFolder = new File(folder.getAbsolutePath() + File.separator + "output" + File.separator );
+		innerOutputFolder.mkdirs();
+		if(!created) {
+			throw new RuntimeException("Could not create the MATSim run inneroutput folder " + innerOutputFolder.getAbsolutePath());
 		}
 		seed = seedBase*run;
 	}
@@ -95,12 +102,11 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 			throw new RuntimeException("Cannot copy input file for MATSim run in " + folder.getAbsolutePath());
 		}
 
-		/* Unzip the release */
-		
-		//FileMakerUtils fu = new FileMakerUtils();	
-		//fu.unGunzipFile(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
+	
+
 		if (System.getProperty("os.name").startsWith("Windows")){
 			
+			/* Unzip the release */
 			UnzipUtility unzipper = new UnzipUtility();
 	        try {
 	            unzipper.unzip(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
@@ -108,14 +114,13 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 	            // some errors occurred
 	            ex.printStackTrace();
 	        }
+	        
+	        /* Execute the MATSim run */
+	        WindowsMatsimInstance.run(folder.getAbsolutePath(), innerOutputFolder.getAbsolutePath(), seed);
         
 		} else {
-		//fu.unGunzipFile(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
-		//fu.unZip(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
-				
-//		UnzipUtility u = new UnzipUtility();
-//		u.unZipTest(folder.getAbsolutePath() + File.separator + "release.zip", folder.getAbsolutePath());
-		
+			
+			/* Unzip the release */
 			ProcessBuilder zipBuilder = new ProcessBuilder(
 					"unzip", 
 					String.format("%s%srelease.zip", folder.getAbsolutePath(),File.separator), 
@@ -140,53 +145,53 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 				throw new RuntimeException("Could not unzip release for MATSim run " + folder.getAbsolutePath());
 			}
 		
-        }
 		
-		
-		/* Execute the MATSim run */
-		ProcessBuilder equilBuilder = new ProcessBuilder(
-				"java",
-				"-Xmx12g",
-				"-cp",
-				String.format(".%s./onnene-0.10.0-SNAPSHOT/onnene-0.10.0-SNAPSHOT.jar", File.pathSeparator),
-				"playground.onnene.ga.MatsimInstance",
-				"config.xml",
-				String.format("%s", folder.getAbsolutePath()+File.separator+"output"),
-				//"output/",
-				String.valueOf(seed)
-				);
-		equilBuilder.directory(folder);
-		equilBuilder.redirectErrorStream(true);
-		
-		Process equilProcess;
-		try {
-			equilProcess = equilBuilder.start();
-		} catch (IOException e3) {
-			e3.printStackTrace();
-			throw new RuntimeException("Cannot execute MATSim instance");
-		}
-		log.info("MATSim instance started... " + folder.getAbsolutePath());
-		BufferedReader br = new BufferedReader(new InputStreamReader(equilProcess.getInputStream()));
-		String line;
-		try {
-			while((line = br.readLine()) != null) {
-//				System.out.println(line);
-				/*FIXME Check if this can be written to standard out, or rather formal Logger. */
+			/* Execute the MATSim run */
+			ProcessBuilder equilBuilder = new ProcessBuilder(
+					"java",
+					"-Xmx8g",
+					"-cp",
+					String.format(".%s./onnene-0.10.0-SNAPSHOT/onnene-0.10.0-SNAPSHOT.jar", File.pathSeparator),
+					"playground.onnene.ga.UnixMatsimInstance",
+					"config.xml",
+					String.format("%s", folder.getAbsolutePath()+File.separator+"output"),
+					//"output/",
+					String.valueOf(seed)
+					);
+			equilBuilder.directory(folder);
+			equilBuilder.redirectErrorStream(true);
+			
+			Process equilProcess;
+			try {
+				equilProcess = equilBuilder.start();
+			} catch (IOException e3) {
+				e3.printStackTrace();
+				throw new RuntimeException("Cannot execute MATSim instance");
 			}
-		} catch (IOException e3) {
-			e3.printStackTrace();
-			throw new RuntimeException("Cannot reinterpret terminal process terminal output from buffer");
-		}
-		int equilExitCode;
-		try {
-			equilExitCode = equilProcess.waitFor();
-		} catch (InterruptedException e3) {
-			e3.printStackTrace();
-			throw new RuntimeException("Terminated while waiting for MATSim instance to complete.");
-		}
-		log.info("MATSim instance completed: " + folder.getAbsolutePath() + ". Exit status '" + equilExitCode + "'");
-		if(equilExitCode != 0) {
-			log.error("Could not complete MATSim run " + folder.getAbsolutePath());
+			log.info("MATSim instance started... " + folder.getAbsolutePath());
+			BufferedReader br = new BufferedReader(new InputStreamReader(equilProcess.getInputStream()));
+			String line;
+			try {
+				while((line = br.readLine()) != null) {
+	//				System.out.println(line);
+					/*FIXME Check if this can be written to standard out, or rather formal Logger. */
+				}
+			} catch (IOException e3) {
+				e3.printStackTrace();
+				throw new RuntimeException("Cannot reinterpret terminal process terminal output from buffer");
+			}
+			int equilExitCode;
+			try {
+				equilExitCode = equilProcess.waitFor();
+			} catch (InterruptedException e3) {
+				e3.printStackTrace();
+				throw new RuntimeException("Terminated while waiting for MATSim instance to complete.");
+			}
+			log.info("MATSim instance completed: " + folder.getAbsolutePath() + ". Exit status '" + equilExitCode + "'");
+			if(equilExitCode != 0) {
+				log.error("Could not complete MATSim run " + folder.getAbsolutePath());
+			}
+		
 		}
 		
 		/* Interpret the output events. */

@@ -57,11 +57,13 @@ import org.moeaframework.util.TypedProperties;
 public class RunSimulationBasedTransitOptimisation {
 	
 	private static final Logger LOG = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
-    private static final int MAX_NFE = 2000;   
-	private static final int CHECKPOINT_FREQ = 70;
-	private static final int POP_SIZE = 70;
-	public static final int MATSIM_ITERATION_NUMBER = 80;
+    private static final int MAX_NFE = 20;   
+	private static final int CHECKPOINT_FREQ = 4;
+	private static final int POP_SIZE = 4;
+	public static final int MATSIM_ITERATION_NUMBER = 10;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
+    
+    public static Path matsimOutput; 
 
     /**
 	 * @param args
@@ -205,7 +207,9 @@ public class RunSimulationBasedTransitOptimisation {
 			Path algorithmOutputFolder = Files.createDirectories(Paths.get("./input/output" + File.separator + algorithmName + File.separator));
 			Path checkPointFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() +  File.separator + "checkPoint" + File.separator));
 			Path refsetFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"referenceSet" + File.separator));
-
+			
+			matsimOutput = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"matSimOutput" + File.separator));
+			
 			OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
 			Algorithm algorithm = AlgorithmFactory.getInstance().getAlgorithm(algorithmName, properties.getProperties(), problem);
 
