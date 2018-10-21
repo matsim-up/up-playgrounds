@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.moeaframework.algorithm.Checkpoints;
 import org.moeaframework.analysis.sensitivity.ResultEntry;
 import org.moeaframework.analysis.sensitivity.ResultFileWriter;
@@ -36,6 +37,8 @@ import org.moeaframework.core.FrameworkException;
  *
  */
 public class LocalMachineCheckpointAndOutputResult extends Checkpoints{
+	
+		private static final Logger log = Logger.getLogger(LocalMachineCheckpointAndOutputResult.class);
 	
 	    private final ResultFileWriter writer;
 		

@@ -6,6 +6,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -21,6 +22,8 @@ import org.xml.sax.SAXException;
  *
  */
 public class ExtractTransitScheduleHelperFiles {
+	
+	private static final Logger log = Logger.getLogger(ExtractTransitScheduleHelperFiles.class);
 		
 
     public void getMatsimStops(String xmlFile, String outputFilePath) throws ParserConfigurationException, SAXException, IOException{
@@ -81,7 +84,7 @@ public class ExtractTransitScheduleHelperFiles {
 
                 }
                 fileMaker.closeFile();
-                System.out.println("MATSim transit stops file written");
+                log.info("MATSim transit stops file written");
             }
         }  
     }
@@ -129,7 +132,7 @@ public class ExtractTransitScheduleHelperFiles {
 
                 }
                 fileMaker.closeFile();
-                System.out.println("MATSim transit lines file written");
+                log.info("MATSim transit lines file written");
             }
         }            
         

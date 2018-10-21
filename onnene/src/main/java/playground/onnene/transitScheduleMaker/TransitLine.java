@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import org.apache.log4j.Logger;
 import org.moeaframework.core.PRNG;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -17,6 +18,8 @@ import org.w3c.dom.Element;
  * @author Onnene
  */
 class TransitLine{
+	
+	private static final Logger log = Logger.getLogger(TransitLine.class);
     
     private Document d;
     private Element e;

@@ -63,7 +63,7 @@ import playground.onnene.ga.ProblemUtils;
  */
 public class LocalMachineRunSimulOptProb {
 	
-	private static final Logger LOG = Logger.getLogger(LocalMachineRunSimulOptProb.class);
+	private static final Logger log = Logger.getLogger(LocalMachineRunSimulOptProb.class);
     private static final int MAX_NFE = 3;
     public static int callsToEvaluate = 0;   
 	private static final int CHECKPOINT_FREQ = 3;
@@ -88,7 +88,7 @@ public class LocalMachineRunSimulOptProb {
 		int numberOfRuns = Integer.parseInt(args[1]);
 
 		processResults(runSimulation(seed_base, numberOfRuns));
-		LOG.info("Finished!");
+		log.info("Finished!");
 		Header.printFooter();
 		
 	}
@@ -115,7 +115,7 @@ public class LocalMachineRunSimulOptProb {
 	private static void setupOutput() {
 		File outputFolder = new File("./output/");
 		if(outputFolder.exists()) {
-			LOG.warn("The output folder exists and will be deleted.");
+			log.warn("The output folder exists and will be deleted.");
 			try {
 				FileUtils.deleteDirectory(outputFolder);
 			} catch (IOException e) {
@@ -234,7 +234,7 @@ public class LocalMachineRunSimulOptProb {
 			
 			
 			if (checkpointFile.exists()) {
-				LOG.info("Using checkpoint file for " + algorithmName + "!");
+				log.info("Using checkpoint file for " + algorithmName + "!");
 			}
 			
 			//TODO - Do not delete this but get back to it when you have a standard reference set
@@ -248,7 +248,7 @@ public class LocalMachineRunSimulOptProb {
 				
 				long seed = seedBase+((long)run);
 				
-				LOG.info("Running population " + run + " (using seed "+ seedBase + ")... ");
+				log.info("Running population " + run + " (using seed "+ seedBase + ")... ");
 		
 				PRNG.setSeed(seed);
 				
@@ -339,7 +339,7 @@ public class LocalMachineRunSimulOptProb {
 				//List<File> outputFiles = outputFilesLst.get(i);
 	
 				// Step 2 - Compute the reference set.
-				LOG.info("Computing reference set...");
+				log.info("Computing reference set...");
 				File referenceSetFile = new File("./input/output/problemReferenceSet/output_refset.ref");
 				//File referenceSetFileTxt = new File("./input/output/problemReferenceSet/output_refset.txt");
 				
@@ -353,7 +353,7 @@ public class LocalMachineRunSimulOptProb {
 				
 				// Step 3 - Evaluate the metrics.
 				for (File outputFile : outputFiles) {
-					LOG.info("Calculating metrics for " + outputFile + "...");
+					log.info("Calculating metrics for " + outputFile + "...");
 					
 					ResultFileEvaluator.main(new String[] {
 							"--dimension", Integer.toString(problem.getNumberOfObjectives()),
@@ -411,7 +411,7 @@ public class LocalMachineRunSimulOptProb {
 			
 						folderIdx++;
 						int fileIdx = 0;
-						LOG.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
+						log.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
 			
 						for(int solution = 0; solution < runResult.size(); solution++) {
 							
@@ -421,7 +421,7 @@ public class LocalMachineRunSimulOptProb {
 							//rsbtop.decodeResult(solution.getVariable(0), DirectoryConfig.RESULTS_FILE, folderIdx, fileIdx);
 							lmpr.decodeResult(runSolution.getVariable(0), resultFolder, algorithmResultFolder, folderIdx, fileIdx);
 							//MOEA_LOG_FILE  = new FileOutputStream(new File("./output/logs/run_moea_log.txt"), true);
-							LOG.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
+							log.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
 							
 							MOEA_LOG.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
 							REFSET_TXT.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());

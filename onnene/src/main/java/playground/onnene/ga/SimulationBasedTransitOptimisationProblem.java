@@ -47,14 +47,14 @@ import org.moeaframework.problem.AbstractProblem;
  */
 public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
-	final private static int SIMULATIONS_PER_EVALUATION = 2;
-	final private static int SIMULATIONS_PER_BLOCK = 2;
+	final private static int SIMULATIONS_PER_EVALUATION = 10;
+	final private static int SIMULATIONS_PER_BLOCK = 10;
 	final private static int THREADS_PER_SIMULATION = 10;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
 	/* Other variables. */
-	final private Logger log = Logger.getLogger(SimulationBasedTransitOptimisationProblem.class.getName());  
-	final private long seedBase = 20181014l;
+	final private Logger log = Logger.getLogger(SimulationBasedTransitOptimisationProblem.class);  
+	final private long seedBase = 20181021l;
 	private static AtomicInteger overallRunNumber = new AtomicInteger(0);
 
 
@@ -133,6 +133,7 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 
 			while(simulationsInCurrentBlock < SIMULATIONS_PER_BLOCK && totalSimulations < SIMULATIONS_PER_EVALUATION) {
 				MatsimInstanceCallable mic = new MatsimInstanceCallable(folder, totalSimulations, seedBase);
+				log.info(String.format("Memory Usage: %s ", Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory()));
 				Future<Double[]> job = executor.submit(mic);
 				jobs.add(job);
 
@@ -167,23 +168,15 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 			//File ensembleDest = new File("./input/output/matsimOutput/");
 			File ensembleDest = new File(RunSimulationBasedTransitOptimisation.matsimOutput.toString());
 						
-			if (new File(ensembleDest + File.separator + ensembleToCopy).exists()) {
+			if (new File(ensembleDest + File.separator + ensembleToCopy.getName()).exists()) {
 				
-				File[] ff = ensembleDest.listFiles();
+				File[] fileList = ensembleDest.listFiles();
 				
-				int newFileNum = Integer.parseInt(ff[-1].getName().replaceAll("\\D+","")) + 1;
-			
-				//File dest = new File(ensembleToCopy.getAbsolutePath() + "_" + UUID.randomUUID().toString());			
-				
-				///File dest = new File(ensembleToCopy.getAbsolutePath() + "_" + Integer.parseInt(ff[-1].getName().substring(-1)) + 1);
+				int newFileNum = Integer.parseInt(fileList[fileList.length-1].getName().replaceAll("\\D+","")) + 1;
 				
 				ensembleToCopy.renameTo(new File (ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt"));				
-				//org.apache.commons.io.FileUtils.copyDirectoryToDirectory(dest, ensembleDest);
 								
 			} else {
-				
-					
-					//FileUtils.copyFile(ensembleToCopy, ensembleDest);
 				
 					org.apache.commons.io.FileUtils.copyFileToDirectory(ensembleToCopy, ensembleDest);
 			}

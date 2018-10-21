@@ -25,6 +25,8 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
+import org.matsim.up.utils.Header;
 import org.xml.sax.SAXException;
 
 /**
@@ -34,11 +36,15 @@ import org.xml.sax.SAXException;
  *
  */
 public class RunExtractTransitScheduleHelperFiles {
+	
+	public static final Logger log = Logger.getLogger(RunExtractTransitScheduleHelperFiles.class);
 
 	/**
 	 * @param args
 	 */	 
     public static void main(String[] args) throws ParserConfigurationException, SAXException {
+    	
+    	Header.printHeader(RunExtractTransitScheduleHelperFiles.class, args);
 	
 		String gZipTschedule = "./input/gtfsInputs/gtfsOutput/transitSchedule.xml.gz";
 	    String decompressedTscheduleXml = "./input/gtfsInputs/gtfsOutput/transitSchedule.xml";
@@ -71,7 +77,7 @@ public class RunExtractTransitScheduleHelperFiles {
 			e.printStackTrace();
 		}
 	      
- 	
+	    Header.printFooter();
     }
 
 }

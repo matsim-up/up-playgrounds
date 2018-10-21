@@ -21,6 +21,8 @@
  */
 package playground.onnene.ga;
 
+import java.io.FileNotFoundException;
+
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -42,9 +44,10 @@ public class WindowsMatsimInstance {
 	/**
 	 * Modified version of class to make the MATSim instance run on its own virtual machine
 	 * @param args
+	 * @throws FileNotFoundException 
 	 */
 	
-	public static void run(String folder, String output, long seed) {
+	public static void run(String folder, String output, long seed) throws FileNotFoundException {
 		Config config = ConfigUtils.createConfig();
 		ConfigUtils.loadConfig(config, folder + "./config.xml");
 		config.global().setRandomSeed(seed);
@@ -78,5 +81,7 @@ public class WindowsMatsimInstance {
 		
 
 		controler.run();
+		
+		
 	}
 }

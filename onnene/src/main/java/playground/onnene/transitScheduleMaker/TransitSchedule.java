@@ -23,6 +23,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
@@ -42,6 +43,7 @@ import org.xml.sax.SAXException;
  */
 public class TransitSchedule {
 	
+	private static final Logger log = Logger.getLogger(TransitSchedule.class);
     
     public String createTransitScheduleXML(Collection<String> f2, int index, int numberOfLines, String outputFile) throws IOException, FileNotFoundException, TransformerException, ParserConfigurationException, SAXException{
        
@@ -78,7 +80,7 @@ public class TransitSchedule {
         //departure hours
         int [] hours = {4,4,4,4,3,3,3,3,3,3,4,4,4,2,2,2};
         
-        //System.out.println("Current decision variable has " + f2.size() + " routes...");
+        //log.info("Current decision variable has " + f2.size() + " routes...");
 
         Iterator<String> iterator = f2.iterator();
 
@@ -105,7 +107,7 @@ public class TransitSchedule {
                 }
             }
             int trip = (int) Math.round((double)(hours.length/forward));
-               // System.out.println(trip+"****");
+               // log.info(trip+"****");
 
                 //for uneven route sizes
             int left = hours.length - trip * forward;
@@ -140,7 +142,6 @@ public class TransitSchedule {
                 }
 
                 //min and max being parameters of the hours divided by trip
-                
 
                 //max value returns to array size if its greater than array size
                 if(max>hours.length){
@@ -214,7 +215,7 @@ public class TransitSchedule {
             }
             
            trip = (int) Math.round((double)(hours.length/reverse));
-                //System.out.println(trip+"@@@");
+                //log.info(trip+"@@@");
           
                 //for uneven route sizes
             left = hours.length - trip*reverse;

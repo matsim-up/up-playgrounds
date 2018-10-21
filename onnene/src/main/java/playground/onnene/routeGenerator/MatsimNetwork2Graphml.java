@@ -13,9 +13,12 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
 public class MatsimNetwork2Graphml {
+	
+	private static final Logger log = Logger.getLogger(MatsimNetwork2Graphml.class);
 
 	public void Network2Graphml(String graphStyleSheet, String transitNetworkFile, String graphFileDirectory) throws Exception{
 
@@ -38,7 +41,7 @@ public class MatsimNetwork2Graphml {
         
         //String xml = new XMLDocument(source).toString();
         
-        System.out.println("Network converted to Graphml format");
+        log.info("Network converted to Graphml format");
     
 	}
 

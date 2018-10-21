@@ -61,7 +61,7 @@ import playground.onnene.ga.ProblemUtils;
  */
 public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 	
-	final private static Logger LOG = Logger.getLogger(LocalMachineRunSimulationBasedTransitOptimisationProblem.class);
+	final private static Logger log = Logger.getLogger(LocalMachineRunSimulationBasedTransitOptimisationProblem.class);
 	private static final int MAX_MOEA_EVALUATIONS = 1; //FIXME was 20
 	public static final int MATSIM_ITERATION_NUMBER = 10; // FIXME was 10
 	private static BufferedWriter SEED_FILE;
@@ -92,7 +92,7 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 	private static void setupOutput() {
 		File outputFolder = new File("./output/");
 		if(outputFolder.exists()) {
-			LOG.warn("The output folder exists and will be deleted.");
+			log.warn("The output folder exists and will be deleted.");
 			try {
 				FileUtils.deleteDirectory(outputFolder);
 			} catch (IOException e) {
@@ -135,7 +135,7 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 	private static File checkPoint(String checkPointFile) {
 		File checkpointFile = new File (checkPointFile);
 		if (checkpointFile.exists()) {
-			LOG.info("Checkpoint file exists, will resume from prior run!");
+			log.info("Checkpoint file exists, will resume from prior run!");
 		}
 		return checkpointFile;
 	} 
@@ -184,7 +184,7 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 			long seed = seedBase*((long)run);
 			
 			PRNG.setSeed(seed);
-			LOG.info("Running population " + run + " (using seed "+ seedBase + ")... ");
+			log.info("Running population " + run + " (using seed "+ seedBase + ")... ");
 			NondominatedPopulation finalResult = new Executor()
 					.withSameProblemAs(instrumenter)
 					.withAlgorithm("NSGAII")
@@ -219,7 +219,7 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 //				 PopulationIO.write(new File("approximationSet.dat"), approximationSet);
 //				 System.out.println("Saved " + approximationSet.size() + " solutions!");
 				
-			LOG.info("Completed run");
+			log.info("Completed run");
 		}
 		
 		
@@ -244,7 +244,7 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 
 			folderIdx++;
 			int fileIdx = 0;
-			LOG.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
+			log.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
 
 			for(int solution = 0; solution < runResult.size(); solution++) {
 				Solution runSolution = runResult.get(solution);
@@ -253,7 +253,7 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 				//rsbtop.decodeResult(solution.getVariable(0), DirectoryConfig.RESULTS_FILE, folderIdx, fileIdx);
 				lmrsbtop.decodeResult(runSolution.getVariable(0), ResultFolder, folderIdx, fileIdx);
 				//MOEA_LOG_FILE  = new FileOutputStream(new File("./output/logs/run_moea_log.txt"), true);
-				LOG.info(String.format("%.4f\t%.4f%n", runSolution.getObjective(0), runSolution.getObjective(1)));
+				log.info(String.format("%.4f\t%.4f%n", runSolution.getObjective(0), runSolution.getObjective(1)));
 				
 				BufferedWriter bw = IOUtils.getAppendingBufferedWriter("./output/logs/run_moea_log.txt");		
 				BufferedWriter bwRef = IOUtils.getAppendingBufferedWriter("./output/problemReferenceSet/referenceSet.txt");
@@ -283,7 +283,7 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 			Map<String, Accumulator> results = null;
 
 			if (runResult.size() == 1){
-				LOG.error("requires at least two solutions");
+				log.error("requires at least two solutions");
 			} else {
 
 				results = new HashMap<String, Accumulator>();

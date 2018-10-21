@@ -21,6 +21,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -34,7 +35,11 @@ import org.xml.sax.SAXException;
  * @author Onnene
  *
  */
-class Vehicle {
+public class Vehicle {
+	
+	
+	private static final Logger log = Logger.getLogger(Vehicle.class);
+	
     public  Document d2;
     public  Element e;
     //private boolean flag = false;
@@ -87,7 +92,7 @@ class Vehicle {
         
     }
     public void addVehicle(String id) throws TransformerException{
-        //System.out.println("ff"+id);
+        //log.in("ff"+id);
         Element e10 = d2.createElement("vehicle");
         e10.setAttribute("id", id);
         e10.setAttribute("type", "defaultTransitVehicleType");
@@ -97,9 +102,7 @@ class Vehicle {
     public void output() throws TransformerConfigurationException, TransformerException{
         d2.appendChild(e);
         DOMSource doms = new DOMSource(d2);
-        //String fileName = "C:\\Users\\NNNOB\\Documents\\GitHub\\matsim-sa\\output\\SBO_input\\common\\transitVehicles" + ".xml";
         String vehicleFile = "./input/matsimInput/transitVehicles.xml";
-        //String vehicleFile = DirectoryConfig.TRANSIT_VEHICLES_FILE;
         StreamResult sr = new StreamResult(new File(vehicleFile));
         
         TransformerFactory tf = TransformerFactory.newInstance();
@@ -108,6 +111,6 @@ class Vehicle {
         t.setOutputProperty(OutputKeys.INDENT, "yes");
         t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
         t.transform(doms, sr);
-        //System.out.println("DONE!!!");
+        //log.info("DONE!!!");
     }
 }

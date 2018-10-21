@@ -12,6 +12,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
 
@@ -23,6 +24,8 @@ import org.w3c.dom.Document;
  *
  */
 public class MatsimNetworkAndScheduleExtractor {
+	
+	private static final Logger log = Logger.getLogger(MatsimNetworkAndScheduleExtractor.class);
 
 	public void RouteExtractor(String routeStyleSheet, String transitScheduleFile, String outputDirectory) throws Exception{
 
@@ -39,7 +42,7 @@ public class MatsimNetworkAndScheduleExtractor {
         Result outputTarget = new StreamResult(new File(outputDirectory + "myciti_routes.csv"));
         transformer.transform(source, outputTarget);
 
-        System.out.println("Route extraction finished");
+        log.info("Route extraction finished");
 
 	}
 	
@@ -59,7 +62,7 @@ public class MatsimNetworkAndScheduleExtractor {
         Result outputTarget = new StreamResult(new File(outputDirectory + "myciti_stopFacilities.csv"));
         transformer.transform(source, outputTarget);
 
-        System.out.println("Stop facility extraction finished");
+        log.info("Stop facility extraction finished");
 
 	}
 	
@@ -81,7 +84,7 @@ public class MatsimNetworkAndScheduleExtractor {
         transformer.transform(source, outputTarget);
         
         
-        System.out.println("Node extraction finished");
+        log.info("Node extraction finished");
         
 	}
 	
@@ -102,7 +105,7 @@ public class MatsimNetworkAndScheduleExtractor {
         Result outputTarget = new StreamResult(new File(outputDirectory + "myciti_links.csv"));
         transformer.transform(source, outputTarget);
         
-        System.out.println("Link extraction finished");
+        log.info("Link extraction finished");
 
         
 	}

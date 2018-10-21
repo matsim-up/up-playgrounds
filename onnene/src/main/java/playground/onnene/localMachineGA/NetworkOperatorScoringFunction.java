@@ -113,7 +113,7 @@ public class NetworkOperatorScoringFunction implements VehicleEntersTrafficEvent
 			
 		} else {
 			
-			 if (!event.getVehicleId().toString().startsWith("tr_")) {
+			 if (event.getVehicleId().toString().startsWith("tr_")) {
 				 
 				double vehTripStartTime = vehicleMap.get(event.getVehicleId());
 				double vehTripDuration = event.getTime() - vehTripStartTime;

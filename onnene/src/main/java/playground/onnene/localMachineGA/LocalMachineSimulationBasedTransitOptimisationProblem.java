@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,8 +48,8 @@ import org.moeaframework.problem.AbstractProblem;
 public class LocalMachineSimulationBasedTransitOptimisationProblem extends AbstractProblem{
 	
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
-	final private static int SIMULATIONS_PER_EVALUATION = 1;
-	final private static int SIMULATIONS_PER_BLOCK = 1;
+	final private static int SIMULATIONS_PER_EVALUATION = 2;
+	final private static int SIMULATIONS_PER_BLOCK = 2;
 	final private static int THREADS_PER_SIMULATION = 6;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
@@ -65,7 +64,6 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 	}
 
 
-	//	public SimulationBasedTransitOptimizationProblem(String inputFolder, String outputFolder, int runNumber) throws IOException, InterruptedException {
 	public LocalMachineSimulationBasedTransitOptimisationProblem(){
 		super(1, 2);
 	}
@@ -157,83 +155,29 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 		FileUtils.delete(new File(folder + "transitSchedule.xml"));
 		FileUtils.delete(new File(folder + "transitVehicles.xml"));
 		
-		
+		/* Copy consolidated result to a folder outside the output folder
+		 * where it wont be deleted in subsequent restarts */
 		try {
 			
-			//File ensembleToCopy = new File("./output/matsimOutput/");
-			File ensembleToCopy = new File(folder);
-			File ensembleDest = new File("./input/output/matsimOutput/");
-			
-			
-			if (new File(folder).exists()) {
-			
-				File dest = new File(ensembleToCopy.getAbsolutePath() + "_" + UUID.randomUUID().toString());
-			
-				ensembleToCopy.renameTo(dest);
+			File ensembleToCopy = new File(folder + "ensembleRuns" + runNumber + ".txt");
+			//File ensembleDest = new File("./input/output/matsimOutput/");
+			File ensembleDest = new File(TestRun.matsimOutput.toString());
+						
+			if (new File(ensembleDest + File.separator + ensembleToCopy.getName()).exists()) {
 				
-				org.apache.commons.io.FileUtils.copyDirectoryToDirectory(dest, ensembleDest);
+				File[] fileList = ensembleDest.listFiles();
 				
+				int newFileNum = Integer.parseInt(fileList[fileList.length-1].getName().replaceAll("\\D+","")) + 1;
 				
+				ensembleToCopy.renameTo(new File (ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt"));				
+								
 			} else {
-					
-					org.apache.commons.io.FileUtils.copyDirectoryToDirectory(ensembleToCopy, ensembleDest);
-			}
 				
-			//File ensembleIn = new File("./output/matsimOutput/2");
-			//File ensembleOut = new File("./input/output/matsimOutput/");
-			
-			
-			
-//			System.out.println(ensembleIn.getCanonicalPath());
-//			System.out.println(ensembleIn.getAbsolutePath());
-//			System.out.println(ensembleIn.getName());
-//			System.out.println(new File(ensembleOut.getAbsolutePath() + ensembleIn.getName() + File.separator).exists());
-//			System.out.println(new File(ensembleOut.getAbsolutePath() +   File.separator + ensembleIn.getName()));
-//			System.out.println(ensembleOut.getCanonicalPath());
-//			System.out.println(ensembleOut.getAbsolutePath());
-//			System.out.println(ensembleOut.getName());
-
-			
-			
-//			if (new File(ensembleDest.getAbsolutePath() + File.separator + ensembleToCopy.getName()).exists()) {
-//				
-//				
-//				
-//				//org.apache.commons.io.FileUtils.moveDirectory(org.apache.commons.io.FileUtils.getFile(ensembleIn.getAbsoluteFile()), org.apache.commons.io.FileUtils.getFile(ensembleIn.getAbsolutePath() + "_1"));
-//				
-//				File dest = new File(ensembleToCopy.getAbsolutePath() + "_1");
-//				
-//				ensembleToCopy.renameTo(dest);
-//				
-//				//org.apache.commons.io.FileUtils.copyDirectoryToDirectory(ensembleIn, ensembleOut);
-//				
-//				org.apache.commons.io.FileUtils.copyDirectoryToDirectory(dest, ensembleDest);
-//				//org.apache.commons.io.FileUtils.copyDirectoryToDirectory(new File(ensembleIn.getAbsolutePath() + "_1"), ensembleOut);
-//				
-//			}
-//			
-//			else {
-//				
-//				org.apache.commons.io.FileUtils.copyDirectoryToDirectory(ensembleToCopy, ensembleDest);
-//			}
-//			
-			
-			
-			
-//			for(File file: ensembleOut.listFiles()) 
-//				if (file.isDirectory()) {
-//					for(File f: file.listFiles()) 
-//						if (!f.getName().equals("ensembleRuns.txt")) 
-//							f.delete();
-//		    
-//				}
-			//FileUtils.copyDirectoryStructure(ensembleIn, new File("./input/output/matsimOutput/"));
+					org.apache.commons.io.FileUtils.copyFileToDirectory(ensembleToCopy, ensembleDest);
+			}
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
-		
 		
 		
 		log.info("Completed evaluate() call on folder " + folder);
@@ -252,7 +196,9 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 		
 		//log.info("folder: " + folder);
 		//String matsimEvalNum = new File(folder).getParentFile().getName();
-		String ensembleFilename = folder + "ensembleRuns.txt";
+		//String ensembleFilename = folder + "ensembleRuns.txt";
+		
+		String ensembleFilename = folder + "ensembleRuns" + folder.replaceAll("\\D+","") + ".txt";
 		
 		
 		//String ensembleFilename = "./input/output/matsimOutput/" + "ensembleRuns.txt";
@@ -331,71 +277,7 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 			}
 		}
 		
-		
-		
-		/* Copy consolidated result to a folder outside the output folder
-		 * where it wont be deleted in subsequent restarts */	
-//		try {
-//			
-//			
-//			File ensembleIn = new File(folder);
-//			File ensembleOut = new File("./input/output/matsimOutput/");
-//			
-//			//Paths.get(folder);
-//			//Paths.get("./input/output/matsimOutput/");
-//			
-//			
-//			
-//			//File currentFolder = new File (ensembleOut.getAbsolutePath() + File.separator + ensembleIn.getName());
-//			
-////			if (currentFolder.exists()){
-////				//FileUtils.delete(ensembleIn);
-////				org.apache.commons.io.FileUtils.cleanDirectory(currentFolder);
-////			} 
-//			
-//			//org.apache.commons.io.FileUtils.getFile(ensembleIn.getAbsoluteFile());
-//			//org.apache.commons.io.FileUtils.getFile(ensembleIn.getAbsolutePath() + "_1");
-//			
-//			
-//			if (new File(ensembleOut.getAbsolutePath() + ensembleIn.getName()).exists()) {
-//				
-//				
-//				org.apache.commons.io.FileUtils.moveDirectory(org.apache.commons.io.FileUtils.getFile(ensembleIn.getAbsoluteFile()), org.apache.commons.io.FileUtils.getFile(ensembleIn.getAbsolutePath() + "_1"));
-//				
-//				//org.apache.commons.io.FileUtils.copyDirectoryToDirectory(new File(ensembleIn.getAbsolutePath() + "_1"), ensembleOut);
-//				
-//			}
-//			
-//			else {
-//				
-//				org.apache.commons.io.FileUtils.copyDirectoryToDirectory(ensembleIn, ensembleOut);
-//			}
-//			
-//			
-//			
-//			
-////			for(File file: ensembleOut.listFiles()) 
-////				if (file.isDirectory()) {
-////					for(File f: file.listFiles()) 
-////						if (!f.getName().equals("ensembleRuns.txt")) 
-////							f.delete();
-////		    
-////				}
-//			//FileUtils.copyDirectoryStructure(ensembleIn, new File("./input/output/matsimOutput/"));
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-		
-		
-//		File matsimOutput = new File("./input/output/matsimOutput/");
-//		for(File file: matsimOutput.listFiles()) 
-//			if (file.isDirectory()) {
-//				for(File f: file.listFiles()) 					
-//						if (!f.getName().equals("ensembleRuns.txt")) 
-//							f.delete();
-//				
-//		}
+	
 		
 		return result;
 	}

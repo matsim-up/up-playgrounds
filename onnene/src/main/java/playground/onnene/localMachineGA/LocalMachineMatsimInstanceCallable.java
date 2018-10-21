@@ -96,29 +96,6 @@ public class LocalMachineMatsimInstanceCallable implements Callable<Double[]>{
 			throw new RuntimeException("Cannot copy input file for MATSim run in " + folder.getAbsolutePath());
 		}
 		
-		//LocalMachineMatsimInstance.runInstance(folder + File.separator + "config.xml", folder.getAbsolutePath(), seed);
-		
-		
-//		Config config = ConfigUtils.createConfig();
-//		ConfigUtils.loadConfig(config, folder.getAbsolutePath() + "./config.xml");
-//		config.global().setRandomSeed(seed);
-//		config.global().setNumberOfThreads(4);
-//		config.controler().setLastIteration(LocalMachineRunSimulationBasedTransitOptimisationProblem.MATSIM_ITERATION_NUMBER);       
-//		config.controler().setOutputDirectory(innerOutput.getAbsolutePath());       
-//		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
-//		
-//		config.plans().setInputFile(folder.getAbsolutePath() + "./plans.xml");
-//		//config.parallelEventHandling().setNumberOfThreads(1);
-//		config.qsim().setNumberOfThreads(6);
-//		config.controler().setWriteEventsInterval(1); //FIXME
-//		config.network().setInputFile(folder.getAbsolutePath() + "./network.xml");
-//		config.transit().setVehiclesFile(folder.getAbsolutePath() + "./transitVehicles.xml");
-//		config.transit().setTransitScheduleFile( folder.getAbsolutePath() + "./transitSchedule.xml");
-//
-//		Scenario scenario = ScenarioUtils.loadScenario(config);
-//		Controler controler = new Controler(scenario);
-//		
-//		controler.run();
 
 
 		/* Execute the MATSim run */
@@ -140,28 +117,7 @@ public class LocalMachineMatsimInstanceCallable implements Callable<Double[]>{
 		
 		
 		/* Clean up. */
-		
 		FileUtils.delete(folder);
-		
-//		for(File file: folder.listFiles()) 
-//	    if (!file.getName().endsWith("txt")) 
-//	        file.delete();
-		
-//		try {
-//			//File ensembleIn = new File(folder.getParent());
-//			File ensembleIn = new File("./output/matsimOutput/");
-//			File ensembleOut = new File("./input/output/matsimOutput/");
-//						
-//			//if(!ensembleIn.exists()) { throw new IOException("Cannot find " + ensembleIn.getAbsolutePath()); }
-//			org.apache.commons.io.FileUtils.copyDirectoryToDirectory(ensembleIn, ensembleOut);
-////			for(File file: ensembleOut.listFiles()) 
-////			    if (!file.getName().endsWith("txt")) 
-////			        file.delete();
-//			//FileUtils.copyDirectoryStructure(ensembleIn, new File("./input/output/matsimOutput/"));
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
 		
 
 		

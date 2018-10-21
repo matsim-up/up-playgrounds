@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.matsim.core.utils.io.IOUtils;
 import org.matsim.up.utils.Header;
 import org.moeaframework.analysis.sensitivity.ResultFileEvaluator;
@@ -56,13 +57,13 @@ import org.moeaframework.util.TypedProperties;
  */
 public class RunSimulationBasedTransitOptimisation {
 	
-	private static final Logger LOG = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
-    private static final int MAX_NFE = 20;   
-	private static final int CHECKPOINT_FREQ = 4;
-	private static final int POP_SIZE = 4;
-	public static final int MATSIM_ITERATION_NUMBER = 10;
+	private static final Logger log = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
+	
+    private static final int MAX_NFE = 2100;   
+	private static final int CHECKPOINT_FREQ = 70;
+	private static final int POP_SIZE = 70;
+	public static final int MATSIM_ITERATION_NUMBER = 80;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
-    
     public static Path matsimOutput; 
 
     /**
@@ -70,13 +71,24 @@ public class RunSimulationBasedTransitOptimisation {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {	
+		
 		Header.printHeader(RunSimulationBasedTransitOptimisation.class, args);
+		
+		/*Check memory consumption*/
+		log.info(String.format("Memory Usage: %s ", Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory()));
+		
+		/*Redirect console output to log file with log4j and for windows*/
+		if (System.getProperty("os.name").startsWith("Windows")){
+            
+            PropertyConfigurator.configure("log4j.properties");
+            
+		}
 
 		long seedBase = Long.parseLong(args[0]);
 		int numberOfRuns = Integer.parseInt(args[1]);
 
 		runSimulation(seedBase, numberOfRuns);
-		LOG.info("Finished!");
+		log.info("Finished!");
 		Header.printFooter();
 		
 	}
@@ -120,7 +132,7 @@ public class RunSimulationBasedTransitOptimisation {
 	private static void setupOutput() {
 		File outputFolder = new File("./output/");
 		if(outputFolder.exists()) {
-			LOG.warn("The output folder exists and will be deleted.");
+			log.warn("The output folder exists and will be deleted.");
 			try {
 				FileUtils.deleteDirectory(outputFolder);
 			} catch (IOException e) {
@@ -171,6 +183,9 @@ public class RunSimulationBasedTransitOptimisation {
 	private static void runSimulation(long seedBase, int numberOfRuns) throws Exception {
 				
 		setupOutput();
+	
+		log.info(String.format("Memory Usage: %s ", Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory()));
+		
     	
     	Files.createDirectories(Paths.get("./input/output/logs/"));
     	
@@ -202,13 +217,13 @@ public class RunSimulationBasedTransitOptimisation {
 			List<Long> allSeeds = new ArrayList<>();
 			
 			String algorithmName = algorithmNames[i];
-			LOG.info("Evaluating " + algorithmName + "...");
+			log.info("Evaluating " + algorithmName + "...");
 			
 			Path algorithmOutputFolder = Files.createDirectories(Paths.get("./input/output" + File.separator + algorithmName + File.separator));
 			Path checkPointFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() +  File.separator + "checkPoint" + File.separator));
 			Path refsetFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"referenceSet" + File.separator));
 			
-			matsimOutput = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"matSimOutput" + File.separator));
+			matsimOutput = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"matsimOutput" + File.separator));
 			
 			OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
 			Algorithm algorithm = AlgorithmFactory.getInstance().getAlgorithm(algorithmName, properties.getProperties(), problem);
@@ -217,7 +232,7 @@ public class RunSimulationBasedTransitOptimisation {
 			File outputFile = new File(refsetFolder.toAbsolutePath() + File.separator + "approximationset_" + algorithmName + ".set");
 			
 			if (checkpointFile.exists()) {
-				LOG.info("Using checkpoint file for " + algorithmName + "!");
+				log.info("Using checkpoint file for " + algorithmName + "!");
 				
 			}
 			
@@ -231,7 +246,7 @@ public class RunSimulationBasedTransitOptimisation {
 				
 				PRNG.setSeed(seed);
 				
-				LOG.info("Running population " + run + " (using seed "+ seed + ")... ");	
+				log.info("Running population " + run + " (using seed "+ seed + ")... ");	
 				
 			
 				while (wrapper.getNumberOfEvaluations() < MAX_NFE) {
@@ -290,7 +305,7 @@ public class RunSimulationBasedTransitOptimisation {
 	private static void computeRefSet(Problem problem, List<File> outputFiles, Path folder) throws Exception {
 		
 		// Step 1 - Compute the reference set.
-		LOG.info("Computing reference set...");
+		log.info("Computing reference set...");
 		File referenceSetFile = new File(folder.normalize() + File.separator + "referenceSet/refset.ref");
 		
 		ResultFileMerger.main(
@@ -304,7 +319,7 @@ public class RunSimulationBasedTransitOptimisation {
 		// Step 2 - Evaluate the metrics.
 		for (File outputFile : outputFiles) {
 			
-			LOG.info("Calculating metrics for " + outputFile + "...");
+			log.info("Calculating metrics for " + outputFile + "...");
 			
 			ResultFileEvaluator.main(new String[] {
 					"--dimension", Integer.toString(problem.getNumberOfObjectives()),
@@ -349,14 +364,14 @@ public class RunSimulationBasedTransitOptimisation {
 
 			folderIdx++;
 			int fileIdx = 0;
-			LOG.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
+			log.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
 
 			for(int solution = 0; solution < runResult.size(); solution++) {				
 				Solution runSolution = runResult.get(solution);
 
 				fileIdx++;
 				tr.decodeResult(runSolution.getVariable(0), resultFolder, folderIdx, fileIdx);
-				LOG.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
+				log.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
 				
 				MOEA_LOG.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
 				REFSET_TXT.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());

@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -19,6 +20,8 @@ import org.w3c.dom.Element;
  *
  */
 public class TransitStops {
+	
+	private static final Logger log = Logger.getLogger(TransitStops.class);
     
     private Document d;
     private Element e;

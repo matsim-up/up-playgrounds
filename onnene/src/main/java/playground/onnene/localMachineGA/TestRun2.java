@@ -58,7 +58,7 @@ import org.moeaframework.util.TypedProperties;
  */
 public class TestRun2 {
 	
-	private static final Logger LOG = Logger.getLogger(TestRun2.class);
+	private static final Logger log = Logger.getLogger(TestRun2.class);
     private static final int MAX_NFE = 4;   
 	private static final int CHECKPOINT_FREQ = 2;
 	private static final int POP_SIZE = 4;
@@ -76,7 +76,7 @@ public class TestRun2 {
 		int numberOfRuns = Integer.parseInt(args[1]);
 
 		runSimulation(seedBase, numberOfRuns);
-		LOG.info("Finished!");
+		log.info("Finished!");
 		Header.printFooter();
 		
 	}
@@ -94,9 +94,9 @@ public class TestRun2 {
 	 */
 	private void decodeResult(Variable variable, String resultFilePath,  int folderNum, int fileNum) throws IOException {
 		
-		LOG.info(variable.getClass().toString());
+		log.info(variable.getClass().toString());
 		
-		LOG.info(variable instanceof  DecisionVariable);
+		log.info(variable instanceof  DecisionVariable);
 			
 			if (variable instanceof  DecisionVariable) {
 				DecisionVariable varObj = (DecisionVariable) variable;         
@@ -119,7 +119,7 @@ public class TestRun2 {
 	private static void setupOutput() {
 		File outputFolder = new File("./output/");
 		if(outputFolder.exists()) {
-			LOG.warn("The output folder exists and will be deleted.");
+			log.warn("The output folder exists and will be deleted.");
 			try {
 				FileUtils.deleteDirectory(outputFolder);
 			} catch (IOException e) {
@@ -206,7 +206,7 @@ public class TestRun2 {
 			List<Long> allSeeds = new ArrayList<>();
 			
 			String algorithmName = algorithmNames[i];
-			LOG.info("Evaluating " + algorithmName + "...");
+			log.info("Evaluating " + algorithmName + "...");
 			
 			Path algorithmOutputFolder = Files.createDirectories(Paths.get("./input/output" + File.separator + algorithmName + File.separator));
 			Path checkPointFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() +  File.separator + "checkPoint" + File.separator));
@@ -226,7 +226,7 @@ public class TestRun2 {
 			File outputFile = new File(refsetFolder.toAbsolutePath() + File.separator + "approximationset_" + algorithmName + ".set");
 			
 			if (checkpointFile.exists()) {
-				LOG.info("Using checkpoint file for " + algorithmName + "!");
+				log.info("Using checkpoint file for " + algorithmName + "!");
 				
 			}
 			
@@ -240,7 +240,7 @@ public class TestRun2 {
 				
 				PRNG.setSeed(seed);
 				
-				LOG.info("Running population " + run + " (using seed "+ seed + ")... ");	
+				log.info("Running population " + run + " (using seed "+ seed + ")... ");	
 				
 			
 				while (wrapper.getNumberOfEvaluations() < MAX_NFE) {
@@ -307,7 +307,7 @@ public class TestRun2 {
 	private static void computeRefSet(Problem problem, List<File> outputFiles, Path folder) throws Exception {
 		
 		// Step 1 - Compute the reference set.
-		LOG.info("Computing reference set...");
+		log.info("Computing reference set...");
 		File referenceSetFile = new File(folder.normalize() + File.separator + "referenceSet/refset.ref");
 		
 		ResultFileMerger.main(
@@ -321,7 +321,7 @@ public class TestRun2 {
 		// Step 2 - Evaluate the metrics.
 		for (File outputFile : outputFiles) {
 			
-			LOG.info("Calculating metrics for " + outputFile + "...");
+			log.info("Calculating metrics for " + outputFile + "...");
 		
 			
 //			File indicator = new File("metrics.set");
@@ -356,7 +356,7 @@ public class TestRun2 {
 	 */
 	private static void processResults(List<NondominatedPopulation> allResults, Path algorithmNameDirectory) throws IOException{
 		
-		LOG.info("is " +algorithmNameDirectory.normalize());
+		log.info("is " +algorithmNameDirectory.normalize());
 		
 		String resultFolder =  algorithmNameDirectory.toAbsolutePath() +  File.separator + "optimisationResults" + File.separator;
 		
@@ -387,17 +387,17 @@ public class TestRun2 {
 
 			folderIdx++;
 			int fileIdx = 0;
-			LOG.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
+			log.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
 
 			for(int solution = 0; solution < runResult.size(); solution++) {				
 				Solution runSolution = runResult.get(solution);
 				
-				LOG.info(runSolution.getVariable(0).toString());
-				LOG.info(runSolution.getVariable(0).getClass().toString());
+				log.info(runSolution.getVariable(0).toString());
+				log.info(runSolution.getVariable(0).getClass().toString());
 
 				fileIdx++;
 				tr.decodeResult(runSolution.getVariable(0), resultFolder, folderIdx, fileIdx);
-				LOG.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
+				log.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
 				
 				MOEA_LOG.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
 				REFSET_TXT.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());

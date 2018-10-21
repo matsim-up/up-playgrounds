@@ -32,6 +32,8 @@ import java.util.Scanner;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.log4j.Logger;
+import org.matsim.up.utils.Header;
 import org.xml.sax.SAXException;
 
 import playground.onnene.ga.ProblemUtils;
@@ -48,12 +50,15 @@ import playground.onnene.transitScheduleMaker.TransitSchedule;
 public class CreateInitialPop {
 	
 	static int numLines = ProblemUtils.numberOfLines();
+	
+	private static final Logger log = Logger.getLogger(CreateInitialPop.class);
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		
+		Header.printHeader(CreateInitialPop.class, args);
 		CreateInitialPop cfs = new CreateInitialPop();
 		
 		try {
@@ -65,6 +70,8 @@ public class CreateInitialPop {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		Header.printFooter();
     		
 	}
 	
@@ -117,11 +124,11 @@ public class CreateInitialPop {
 		    		
 		    	} else if (collection.size() == numLines) {
 		    				    	
-		    		System.out.println("Feasible solution " + index + " has " + collection.size() + " routes");
+		    		log.info("Feasible solution " + index + " has " + collection.size() + " routes");
 		    		
 		    	} else {
 		    		
-		    		System.out.println("This solution has only " + collection.size() + " so it will be discarded it");
+		    		log.info("This solution has only " + collection.size() + " so it will be discarded it");
 		    		
 		    		continue;
 		    		

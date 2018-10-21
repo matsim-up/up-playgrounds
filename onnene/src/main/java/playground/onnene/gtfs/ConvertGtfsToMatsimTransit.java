@@ -31,9 +31,8 @@ import playground.onnene.exampleCode.DirectoryConfig;
  */
 public class ConvertGtfsToMatsimTransit {
 	
-	final private static Logger LOG = Logger.getLogger(ConvertGtfsToMatsimTransit.class);
+	final private static Logger log = Logger.getLogger(ConvertGtfsToMatsimTransit.class);
 	final private static String CRS_CT = TransformationFactory.HARTEBEESTHOEK94_LO19;
-	//final private static LocalDate date = LocalDate.now();
 	
 	
 	public static void main(String[] args) {
@@ -47,10 +46,6 @@ public class ConvertGtfsToMatsimTransit {
 		String gtfsFile = DirectoryConfig.GTFS_FEED;
 		String outputFolder = DirectoryConfig.COMPRESSED_GTFS_GZIP_DIRECTORY ;
 		String date = "2018-05-29";
-		
-//		String gtfsFile = args[0];
-//		String outputFolder = args[1];
-//		String date = "2018-05-29";
 		
 		
 		//Scenario sc = parseGtfs(gtfsFile);
@@ -74,7 +69,7 @@ public class ConvertGtfsToMatsimTransit {
 		
 		Scenario sc = ScenarioUtils.createScenario(config);
 		
-		LOG.info("Parse the GTFS file...");
+		log.info("Parse the GTFS file...");
 		GTFSFeed feed = GTFSFeed.fromFile(gtfsFile);
 		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation("WGS84", CRS_CT);
 		GtfsConverter gtfs = new GtfsConverter(feed, sc, ct);
@@ -82,20 +77,16 @@ public class ConvertGtfsToMatsimTransit {
 		//System.out.println(LocalDate.parse(date));
 		gtfs.setDate(LocalDate.parse(date));
 		gtfs.convert();
-		LOG.info("Number of transit lines: " + sc.getTransitSchedule().getTransitLines().size());
+		log.info("Number of transit lines: " + sc.getTransitSchedule().getTransitLines().size());
 		
-		LOG.info("Create transit vehicles...");
+		log.info("Create transit vehicles...");
 		CreateVehiclesForSchedule cvs = new CreateVehiclesForSchedule(sc.getTransitSchedule(), sc.getTransitVehicles());
 		cvs.run();
 		
-		LOG.info("Create transit pseudonetwork...");
+		log.info("Create transit pseudonetwork...");
 		CreatePseudoNetwork cpn = new CreatePseudoNetwork(sc.getTransitSchedule(),sc.getNetwork(),"MyCiTi_");
 		cpn.createNetwork();
-		
-		//System.out.println("");
-		//System.out.println(sc.getNetwork().toString());
-		//System.out.print(cpn.createNetwork());
-		//System.out.println("");
+
 		return sc;
 		
 		

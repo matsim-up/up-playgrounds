@@ -1,25 +1,5 @@
-/* *********************************************************************** *
- * project: org.matsim.*
- * *********************************************************************** *
- *                                                                         *
- * copyright       : (C) 2018 by the members listed in the COPYING,        *
- *                   LICENSE and WARRANTY file.                            *
- * email           : info at matsim dot org                                *
- *                                                                         *
- * *********************************************************************** *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *   See also COPYING, LICENSE and WARRANTY file                           *
- *                                                                         *
- * *********************************************************************** */
-  
-/**
- * 
- */
-package playground.onnene.transitScheduleMaker;
+package playground.onnene.exampleCode;
+
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -29,20 +9,14 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.log4j.Logger;
-
 /**
- * Unzip utility class for window os 
- * 
- * @author Onnene
+ * This utility extracts files and directories of a standard zip file to
+ * a destination directory.
+ * @author www.codejava.net
  *
  */
 public class UnzipUtility {
-	
-	private static final Logger log = Logger.getLogger(UnzipUtility.class);
-	
-	
-	 /**
+    /**
      * Size of the buffer to read/write data
      */
     private static final int BUFFER_SIZE = 4096;
@@ -104,5 +78,6 @@ public class UnzipUtility {
             ex.printStackTrace();
         }
     }
+
 
 }

@@ -37,10 +37,12 @@ import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.up.utils.FileUtils;
 
-import playground.onnene.transitScheduleMaker.UnzipUtility;
+import playground.onnene.exampleCode.UnzipUtility;
 
 
 /**
+ * Class that implements parallel MATSim
+ * 
  * @author jwjoubert
  *
  */
@@ -117,6 +119,9 @@ public class MatsimInstanceCallable implements Callable<Double[]> {
 	        
 	        /* Execute the MATSim run */
 	        WindowsMatsimInstance.run(folder.getAbsolutePath(), innerOutputFolder.getAbsolutePath(), seed);
+	        
+	        //System.setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream("/location/to/console.out")), true));
+	        
         
 		} else {
 			

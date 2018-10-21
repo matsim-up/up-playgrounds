@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+import org.apache.log4j.Logger;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.KShortestPaths;
@@ -27,21 +28,27 @@ import org.jgrapht.io.GraphImporter;
 import org.jgrapht.io.GraphMLImporter;
 import org.jgrapht.io.ImportException;
 import org.jgrapht.io.VertexProvider;
+import org.matsim.up.utils.Header;
 
 import playground.onnene.ga.ProblemUtils;
 
 public class RouteSetGen {
 	
 	static int numLines = ProblemUtils.numberOfLines();
+	private static final Logger log = Logger.getLogger(RouteSetGen.class);
 
 	public static void main(String[] args) throws IOException {
+		
+		Header.printHeader(RouteSetGen.class, args);
 		RouteSetGen rsg = new RouteSetGen();
 	
 		List<List<String>> temp = rsg.getFeasibleRoutesByStratifiedSampling();
 		
 		int numOfSplit = temp.size()/numLines;
 		
-		System.out.print(rsg.splitPopulationIntoIndividuals(temp, numOfSplit));
+		log.info(rsg.splitPopulationIntoIndividuals(temp, numOfSplit));
+		
+		Header.printFooter();
 			
 	}
 
@@ -77,7 +84,7 @@ public class RouteSetGen {
 		outStream.flush();
     	outStream.close();
     
-    	System.out.println("Generatiion complete...");
+    	log.info("Generatiion complete...");
 
 	    return result;
 	}
@@ -85,11 +92,11 @@ public class RouteSetGen {
 	
 	public List<List<String>> getFeasibleRoutesByStratifiedSampling() throws IOException {
 		
-		System.out.println("Generating Feasible Routes...");
+		log.info("Generating Feasible Routes...");
 		
 		Graph<CustomVertex, CustomEdge> graph;
 		List<List<String>> vertLst = new ArrayList<>();
-		List<List<List<String>>> lol = new ArrayList<>();
+		List<List<List<String>>> strata = new ArrayList<>();
 
 		try (BufferedReader br = new BufferedReader(new FileReader("./input/routeGenInput/46_myciti_station.csv"))) {
 
@@ -132,15 +139,15 @@ public class RouteSetGen {
 								vertLst1.add(vertStrLst);
 						}
 						
-						lol.add(vertLst1);
+						strata.add(vertLst1);
 
 			}
 			
 			List<Integer> check = new ArrayList<Integer>();
 			
-			for (int z = 0; z<lol.size(); z++) {
+			for (int z = 0; z<strata.size(); z++) {
 				
-				check.add(lol.get(z).size());
+				check.add(strata.get(z).size());
 								
 			}
 						
@@ -151,9 +158,9 @@ public class RouteSetGen {
 			
 			for (int i = 0; i<sizeOfLongestList; i++) {
 						
-				for (int y = 0; y<lol.size(); y++) {
+				for (int y = 0; y<strata.size(); y++) {
 					
-					temp = lol.get(y);
+					temp = strata.get(y);
 					//System.out.println(temp.size());
 					vertLst.add(RouteSetGen.choice(temp, r));
 			

@@ -47,7 +47,7 @@ import org.matsim.up.utils.Header;
  * @author jwjoubert
  */
 public class GtfsParser {
-	final private static Logger LOG = Logger.getLogger(GtfsParser.class);
+	final private static Logger log = Logger.getLogger(GtfsParser.class);
 	private Scenario sc;
 	private TransitRouterConfig trConfig;
 	private TransitRouter trRouter;
@@ -65,7 +65,7 @@ public class GtfsParser {
 		int from = 1;
 		int to = 25;
 		double dist = gp.findRouteDistance(from, to, Time.parseTime("08:00:00"));
-		LOG.info(String.format("Distance from %d to %d: %.0fm", from, to, dist));
+		log.info(String.format("Distance from %d to %d: %.0fm", from, to, dist));
 		
 		Header.printFooter();
 	}
@@ -122,7 +122,7 @@ public class GtfsParser {
 				}
 			}
 		} else{
-			LOG.error("Either origin (" + from + ") or destination (" + to + ") node, or both, could not be found. Returning zero distance.");
+			log.error("Either origin (" + from + ") or destination (" + to + ") node, or both, could not be found. Returning zero distance.");
 		}
 		return dist;
 	}

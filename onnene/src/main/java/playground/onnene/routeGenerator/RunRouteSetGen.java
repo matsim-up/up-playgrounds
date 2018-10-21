@@ -21,11 +21,17 @@
  */
 package playground.onnene.routeGenerator;
 
+import org.apache.log4j.Logger;
+import org.matsim.up.utils.Header;
+
 /**
+ * This class is used to run the @RouteSetGen class
  * @author Onnene
  *
  */
 public class RunRouteSetGen {
+	
+	private static final Logger log = Logger.getLogger(RunRouteSetGen.class);
 
 	/**
 	 * @param args
@@ -33,10 +39,9 @@ public class RunRouteSetGen {
 	 */
 	public static void main(String[] args) throws Exception {
 		
-		//int numLines = FileMakerUtils.count(DirectoryConfig.SCHEDULE_LINES_HELPER_FILE);
-		//int numLines = FileMakerUtils.count("./input/transitScheduleMakerHelperFiles/transitLineList.txt");		
+		Header.printHeader(RunRouteSetGen.class, args);
 		
-
+		//int numLines = FileMakerUtils.count("./input/transitScheduleMakerHelperFiles/transitLineList.txt");		
 		
 		String transitNetworkXml = "./input/gtfsInputs/gtfsOutput/transitNetwork.xml";
 		String transitScheduleXml = "./input/gtfsInputs/gtfsOutput/transitSchedule.xml";
@@ -77,6 +82,8 @@ public class RunRouteSetGen {
 		//List<List<String>> temp = rsg.getFeasibleRoutesByStratifiedSampling();
 		//int numOfSplit = temp.size()/numLines;
 		//rsg.splitPopulationIntoIndividuals(temp, numOfSplit);
+		
+		Header.printFooter();
 		
 	}
 

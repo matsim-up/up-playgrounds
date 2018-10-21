@@ -125,10 +125,6 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 		
 	}
 	
-//		public static List<Double> getUsersTimeList() {
-//				
-//			return totalTraveltime;
-//	}
 		
 		public double getUserScore() {
 			

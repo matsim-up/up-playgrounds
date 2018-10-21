@@ -21,6 +21,8 @@
  */
 package playground.onnene.ga;
 
+
+import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -28,6 +30,7 @@ import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.scenario.ScenarioUtils;
+import org.matsim.up.utils.Header;
 
 import ch.sbb.matsim.mobsim.qsim.SBBQSimModule;
 import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
@@ -38,6 +41,8 @@ import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
  * @author jwjoubert
  */
 public class UnixMatsimInstance{
+	
+	private static final Logger log = Logger.getLogger(UnixMatsimInstance.class);
 	private static String configFile;
 	private static String output;
 	private static long seed;
@@ -46,10 +51,15 @@ public class UnixMatsimInstance{
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
+		Header.printHeader(UnixMatsimInstance.class, args);
+		
 		configFile = args[0];
 		output = args[1];
 		seed = Long.parseLong(args[2]);
 		runInstance();
+		
+		Header.printFooter();
 	}
 	
 	private static void runInstance() {
@@ -63,7 +73,7 @@ public class UnixMatsimInstance{
 		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 		
 		config.plans().setInputFile("./plans.xml");
-		config.parallelEventHandling().setNumberOfThreads(10);
+		config.parallelEventHandling().setNumberOfThreads(20);
 		config.qsim().setNumberOfThreads(6);
 		config.controler().setWriteEventsInterval(RunSimulationBasedTransitOptimisation.MATSIM_ITERATION_NUMBER); //FIXME
 		config.network().setInputFile("./network.xml");

@@ -63,7 +63,7 @@ import playground.onnene.ga.ProblemUtils;
  */
 public class LocalMachineRunner {
 	
-	private static final Logger LOG = Logger.getLogger(LocalMachineRunner.class);
+	private static final Logger log = Logger.getLogger(LocalMachineRunner.class);
     private static final int MAX_NFE = 3;
     public static int callsToEvaluate = 0;
     //private static final int MAX_NFE = 30;
@@ -86,14 +86,14 @@ public class LocalMachineRunner {
 		int numberOfRuns = Integer.parseInt(args[1]);
 
 		processResults(runSimulation(seed_base, numberOfRuns));
-		LOG.info("Finished!");
+		log.info("Finished!");
 		Header.printFooter();
 		
 	}
 	
 	 private void decodeResult(Variable variable, String resultFilePath, int folderNum, int fileNum) throws IOException {
 		 
-		 LOG.info(variable instanceof  DecisionVariable);
+		 log.info(variable instanceof  DecisionVariable);
 			if (variable instanceof  DecisionVariable) {
 				DecisionVariable varObj = (DecisionVariable) variable;               
 				String resultFileName = "Solution" + fileNum + ".xml";                   
@@ -113,7 +113,7 @@ public class LocalMachineRunner {
 	private static void setupOutput() {
 		File outputFolder = new File("./output/");
 		if(outputFolder.exists()) {
-			LOG.warn("The output folder exists and will be deleted.");
+			log.warn("The output folder exists and will be deleted.");
 			try {
 				FileUtils.deleteDirectory(outputFolder);
 			} catch (IOException e) {
@@ -264,14 +264,14 @@ public class LocalMachineRunner {
 		//File = seed new File("./output/SBO_input/injectedOutput.txt");
 		
 		if (checkpointFile.exists()) { 
-			LOG.info("Using checkpoint file!");
+			log.info("Using checkpoint file!");
 		}
 		
 		/* Run the Algorithm. */
 		for(int run = 0; run < numberOfRuns; run++) {
 			long seed = seedBase+((long)run);
 			
-			LOG.info("Running population " + run + " (using seed "+ seedBase + ")... ");
+			log.info("Running population " + run + " (using seed "+ seedBase + ")... ");
 		
 		//algorithm.getResult();
 		PRNG.setSeed(seed);
@@ -357,7 +357,7 @@ public class LocalMachineRunner {
 
 			folderIdx++;
 			int fileIdx = 0;
-			LOG.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
+			log.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
 
 			for(int solution = 0; solution < runResult.size(); solution++) {
 				Solution runSolution = runResult.get(solution);
@@ -366,7 +366,7 @@ public class LocalMachineRunner {
 				//rsbtop.decodeResult(solution.getVariable(0), DirectoryConfig.RESULTS_FILE, folderIdx, fileIdx);
 				lmr.decodeResult(runSolution.getVariable(0), ResultFolder, folderIdx, fileIdx);
 				//MOEA_LOG_FILE  = new FileOutputStream(new File("./output/logs/run_moea_log.txt"), true);
-				LOG.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
+				log.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
 				
 				MOEA_LOG.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
 				REFSET_TXT.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());

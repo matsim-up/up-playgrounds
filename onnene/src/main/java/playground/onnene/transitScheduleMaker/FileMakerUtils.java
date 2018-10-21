@@ -10,6 +10,8 @@ import java.util.Formatter;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.log4j.Logger;
+
 
 /**
  * Some utility methods for creating the transitSchedule.xml file 
@@ -18,6 +20,8 @@ import java.util.zip.GZIPOutputStream;
  *
  */
 public class FileMakerUtils {
+	
+	private static final Logger log = Logger.getLogger(FileMakerUtils.class);
     
     private Formatter filename;
    
@@ -60,7 +64,7 @@ public class FileMakerUtils {
 	          gzipOuputStream.finish();
 	          gzipOuputStream.close();
 
-	          //System.out.println("The file was compressed successfully!");
+	          //log.info("The file was compressed successfully!");
 
 	      } catch (IOException ex) {
 
@@ -90,7 +94,7 @@ public class FileMakerUtils {
 	          gZIPInputStream.close();
 	          fileOutputStream.close();
 
-	          //System.out.println("The file was decompressed successfully!");
+	          //log.info("The file was decompressed successfully!");
 
 	      } catch (IOException ex) {
 
