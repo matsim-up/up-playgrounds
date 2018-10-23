@@ -67,14 +67,14 @@ public class UnixMatsimInstance{
 		ConfigUtils.loadConfig(config, configFile);
 				
 		config.global().setRandomSeed(seed);
-		config.global().setNumberOfThreads(4);
+		config.global().setNumberOfThreads(2);
 		config.controler().setLastIteration(RunSimulationBasedTransitOptimisation.MATSIM_ITERATION_NUMBER);       
 		config.controler().setOutputDirectory(output);       
 		config.controler().setOverwriteFileSetting(OverwriteFileSetting.deleteDirectoryIfExists);
 		
 		config.plans().setInputFile("./plans.xml");
 		config.parallelEventHandling().setNumberOfThreads(2);
-		config.qsim().setNumberOfThreads(4);
+		config.qsim().setNumberOfThreads(2);
 		config.controler().setWriteEventsInterval(RunSimulationBasedTransitOptimisation.MATSIM_ITERATION_NUMBER); //FIXME
 		config.network().setInputFile("./network.xml");
 		config.transit().setVehiclesFile("./transitVehicles.xml");

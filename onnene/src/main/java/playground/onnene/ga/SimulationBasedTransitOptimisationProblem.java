@@ -49,7 +49,7 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
 	final private static int SIMULATIONS_PER_EVALUATION = 10;
 	final private static int SIMULATIONS_PER_BLOCK = 10;
-	final private static int THREADS_PER_SIMULATION = 6;
+	final private static int THREADS_PER_SIMULATION = 5;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
 	/* Other variables. */
