@@ -38,8 +38,9 @@ public class Testing {
 		
 		try {
 			
-			File ensembleToCopy = new File("./output/matsimOutput/1/ensembleRuns1.txt");
-			File ensembleDest = new File("./input/output/matsimOutput/");
+			File ensembleToCopy = new File("./output/matsimOutput/0/ensembleRuns0.txt");
+			File ensembleDest = new File("./input/output/NSGAII/matsimOutput/");
+			
 			//File ensembleDest = new File(RunSimulationBasedTransitOptimisation.matsimOutput.toString());
 						
 			if (new File(ensembleDest + File.separator + ensembleToCopy.getName()).exists()) {
@@ -53,7 +54,9 @@ public class Testing {
 				
 				///File dest = new File(ensembleToCopy.getAbsolutePath() + "_" + Integer.parseInt(ff[-1].getName().substring(-1)) + 1);
 				
-				ensembleToCopy.renameTo(new File (ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt"));				
+				ensembleToCopy.renameTo(new File (ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt"));			
+				
+				//Log.info(ensembleToCopy);
 				//org.apache.commons.io.FileUtils.copyDirectoryToDirectory(dest, ensembleDest);
 								
 			} else {

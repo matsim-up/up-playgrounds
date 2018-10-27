@@ -60,8 +60,8 @@ public class Mutation implements Variation {
                 Variable variable1 = result1.getVariable(i);
 
                 if ((PRNG.nextDouble() <= probability)
-                    && (variable1 instanceof DecisionVariable)) {
-                        applyMutation((DecisionVariable)variable1);
+                    && (variable1 instanceof LocalMachineDecisionVariable)) {
+                        applyMutation((LocalMachineDecisionVariable)variable1);
                 }
         }
 
@@ -69,7 +69,7 @@ public class Mutation implements Variation {
     }
 
 
-    private void applyMutation(DecisionVariable v1) {
+    private void applyMutation(LocalMachineDecisionVariable v1) {
     	
     	ProblemUtils pu = new ProblemUtils();
 		int transitLineNumberToReplace = PRNG.nextInt(1, numLines-1);
@@ -85,7 +85,7 @@ public class Mutation implements Variation {
     }
     
 
-    private void replaceTransitLine(DecisionVariable v1, JSONObject transitLineToReplace, int transitLineNumberToReplace) {
+    private void replaceTransitLine(LocalMachineDecisionVariable v1, JSONObject transitLineToReplace, int transitLineNumberToReplace) {
         JSONArray tsList = ProblemUtils.getTransitLines(v1);
         tsList.put(transitLineNumberToReplace, transitLineToReplace);
     }

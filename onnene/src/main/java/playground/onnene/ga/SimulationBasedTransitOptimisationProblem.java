@@ -42,19 +42,19 @@ import org.moeaframework.problem.AbstractProblem;
 /**
  * This class implements our simulation based optimisation problem
  * 
- * @author Onnene
+ * @author jwjoubert
  *
  */
 public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
 	final private static int SIMULATIONS_PER_EVALUATION = 10;
 	final private static int SIMULATIONS_PER_BLOCK = 10;
-	final private static int THREADS_PER_SIMULATION = 6;
+	final private static int THREADS_PER_SIMULATION = 5;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
 	/* Other variables. */
 	final private Logger log = Logger.getLogger(SimulationBasedTransitOptimisationProblem.class);  
-	final private long seedBase = 20181021l;
+	final private long seedBase = 20181026l;
 	private static AtomicInteger overallRunNumber = new AtomicInteger(0);
 
 
@@ -158,23 +158,21 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 		FileUtils.delete(new File(folder + "release.zip"));
 		FileUtils.delete(new File(folder + "transitSchedule.xml"));
 		FileUtils.delete(new File(folder + "transitVehicles.xml"));
-		
-		
+				
 		/* Copy consolidated result to a folder outside the output folder
 		 * where it wont be deleted in subsequent restarts */
 		try {
 			
 			File ensembleToCopy = new File(folder + "ensembleRuns" + runNumber + ".txt");
-			//File ensembleDest = new File("./input/output/matsimOutput/");
 			File ensembleDest = new File(RunSimulationBasedTransitOptimisation.matsimOutput.toString());
 						
 			if (new File(ensembleDest + File.separator + ensembleToCopy.getName()).exists()) {
 				
 				File[] fileList = ensembleDest.listFiles();
-				
-				int newFileNum = Integer.parseInt(fileList[fileList.length-1].getName().replaceAll("\\D+","")) + 1;
-				
-				ensembleToCopy.renameTo(new File (ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt"));				
+				int newFileNum = Integer.parseInt(fileList[fileList.length-1].getName().replaceAll("\\D+","")) + 1;			
+				File renamedEnsembleToCopy = org.apache.commons.io.FileUtils.getFile(ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt");
+				org.apache.commons.io.FileUtils.moveFile(ensembleToCopy, renamedEnsembleToCopy);
+				//ensembleToCopy.renameTo(new File (ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt"));				
 								
 			} else {
 				
@@ -197,7 +195,11 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 
 	private double[] consolidateMatsimRuns(String folder, List<Future<Double[]>> listOfJobs, int objectives) {
 		double[] result = new double[objectives];
+		
+		
 		String ensembleFilename = folder + "ensembleRuns" + folder.replaceAll("\\D+","") + ".txt";
+		
+		
 		BufferedWriter bw = IOUtils.getBufferedWriter(ensembleFilename);
 		try {
 			bw.write("Run\tObj1\tObj2\n");

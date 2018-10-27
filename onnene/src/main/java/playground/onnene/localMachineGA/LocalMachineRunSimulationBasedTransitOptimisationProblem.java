@@ -51,9 +51,6 @@ import org.moeaframework.core.indicator.QualityIndicator;
 import org.moeaframework.core.spi.OperatorFactory;
 import org.moeaframework.core.spi.ProblemFactory;
 
-import playground.onnene.ga.DecisionVariable;
-import playground.onnene.ga.GA_OperatorProvider;
-import playground.onnene.ga.ProblemUtils;
 
 /**
  * @author Onnene
@@ -142,8 +139,8 @@ public class LocalMachineRunSimulationBasedTransitOptimisationProblem {
 
 	
 	private void decodeResult(Variable variable, String resultFilePath, int folderNum, int fileNum) throws IOException {
-		if (variable instanceof  DecisionVariable) {
-			DecisionVariable varObj = (DecisionVariable) variable;               
+		if (variable instanceof LocalMachineDecisionVariable) {
+			LocalMachineDecisionVariable varObj = (LocalMachineDecisionVariable) variable;               
 			String resultFileName = "Solution" + fileNum + ".xml";                   
 			String innerFolderStr = resultFilePath + folderNum + File.separator;             
 			Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));               

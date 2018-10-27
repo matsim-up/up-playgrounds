@@ -39,6 +39,7 @@ import org.matsim.up.utils.FileUtils;
 import org.moeaframework.core.Solution;
 import org.moeaframework.problem.AbstractProblem;
 
+import playground.onnene.ga.RunSimulationBasedTransitOptimisation;
 
 /**
  * This class is a version of the simulation based 
@@ -47,9 +48,9 @@ import org.moeaframework.problem.AbstractProblem;
  */
 public class LocalMachineSimulationBasedTransitOptimisationProblem extends AbstractProblem{
 	
-	/*TODO The following should be set once we have a good idea of what they need to be. */ 
-	final private static int SIMULATIONS_PER_EVALUATION = 2;
-	final private static int SIMULATIONS_PER_BLOCK = 2;
+	/* TODO The following should be set once we have a good idea of what they need to be. */ 
+	final private static int SIMULATIONS_PER_EVALUATION = 1;
+	final private static int SIMULATIONS_PER_BLOCK = 1;
 	final private static int THREADS_PER_SIMULATION = 6;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
@@ -71,7 +72,8 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 
 	@Override
 	public void evaluate(Solution solution) {
-		DecisionVariable var = (DecisionVariable) solution.getVariable(0);
+		//DecisionVariable var = (DecisionVariable) solution.getVariable(0);
+		LocalMachineDecisionVariable var = (LocalMachineDecisionVariable) solution.getVariable(0);
 		JSONObject Jvar = var.getTransitSchedule();
 
 		final int runNumber = overallRunNumber.getAndIncrement();
@@ -80,7 +82,7 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 		final String folder = outputFolder;
 		new File(outputFolder).mkdirs();
 		log.info("Starting evaluate() call... " + folder);
-		log.info("Output folder created. This run is number: " + runNumber + "while the overall: " + (runNumber+1));
+		log.info("Output folder created. This run is number: " + runNumber + " while the overall: " + (runNumber+1));
 
 		/* Copy all the necessary input files, JAR included */
 		log.info("Copying all required input files...");
@@ -160,16 +162,15 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 		try {
 			
 			File ensembleToCopy = new File(folder + "ensembleRuns" + runNumber + ".txt");
-			//File ensembleDest = new File("./input/output/matsimOutput/");
-			File ensembleDest = new File(TestRun.matsimOutput.toString());
+			File ensembleDest = new File(RunSimulationBasedTransitOptimisation.matsimOutput.toString());
 						
 			if (new File(ensembleDest + File.separator + ensembleToCopy.getName()).exists()) {
 				
 				File[] fileList = ensembleDest.listFiles();
-				
-				int newFileNum = Integer.parseInt(fileList[fileList.length-1].getName().replaceAll("\\D+","")) + 1;
-				
-				ensembleToCopy.renameTo(new File (ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt"));				
+				int newFileNum = Integer.parseInt(fileList[fileList.length-1].getName().replaceAll("\\D+","")) + 1;			
+				File renamedEnsembleToCopy = org.apache.commons.io.FileUtils.getFile(ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt");
+				org.apache.commons.io.FileUtils.moveFile(ensembleToCopy, renamedEnsembleToCopy);
+				//ensembleToCopy.renameTo(new File (ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt"));				
 								
 			} else {
 				
@@ -179,7 +180,6 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 			e1.printStackTrace();
 		}
 		
-		
 		log.info("Completed evaluate() call on folder " + folder);
 	}
 
@@ -187,7 +187,7 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 	@Override
 	public Solution newSolution() {
 		Solution solution = new Solution(1, 2);   	
-		solution.setVariable(0, new DecisionVariable());
+		solution.setVariable(0, new LocalMachineDecisionVariable());
 		return solution;
 	}
 
@@ -199,8 +199,7 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 		//String ensembleFilename = folder + "ensembleRuns.txt";
 		
 		String ensembleFilename = folder + "ensembleRuns" + folder.replaceAll("\\D+","") + ".txt";
-		
-		
+	
 		//String ensembleFilename = "./input/output/matsimOutput/" + "ensembleRuns.txt";
 		//BufferedWriter bw = IOUtils.getBufferedWriter(ensembleFilename);
 		BufferedWriter bw = IOUtils.getBufferedWriter(ensembleFilename);
@@ -276,8 +275,6 @@ public class LocalMachineSimulationBasedTransitOptimisationProblem extends Abstr
 				log.error("Could not write ensemble runs result.");
 			}
 		}
-		
-	
 		
 		return result;
 	}

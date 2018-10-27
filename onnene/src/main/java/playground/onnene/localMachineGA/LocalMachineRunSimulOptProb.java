@@ -53,9 +53,6 @@ import org.moeaframework.core.spi.OperatorFactory;
 import org.moeaframework.core.spi.ProblemFactory;
 import org.moeaframework.util.TypedProperties;
 
-import playground.onnene.ga.DecisionVariable;
-import playground.onnene.ga.GA_OperatorProvider;
-import playground.onnene.ga.ProblemUtils;
 
 /**
  * @author Onnene
@@ -95,8 +92,8 @@ public class LocalMachineRunSimulOptProb {
 	
 	
 	 private void decodeResult(Variable variable, String resultFilePath, String algorithmNameFolder,  int folderNum, int fileNum) throws IOException {
-			if (variable instanceof  DecisionVariable) {
-				DecisionVariable varObj = (DecisionVariable) variable;         
+			if (variable instanceof  LocalMachineDecisionVariable) {
+				LocalMachineDecisionVariable varObj = (LocalMachineDecisionVariable) variable;         
 				//Path algorithmFolder = Files.createDirectories(Paths.get(algorithmNameFolder)); 				
 				String resultFileName = "Solution" + fileNum + ".xml";                   
 				String innerFolderStr = resultFilePath + algorithmNameFolder +  folderNum + File.separator;             

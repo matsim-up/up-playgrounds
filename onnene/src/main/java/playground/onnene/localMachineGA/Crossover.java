@@ -62,10 +62,10 @@ public class Crossover implements Variation {
 	            Variable variable1 = parent1Child.getVariable(i);
 	            Variable variable2 = parent2Child.getVariable(i);
 
-	            if ((PRNG.nextDouble() <= probability) && (variable1 instanceof DecisionVariable) && (variable2 instanceof DecisionVariable)) {
+	            if ((PRNG.nextDouble() <= probability) && (variable1 instanceof LocalMachineDecisionVariable) && (variable2 instanceof LocalMachineDecisionVariable)) {
 
-	                DecisionVariable v1 = (DecisionVariable) variable1;
-	                DecisionVariable v2 = (DecisionVariable) variable2;
+	                LocalMachineDecisionVariable v1 = (LocalMachineDecisionVariable) variable1;
+	                LocalMachineDecisionVariable v2 = (LocalMachineDecisionVariable) variable2;
 
 	                applyCrossover(v1, v2);
 	            }
@@ -77,7 +77,7 @@ public class Crossover implements Variation {
 	    
 
 
-	    private void applyCrossover(DecisionVariable v1, DecisionVariable v2) {
+	    private void applyCrossover(LocalMachineDecisionVariable v1, LocalMachineDecisionVariable v2) {
 	        // swap first half of <transitLine> between v1 and v2
 	    	
 	    	int numLines = ProblemUtils.numberOfLines();	       
@@ -90,7 +90,7 @@ public class Crossover implements Variation {
 	        
 	    }
 
-	    private void replaceTransitLines(DecisionVariable v, List<JSONObject> transitLinesToReplace) {
+	    private void replaceTransitLines(LocalMachineDecisionVariable v, List<JSONObject> transitLinesToReplace) {
 	        JSONArray tlList = ProblemUtils.getTransitLines(v);
 	        
 	        JSONObject tlToReplace;
@@ -100,7 +100,7 @@ public class Crossover implements Variation {
 	        }
 	    }
 
-	    private List<JSONObject> getTransitLines(DecisionVariable v2, int numberOfTransitLinesToSwap) {
+	    private List<JSONObject> getTransitLines(LocalMachineDecisionVariable v2, int numberOfTransitLinesToSwap) {
 
 	        JSONArray tlList = ProblemUtils.getTransitLines(v2);
 	        

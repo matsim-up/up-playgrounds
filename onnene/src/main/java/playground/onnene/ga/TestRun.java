@@ -19,7 +19,7 @@
 /**
  * 
  */
-package playground.onnene.localMachineGA;
+package playground.onnene.ga;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -50,8 +50,6 @@ import org.moeaframework.core.spi.OperatorFactory;
 import org.moeaframework.core.spi.ProblemFactory;
 import org.moeaframework.util.TypedProperties;
 
-import playground.onnene.ga.GA_OperatorProvider;
-
 /**
  * This class is used to run the simulation based transit optimisation problem
  * 
@@ -61,9 +59,9 @@ import playground.onnene.ga.GA_OperatorProvider;
 public class TestRun {
 	
 	private static final Logger log = Logger.getLogger(TestRun.class);
-    private static final int MAX_NFE = 4;   
-	private static final int CHECKPOINT_FREQ = 2;
-	private static final int POP_SIZE = 4;
+    private static final int MAX_NFE = 12;   
+	private static final int CHECKPOINT_FREQ = 3;
+	private static final int POP_SIZE = 3;
 	public static final int MATSIM_ITERATION_NUMBER = 10;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
     
@@ -198,8 +196,9 @@ public class TestRun {
 		REFSET_PF = new FileOutputStream(new File("./input/output/problemReferenceSet/refSet.pf"), true);
   		
 		// Step 1 - Run the algorithm(s).  If running multiple algorithms, save to separate files.
-		ProblemFactory.getInstance().addProvider(new LocalMachineGA_ProblemProvider());
-		Problem problem = ProblemFactory.getInstance().getProblem("LocalMachineSimulationBasedTransitOptimisationProblem");
+		
+		ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
+		Problem problem = ProblemFactory.getInstance().getProblem("SimulationBasedTransitOptimisationProblem");
 		
 		
 		TypedProperties properties = new TypedProperties();
@@ -243,7 +242,9 @@ public class TestRun {
 			
 			long seed = seedBase + PRNG.nextInt(POP_SIZE);
 		
-			LocalMachineCheckpointAndOutputResult wrapper = new LocalMachineCheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
+			//LocalMachineCheckpointAndOutputResult wrapper = new LocalMachineCheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
+			
+			CheckpointAndOutputResult wrapper = new CheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
 			
 			for(int run = 0; run < numberOfRuns; run++) {
 				
@@ -415,7 +416,7 @@ public class TestRun {
 
 		}
 		
-		cleanMatsimFolder();		
+		//cleanMatsimFolder();		
 		
 	}
 	

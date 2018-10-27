@@ -130,7 +130,7 @@ public class ProblemUtils{
     
     
     
-    public static JSONArray getTransitLines(DecisionVariable v) {
+    public static JSONArray getTransitLines(LocalMachineDecisionVariable v) {
         return getTransitLines(v.getTransitSchedule());
     }
     

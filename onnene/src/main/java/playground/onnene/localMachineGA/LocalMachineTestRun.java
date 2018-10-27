@@ -56,20 +56,23 @@ import org.moeaframework.util.TypedProperties;
  * @author Onnene
  *
  */
-public class TestRun2 {
+public class LocalMachineTestRun {
 	
-	private static final Logger log = Logger.getLogger(TestRun2.class);
-    private static final int MAX_NFE = 4;   
-	private static final int CHECKPOINT_FREQ = 2;
-	private static final int POP_SIZE = 4;
+	private static final Logger log = Logger.getLogger(LocalMachineTestRun.class);
+    private static final int MAX_NFE = 12;   
+	private static final int CHECKPOINT_FREQ = 3;
+	private static final int POP_SIZE = 3;
+	public static final int MATSIM_ITERATION_NUMBER = 10;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
+    
+    public static Path matsimOutput; 
 
     /**
 	 * @param args
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {	
-		Header.printHeader(TestRun2.class, args);
+		Header.printHeader(LocalMachineTestRun.class, args);
 
 		//int numThreads = Integer.parseInt(args[0]);
 		long seedBase = Long.parseLong(args[0]);
@@ -80,6 +83,7 @@ public class TestRun2 {
 		Header.printFooter();
 		
 	}
+	
 	
 	
 	 /**
@@ -94,24 +98,31 @@ public class TestRun2 {
 	 */
 	private void decodeResult(Variable variable, String resultFilePath,  int folderNum, int fileNum) throws IOException {
 		
-		log.info(variable.getClass().toString());
 		
-		log.info(variable instanceof  LocalMachineDecisionVariable);
+		if (variable instanceof LocalMachineDecisionVariable) {
 			
-			if (variable instanceof  LocalMachineDecisionVariable) {
-				LocalMachineDecisionVariable varObj = (LocalMachineDecisionVariable) variable;         
-				Path algorithmFolder = Files.createDirectories(Paths.get(resultFilePath)); 				
-				String resultFileName = "Solution" + fileNum + ".xml";                   
-				String innerFolderStr = resultFilePath + File.separator +  folderNum + File.separator;             
-				Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));               
-				String paretoResultFolderPath = innerFolder + File.separator + resultFileName;
-				ProblemUtils.getXMLFromJSONDecisionVar(varObj.getTransitSchedule(), paretoResultFolderPath);
+			try {
+			LocalMachineDecisionVariable varObj = (LocalMachineDecisionVariable) variable;         
+			//Path algorithmFolder = Files.createDirectories(Paths.get(resultFilePath)); 				
+			String resultFileName = "Solution" + fileNum + ".xml";                   
+			String innerFolderStr = resultFilePath + File.separator +  folderNum + File.separator;             
+			Path innerFolder = Files.createDirectories(Paths.get(innerFolderStr));               
+			String paretoResultFolderPath = innerFolder + File.separator + resultFileName;
+			ProblemUtils.getXMLFromJSONDecisionVar(varObj.getTransitSchedule(), paretoResultFolderPath);
+			
 			}
-			else {
-				throw new IOException("type not supported");
-			}        
-		}
-	 
+			
+			catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Something is wrong here");
+			}
+			
+		}else {
+			throw new IOException("type not supported");
+		}        
+	}
+	
+
 	
 	/**
 	 * Creates all the necessary output folders and sets up the log files.
@@ -130,7 +141,7 @@ public class TestRun2 {
 		
 		/* Set up output folders. */
 		new File("./output/logs/").mkdirs();
-		//new File("./output/matsimOutput/").mkdirs();
+		new File("./output/matsimOutput/").mkdirs();
 		new File("./output/optimisationResults/").mkdirs();
 		new File("./output/problemReferenceSet/").mkdirs();
 
@@ -158,7 +169,7 @@ public class TestRun2 {
 		}
 		
 	}
-//	
+	
 	
 	/**
 	 * This class runs the simulation based transit optimisation problem
@@ -173,21 +184,21 @@ public class TestRun2 {
     	
     	Files.createDirectories(Paths.get("./input/output/logs/"));
 		//Files.createDirectories(Paths.get("./input/output/optimisationResults/"));
-    	//Files.createDirectories(Paths.get("./output/SBO_input/problemReferenceSet/"));
-    	//Files.createDirectories(Paths.get("./output/SBO_input/checkpoint/"));
-    	//Files.createDirectories(Paths.get("./output/SBO_input/indicator/"));
+//    	Files.createDirectories(Paths.get("./input/output/problemReferenceSet/"));
+//    	Files.createDirectories(Paths.get("./input/output/checkpoint/"));
+//    	Files.createDirectories(Paths.get("./input/output/indicator/"));
     	//Files.createDirectories(Paths.get("./input/output/matsimOutput/"));
     	
     	MOEA_LOG = new FileOutputStream(new File("./input/output/logs/run_moea_log.txt"));
 		MOEA_LOG.write(String.format("Run\tPareto\tObjective1\tObjective2\n").getBytes());
-		REFSET_TXT = new FileOutputStream(new File("./input/output/logs/refSet.txt"), true);
-		REFSET_PF = new FileOutputStream(new File("./input/output/logs/refSet.pf"), true);
+		REFSET_TXT = new FileOutputStream(new File("./input/output/problemReferenceSet/refSet.txt"), true);
+		REFSET_PF = new FileOutputStream(new File("./input/output/problemReferenceSet/refSet.pf"), true);
   		
 		// Step 1 - Run the algorithm(s).  If running multiple algorithms, save to separate files.
 		ProblemFactory.getInstance().addProvider(new LocalMachineGA_ProblemProvider());
 		Problem problem = ProblemFactory.getInstance().getProblem("LocalMachineSimulationBasedTransitOptimisationProblem");
 		
-		//"LocalMachineSimulationBasedTransitOptimisationProblem"
+		
 		TypedProperties properties = new TypedProperties();
 		properties.setString("operator", "MyCrossover+MyMutation");
 		properties.setDouble("MyCrossover.Rate", 0.75);
@@ -195,32 +206,29 @@ public class TestRun2 {
 		properties.setInt("populationSize", POP_SIZE);
 		
 		
-		String[] algorithmNames = new String[] { "NSGAII" };
-		List<NondominatedPopulation> allResults = new ArrayList<>();
+		String[] algorithmNames = new String[] { "NSGAII"};
 		List<File> outputFiles = new ArrayList<File>();
 		
+			
 		
 		for (int i = 0; i < algorithmNames.length; i++) {
 			
-			
+			List<NondominatedPopulation> allResults = new ArrayList<>();
 			List<Long> allSeeds = new ArrayList<>();
-			
 			String algorithmName = algorithmNames[i];
 			log.info("Evaluating " + algorithmName + "...");
 			
 			Path algorithmOutputFolder = Files.createDirectories(Paths.get("./input/output" + File.separator + algorithmName + File.separator));
-			Path checkPointFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() +  File.separator + "checkPoint" + File.separator));
-			Path refsetFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"referenceSet" + File.separator));
+			Path checkPointFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toAbsolutePath() +  File.separator + "checkPoint" + File.separator));
+			Path refsetFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toAbsolutePath() + File.separator +"referenceSet" + File.separator));
 			
-			//Path optimisationResults = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"setFile" + File.separator));
-			//Path setFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"setFile" + File.separator));
+			matsimOutput = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"matsimOutput" + File.separator));
 		
 			OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
 			Algorithm algorithm = AlgorithmFactory.getInstance().getAlgorithm(algorithmName, properties.getProperties(), problem);
 
-			//File checkpointFile = new File("./input/output/checkpoint/" + "checkpoint_" + algorithmName + ".dat");
-			//File outputFile = new File("./input/output/problemReferenceSet/" + algorithmName + "output_" + ".set");
-			
+//			File checkpointFile = new File("./input/output/checkpoint/" + "checkpoint_" + algorithmName + ".dat");
+//			File outputFile = new File("./input/output/problemReferenceSet/" + algorithmName + "output_" + ".set");
 			
 			File checkpointFile = new File(checkPointFolder.toAbsolutePath() + File.separator + "checkpoint_" + algorithmName + ".dat");
 			File outputFile = new File(refsetFolder.toAbsolutePath() + File.separator + "approximationset_" + algorithmName + ".set");
@@ -230,39 +238,44 @@ public class TestRun2 {
 				
 			}
 			
-			long seed_base = seedBase + PRNG.nextInt(9000, 10000);
+			long seed = seedBase + PRNG.nextInt(POP_SIZE);
 		
+			//LocalMachineCheckpointAndOutputResult wrapper = new LocalMachineCheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
+			
 			LocalMachineCheckpointAndOutputResult wrapper = new LocalMachineCheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
 			
 			for(int run = 0; run < numberOfRuns; run++) {
 				
-				long seed = seed_base*run;
-				
-				PRNG.setSeed(seed);
-				
 				log.info("Running population " + run + " (using seed "+ seed + ")... ");	
 				
+				PRNG.setSeed((long)(seed*run));
 			
 				while (wrapper.getNumberOfEvaluations() < MAX_NFE) {
 					
-					wrapper.step();				
-					
+					wrapper.step();					
+
 				}
 				
-				//NondominatedPopulation finalResult = algorithm.getResult();
-				allResults.add(wrapper.getResult());
+				NondominatedPopulation finalResult = algorithm.getResult();
+				allResults.add(finalResult);
 				allSeeds.add(seed);
 				outputFiles.add(outputFile);
 				
 			}
 		
+//			computeRefSet(problem, outputFiles);			
+//			writeSeeds(allSeeds, algorithmName);			
+//			processResults(allResults, algorithmName);	
+			
 			computeRefSet(problem, outputFiles, algorithmOutputFolder);			
 			writeSeeds(allSeeds, algorithmOutputFolder);			
-			processResults(allResults, algorithmOutputFolder);			
+			processResults(allResults, algorithmOutputFolder);		
 			
 		}		
 
 	}
+	
+
 	
 	/**
 	 * A method to write the seeds used in each run of the algorithm.
@@ -296,7 +309,8 @@ public class TestRun2 {
 		}
 	}
 	
-		
+	
+	
 	/**
 	 * Method to compute the metrics of the algorithm run and write them to file.
 	 * 
@@ -344,8 +358,7 @@ public class TestRun2 {
 			});
 		}
 	}
-		
-		
+	
 	/**
 	 * This method to call @decodeResult() (convert from JSON to XML) on the 
 	 * final optimisation results contained in the Pareto front of the 
@@ -356,7 +369,7 @@ public class TestRun2 {
 	 */
 	private static void processResults(List<NondominatedPopulation> allResults, Path algorithmNameDirectory) throws IOException{
 		
-		log.info("is " +algorithmNameDirectory.normalize());
+		//log.info("is " +algorithmNameDirectory.toAbsolutePath());
 		
 		String resultFolder =  algorithmNameDirectory.toAbsolutePath() +  File.separator + "optimisationResults" + File.separator;
 		
@@ -364,20 +377,17 @@ public class TestRun2 {
 		
 		//FileUtils.delete(matsimOutputFolder);
 		
-		//FileUtils.cleanDirectory(new File(resultFolder));
-		
 		if (Files.exists(Paths.get(resultFolder))){
 			
 			FileUtils.cleanDirectory(new File(resultFolder));
 			
-		}   else {
-		
+		}  else {
+			
 			Files.createDirectories(Paths.get(resultFolder));
-		
 		}
 		
 		
-		TestRun2 tr = new TestRun2();	
+		LocalMachineTestRun tr = new LocalMachineTestRun();	
 				
 		int folderIdx = 0;
 		
@@ -391,9 +401,6 @@ public class TestRun2 {
 
 			for(int solution = 0; solution < runResult.size(); solution++) {				
 				Solution runSolution = runResult.get(solution);
-				
-				log.info(runSolution.getVariable(0).toString());
-				log.info(runSolution.getVariable(0).getClass().toString());
 
 				fileIdx++;
 				tr.decodeResult(runSolution.getVariable(0), resultFolder, folderIdx, fileIdx);
@@ -407,9 +414,10 @@ public class TestRun2 {
 
 		}
 		
-		cleanMatsimFolder();		
+		//cleanMatsimFolder();		
 		
 	}
+	
 
 
 	/**
@@ -429,4 +437,3 @@ public class TestRun2 {
 	
 
 }
-

@@ -97,10 +97,10 @@ public class Test3 {
 //			LOG.info(variable.getClass().toGenericString());
 //			LOG.info(DecisionVariable.class.toGenericString());
 			
-			if (variable instanceof  DecisionVariable) {
+			if (variable instanceof  LocalMachineDecisionVariable) {
 				
 
-				DecisionVariable varObj = (DecisionVariable) variable;         
+				LocalMachineDecisionVariable varObj = (LocalMachineDecisionVariable) variable;         
 				//Path algorithmFolder = Files.createDirectories(Paths.get(resultFilePath)); 				
 				String resultFileName = "Solution" + fileNum + ".xml";                   
 				String innerFolderStr = resultFilePath + File.separator +  folderNum + File.separator;             

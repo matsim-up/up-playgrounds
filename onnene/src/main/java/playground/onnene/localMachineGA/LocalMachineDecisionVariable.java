@@ -36,18 +36,18 @@ import org.moeaframework.core.Variable;
  * @author Onnene
  *
  */
-public class DecisionVariable implements Variable{
+public class LocalMachineDecisionVariable implements Variable{
 	
 	private static final long serialVersionUID = 1L;
     private JSONObject transitSchedule; 
 
-    public DecisionVariable() {
+    public LocalMachineDecisionVariable() {
     	
     	super();
     		
     }
     
-    public DecisionVariable(JSONObject transitSchedule) {
+    public LocalMachineDecisionVariable(JSONObject transitSchedule) {
     	
 		this();
 		this.transitSchedule = transitSchedule;
@@ -78,7 +78,7 @@ public class DecisionVariable implements Variable{
     @Override
     public Variable copy() {
     	
-        DecisionVariable v = new DecisionVariable(); 
+        LocalMachineDecisionVariable v = new LocalMachineDecisionVariable(); 
         if (this.getTransitSchedule() != null) {
         	v.setTransitSchedule(new JSONObject(this.getTransitSchedule().toString())); 
         }
