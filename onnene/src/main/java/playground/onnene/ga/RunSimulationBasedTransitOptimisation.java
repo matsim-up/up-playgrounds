@@ -59,7 +59,7 @@ public class RunSimulationBasedTransitOptimisation {
 	
 	private static final Logger log = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
 	
-    private static final int MAX_NFE = 3000;   
+    private static final int MAX_NFE = 5000;   
 	private static final int CHECKPOINT_FREQ = 100;
 	private static final int POP_SIZE = 100;
 	public static final int MATSIM_ITERATION_NUMBER = 70;
