@@ -54,7 +54,7 @@ public class OrtiaFacilityCoordinateConverter {
 		 * contain the CRS, i.e. new version. */
 		CoordinateTransformation ct = TransformationFactory.getCoordinateTransformation(TransformationFactory.HARTEBEESTHOEK94_LO29, TransformationFactory.WGS84);
 		Scenario sc = ScenarioUtils.createScenario(ConfigUtils.createConfig());
-		new MatsimFacilitiesReader(TransformationFactory.WGS84, sc).readFile(facilities);
+//		new MatsimFacilitiesReader(TransformationFactory.WGS84, sc).readFile(facilities);
 		
 		BufferedWriter bw = IOUtils.getBufferedWriter(output);
 		try {
