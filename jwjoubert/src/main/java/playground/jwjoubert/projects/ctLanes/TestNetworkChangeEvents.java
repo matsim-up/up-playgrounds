@@ -59,12 +59,21 @@ public class TestNetworkChangeEvents {
 		Network network = sc.getNetwork();
 		Collection<NetworkChangeEvent> events = new ArrayList<>();
 		
+		double cache06 = network.getLinks().get(Id.createLinkId("6")).getFlowCapacityPerSec();
+		double cache15 = network.getLinks().get(Id.createLinkId("15")).getFlowCapacityPerSec();
+		
 		NetworkChangeEvent nceAddOne = new NetworkChangeEvent(Time.parseTime("05:00:00"));
 		nceAddOne.addLink(network.getLinks().get(Id.createLinkId("6")));
 		nceAddOne.addLink(network.getLinks().get(Id.createLinkId("15")));
 		ChangeValue changeAdd = new ChangeValue(ChangeType.OFFSET_IN_SI_UNITS, -1);
 		nceAddOne.setLanesChange(changeAdd);
 		events.add(nceAddOne);
+		
+//		NetworkChangeEvent nceToZero = new NetworkChangeEvent(Time.parseTime("05:00:00"));
+//		nceToZero.addLink(network.getLinks().get(Id.createLinkId("6")));
+//		nceToZero.addLink(network.getLinks().get(Id.createLinkId("15")));
+//		ChangeValue setZero = new ChangeValue(ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0);
+//		nceToZero.setFlowCapacityChange(setZero);
 
 		NetworkChangeEvent nceRemoveOne = new NetworkChangeEvent(Time.parseTime("08:00:00"));
 		nceRemoveOne.addLink(network.getLinks().get(Id.createLinkId("6")));
