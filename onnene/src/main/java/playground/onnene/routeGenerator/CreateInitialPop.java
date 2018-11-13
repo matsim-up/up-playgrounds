@@ -122,21 +122,24 @@ public class CreateInitialPop {
 		    	
 		    	if (collection.size() < numLines){
 		    		
+		    		log.info("This solution has only " + collection.size() + " ... it will be discarded it");
+		    		
 		    	} else if (collection.size() == numLines) {
 		    				    	
 		    		log.info("Feasible solution " + index + " has " + collection.size() + " routes");
+		    		String initialPopFiles = outputFolder + "transitSchedule" + index + ".xml";					    	
+			    	feasibleRoutesList.add(TS.createTransitScheduleXML(collection, index, numLines, initialPopFiles));
 		    		
 		    	} else {
 		    		
-		    		log.info("This solution has only " + collection.size() + " so it will be discarded it");
+		    		log.info("This solution has only " + collection.size() + " ... it will be discarded it");
 		    		
 		    		continue;
 		    		
 		    	}
 		    	 
 		    	
-		    	String initialPopFiles = outputFolder + "transitSchedule" + index + ".xml";					    	
-		    	feasibleRoutesList.add(TS.createTransitScheduleXML(collection, index, numLines, initialPopFiles));			   
+		    				   
 			}
 									
 			s.close();

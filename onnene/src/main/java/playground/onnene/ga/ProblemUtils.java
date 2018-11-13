@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -213,5 +214,39 @@ public class ProblemUtils{
     	
     	return new BigInteger(1, token).toString(16);
     }
+    
+    
+    // Sort an array of files
+    public static void sortArrayOfFiles(File[] files){
+		
+		Arrays.sort(files, new Comparator<File>()  {
+		    
+			@Override
+            public int compare(File f1, File f2) {
+                int n1 = Integer.parseInt(f1.getName().replaceAll("\\D+", ""));
+                int n2 = Integer.parseInt(f2.getName().replaceAll("\\D+", ""));
+                return n1 - n2;
+            }
+	
+		});
+	
+	}
+	
+     //Sort a list of files
+	 public static List<File> SortListOfFiles(List<File> files){
+	    
+    	Collections.sort(files, new Comparator<File>(){
+
+			@Override
+			public int compare(File f1, File f2) {
+				
+				return Integer.compare(Integer.parseInt(f1.getName().replaceAll("\\D+", "")),Integer.parseInt(f2.getName().replaceAll("\\D+", "")));
+			}
+
+    	});
+    	
+    
+    	return files;    	
+	  }
     
 }

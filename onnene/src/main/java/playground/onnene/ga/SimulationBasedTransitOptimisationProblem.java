@@ -104,10 +104,6 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 			if(!transitVehiclesIn.exists()) { throw new IOException("Cannot find " + transitVehiclesIn.getAbsolutePath()); }
 			FileUtils.copyFile(transitVehiclesIn, new File(outputFolder + "transitVehicles.xml"));
 
-			//    	File transitScheduleIn = new File(inputFolder + "matsimInput/transitSchedule.xml");
-			//    	if(!transitScheduleIn.exists()) { throw new IOException("Cannot find " + transitScheduleIn.getAbsolutePath()); }
-			//    	FileUtils.copyFile(transitScheduleIn, new File(outputFolder + "transitSchedule.xml"));
-
 			File release = new File(inputFolder + "matsimInput/release.zip");
 			if(!release.exists()) { throw new IOException("Cannot find " + release.getAbsolutePath()); }
 			FileUtils.copyFile(release, new File(outputFolder + "release.zip"));
@@ -169,9 +165,10 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 			if (new File(ensembleDest + File.separator + ensembleToCopy.getName()).exists()) {
 				
 				File[] fileList = ensembleDest.listFiles();
+				ProblemUtils.sortArrayOfFiles(fileList);
 				int newFileNum = Integer.parseInt(fileList[fileList.length-1].getName().replaceAll("\\D+","")) + 1;			
 				File renamedEnsembleToCopy = org.apache.commons.io.FileUtils.getFile(ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt");
-				org.apache.commons.io.FileUtils.moveFile(ensembleToCopy, renamedEnsembleToCopy);
+				org.apache.commons.io.FileUtils.copyFile(ensembleToCopy, renamedEnsembleToCopy);
 				//ensembleToCopy.renameTo(new File (ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt"));				
 								
 			} else {

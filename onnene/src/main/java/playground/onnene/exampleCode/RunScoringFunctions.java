@@ -62,6 +62,7 @@ public class RunScoringFunctions {
 		NetworkOperatorScoringFunction operatorFunction = new NetworkOperatorScoringFunction(operatorScoreOutputFile, scenario.getNetwork());
 		manager.addHandler(operatorFunction);
 		
+		
 		new MatsimEventsReader(manager).readFile(eventsFile);
 		
 		double aaa = userFunction.getUserScore();		
