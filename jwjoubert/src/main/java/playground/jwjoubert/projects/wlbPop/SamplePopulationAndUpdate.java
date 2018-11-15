@@ -62,12 +62,19 @@ public class SamplePopulationAndUpdate {
 			double rnd = MatsimRandom.getLocalInstance().nextDouble();
 			if(rnd < fraction) {
 				Person person = sc.getPopulation().getPersons().get(pid);
-				person.getAttributes().putAttribute("age", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "age"));
-				person.getAttributes().putAttribute("gender", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "gender"));
-				person.getAttributes().putAttribute("householdId", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "householdId"));
-				person.getAttributes().putAttribute("population", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "population"));
-				person.getAttributes().putAttribute("relationship", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "relationship"));
-				person.getAttributes().putAttribute("school", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "school"));
+				
+				/* Distinguish between individuals and commercial vehicles */
+				String pidString = pid.toString();
+				if(pidString.startsWith("coct_p")) {
+					person.getAttributes().putAttribute("age", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "age"));
+					person.getAttributes().putAttribute("gender", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "gender"));
+					person.getAttributes().putAttribute("householdId", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "householdId"));
+					person.getAttributes().putAttribute("population", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "population"));
+					person.getAttributes().putAttribute("relationship", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "relationship"));
+					person.getAttributes().putAttribute("school", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "school"));
+				}
+				
+				/* Each person and commercial vehicle must have a subpopulation attribute. */
 				person.getAttributes().putAttribute("subpopulation", sc.getPopulation().getPersonAttributes().getAttribute(pid.toString(), "subpopulation"));
 				
 				scSample.getPopulation().addPerson(person);
