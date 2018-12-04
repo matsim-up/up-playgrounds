@@ -59,10 +59,10 @@ public class RunSimulationBasedTransitOptimisation {
 	
 	private static final Logger log = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
 	
-    private static final int MAX_NFE = 5000;   
-	private static final int CHECKPOINT_FREQ = 100;
-	private static final int POP_SIZE = 100;
-	public static final int MATSIM_ITERATION_NUMBER = 70;
+    private static final int MAX_NFE = 1000;   
+	private static final int CHECKPOINT_FREQ = 50;
+	private static final int POP_SIZE = 50;
+	public static final int MATSIM_ITERATION_NUMBER = 10;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
     public static Path matsimOutput; 
 
@@ -206,7 +206,7 @@ public class RunSimulationBasedTransitOptimisation {
 		properties.setInt("populationSize", POP_SIZE);
 		
 		
-		String[] algorithmNames = new String[] { "NSGAII" };
+		String[] algorithmNames = new String[] { "GA" };
 		
 		List<File> outputFiles = new ArrayList<File>();
 		
