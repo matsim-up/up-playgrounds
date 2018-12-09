@@ -59,7 +59,7 @@ public class RunSimulationBasedTransitOptimisation {
 	
 	private static final Logger log = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
 	
-    private static final int MAX_NFE = 1500;   
+    private static final int MAX_NFE = 500;   
 	private static final int CHECKPOINT_FREQ = 50;
 	private static final int POP_SIZE = 50;
 	public static final int MATSIM_ITERATION_NUMBER = 10;
@@ -203,7 +203,9 @@ public class RunSimulationBasedTransitOptimisation {
 		properties.setString("operator", "MyCrossover+MyMutation");
 		properties.setDouble("MyCrossover.Rate", 0.75);
 		properties.setDouble("MyMutation.Rate", 0.25);
+		properties.setDoubleArray("weights", new double[] {0.8, 0.2});
 		properties.setInt("populationSize", POP_SIZE);
+		
 		
 		
 		String[] algorithmNames = new String[] { "GA" };
