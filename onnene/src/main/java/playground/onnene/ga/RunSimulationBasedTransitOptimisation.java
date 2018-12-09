@@ -203,7 +203,7 @@ public class RunSimulationBasedTransitOptimisation {
 		properties.setString("operator", "MyCrossover+MyMutation");
 		properties.setDouble("MyCrossover.Rate", 0.75);
 		properties.setDouble("MyMutation.Rate", 0.25);
-		properties.setDoubleArray("weights", new double[] {0.8, 0.2});
+		properties.setDoubleArray("weights", new double[] {0.2, 0.8});
 		properties.setInt("populationSize", POP_SIZE);
 		
 		
