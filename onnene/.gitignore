@@ -7,5 +7,4 @@ bin
 input
 output
 initialPop
-src/main/java/playground.onnene/localMachineGA/
-playground.onnene.localMachineGA
+/up-playgrounds/onnene/src/main/java/playground/onnene/localMachineGA
