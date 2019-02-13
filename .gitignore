@@ -10,3 +10,4 @@ target
 */output
 *.properties
 onnene/.gitattributes
+onnene/src/main/java/playground/onnene/localMachineGA/
