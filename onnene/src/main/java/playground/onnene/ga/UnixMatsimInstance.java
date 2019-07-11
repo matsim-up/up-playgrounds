@@ -32,7 +32,6 @@ import org.matsim.core.controler.OutputDirectoryHierarchy.OverwriteFileSetting;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.up.utils.Header;
 
-import ch.sbb.matsim.mobsim.qsim.SBBQSimModule;
 import ch.sbb.matsim.routing.pt.raptor.SwissRailRaptorModule;
 
 /**
@@ -87,7 +86,7 @@ public class UnixMatsimInstance{
 			@Override
 			public void install() {
 				// To use the deterministic pt simulation:
-				install(new SBBQSimModule());
+				//install(new SBBQSimModule());
 
 				// To use the fast pt router:
 				install(new SwissRailRaptorModule());
