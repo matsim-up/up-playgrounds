@@ -209,6 +209,7 @@ public class RunSimulationBasedTransitOptimisation {
 		String[] algorithmNames = new String[] {"NSGA-II"};
 
 		//String[] algorithmNames = new String[] { "NSGA-II", "NSGA-III", "DBEA", "SPEA2", "IBEA" };
+		//String[] algorithmNames = new String[] {"GA"}
 		
 		List<File> outputFiles = new ArrayList<File>();
 		
