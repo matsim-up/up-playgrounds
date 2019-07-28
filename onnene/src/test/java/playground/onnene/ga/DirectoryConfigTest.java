@@ -28,7 +28,9 @@ public class DirectoryConfigTest {
 	@Test
 	public void testGetParentDirectory() {
 		String parentDefault = DirectoryConfig.getParentDirectory();
-		Assert.assertTrue("Wrong default parent folder", parentDefault.equalsIgnoreCase("C:\\Users\\NNNOB\\Documents\\GitHub\\SBO_input\\"));
+		//Assert.assertTrue("Wrong default parent folder", parentDefault.equalsIgnoreCase("C:\\Users\\NNNOB\\Documents\\GitHub\\SBO_input\\"));
+		Assert.assertTrue("Wrong default parent folder", parentDefault.equalsIgnoreCase("./input/"));
+		
 	}
 
 	@Test
