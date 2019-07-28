@@ -24,7 +24,6 @@ package playground.onnene.transitScheduleMaker;
 import org.apache.log4j.Logger;
 import org.matsim.up.utils.Header;
 
-import playground.onnene.exampleCode.UnzipUtility;
 
 /**
  * @author Onnene
@@ -41,8 +40,8 @@ public class UnzipUtilityRunner {
 		
 		Header.printHeader(UnzipUtilityRunner.class, args);
 		
-		String zipFilePath = "C:/Users/NNNOB/Documents/GitHub/up-playgrounds/onnene/input/matsimInput/release.zip";
-        String destDirectory = "C:/Users/NNNOB/Documents/GitHub/up-playgrounds/onnene/input/matsimInput/new/";
+		String zipFilePath = "./input/matsimInput/release.zip";
+        String destDirectory = "./input/matsimInput/new/";
         UnzipUtility unzipper = new UnzipUtility();
         try {
             unzipper.unzip(zipFilePath, destDirectory);

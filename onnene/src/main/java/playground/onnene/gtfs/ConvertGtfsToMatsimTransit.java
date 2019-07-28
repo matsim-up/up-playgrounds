@@ -19,8 +19,6 @@ import org.matsim.vehicles.VehicleWriterV1;
 
 import com.conveyal.gtfs.GTFSFeed;
 
-import playground.onnene.exampleCode.DirectoryConfig;
-
 //import com.conveyal.gtfs.GTFSFeed;
 
 /**
@@ -43,9 +41,11 @@ public class ConvertGtfsToMatsimTransit {
 	}
 	
 	public static void run(String[] args) {
-		String gtfsFile = DirectoryConfig.GTFS_FEED;
-		String outputFolder = DirectoryConfig.COMPRESSED_GTFS_GZIP_DIRECTORY ;
-		String date = "2018-05-29";
+		String gtfsFile = "./input/31Mar2018_MyCiTi_gtfs.zip";
+		String outputFolder = "./input/gtfsInputs/gtfsOutput/";
+		//String gtfsFile = DirectoryConfig.GTFS_FEED;
+		//String outputFolder = DirectoryConfig.COMPRESSED_GTFS_GZIP_DIRECTORY;
+		String date = "2018-05-29"; 
 		
 		
 		//Scenario sc = parseGtfs(gtfsFile);
