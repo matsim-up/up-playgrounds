@@ -208,42 +208,41 @@ public class RunSimulationBasedTransitOptimisation {
 		
 		//String[] algorithmNames = new String[] {"NSGA-II"};
 
-		String[] algorithmNames = new String[] {"NSGA-II","NSGA-III","SPEA2"};
+		String[] algorithmNames = new String[] {"NSGA-II","NSGA-III","SPEA2", "DBEA", "IBEA"};
 		//String[] algorithmNames = new String[] {"GA"}
 		
 		List<File> outputFiles = new ArrayList<File>();
 		
-		
-		for (int i = 0; i < algorithmNames.length; i++) {
-			
-			List<NondominatedPopulation> allResults = new ArrayList<>();
-			List<Long> allSeeds = new ArrayList<>();
-			
-			String algorithmName = algorithmNames[i];
-			log.info("Evaluating " + algorithmName + "...");
-			
-			Path algorithmOutputFolder = Files.createDirectories(Paths.get("./input/output" + File.separator + algorithmName + File.separator));
-			Path checkPointFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() +  File.separator + "checkPoint" + File.separator));
-			Path refsetFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"referenceSet" + File.separator));
-			
-			matsimOutput = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"matsimOutput" + File.separator));
-			
-			OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
-			Algorithm algorithm = AlgorithmFactory.getInstance().getAlgorithm(algorithmName, properties.getProperties(), problem);
-
-			File checkpointFile = new File(checkPointFolder.toAbsolutePath() + File.separator + "checkpoint_" + algorithmName + ".dat");
-			File outputFile = new File(refsetFolder.toAbsolutePath() + File.separator + "approximationset_" + algorithmName + ".set");
-			
-			if (checkpointFile.exists()) {
-				log.info("Using checkpoint file for " + algorithmName + "!");
-				
-			}
-			
-			long seed_base = seedBase + PRNG.nextInt(1000, 10000);
-		
-			CheckpointAndOutputResult wrapper = new CheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
-			
 			for(int run = 0; run < numberOfRuns; run++) {
+				
+				for (int i = 0; i < algorithmNames.length; i++) {
+					
+					List<NondominatedPopulation> allResults = new ArrayList<>();
+					List<Long> allSeeds = new ArrayList<>();
+					
+					String algorithmName = algorithmNames[i];
+					log.info("Evaluating " + algorithmName + "...");
+					
+					Path algorithmOutputFolder = Files.createDirectories(Paths.get("./input/output" + File.separator + algorithmName + File.separator));
+					Path checkPointFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() +  File.separator + "checkPoint" + File.separator));
+					Path refsetFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"referenceSet" + File.separator));
+					
+					matsimOutput = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"matsimOutput" + File.separator));
+					
+					OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
+					Algorithm algorithm = AlgorithmFactory.getInstance().getAlgorithm(algorithmName, properties.getProperties(), problem);
+
+					File checkpointFile = new File(checkPointFolder.toAbsolutePath() + File.separator + "checkpoint_" + algorithmName + ".dat");
+					File outputFile = new File(refsetFolder.toAbsolutePath() + File.separator + "approximationset_" + algorithmName + ".set");
+					
+					if (checkpointFile.exists()) {
+						log.info("Using checkpoint file for " + algorithmName + "!");
+						
+					}
+					
+					long seed_base = seedBase + PRNG.nextInt(1000, 10000);
+				
+					CheckpointAndOutputResult wrapper = new CheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
 				
 				long seed = seed_base*run;
 				
@@ -263,11 +262,19 @@ public class RunSimulationBasedTransitOptimisation {
 				allSeeds.add(seed);
 				outputFiles.add(outputFile);
 				
+				
+				
+				computeRefSet(problem, outputFiles, algorithmOutputFolder);			
+				writeSeeds(allSeeds, algorithmOutputFolder);			
+				processResults(allResults, algorithmOutputFolder);	
+				
+				
+				
 			}
 		
-			computeRefSet(problem, outputFiles, algorithmOutputFolder);			
-			writeSeeds(allSeeds, algorithmOutputFolder);			
-			processResults(allResults, algorithmOutputFolder);			
+			// computeRefSet(problem, outputFiles, algorithmOutputFolder);			
+			// writeSeeds(allSeeds, algorithmOutputFolder);			
+			// processResults(allResults, algorithmOutputFolder);			
 			
 		}		
 

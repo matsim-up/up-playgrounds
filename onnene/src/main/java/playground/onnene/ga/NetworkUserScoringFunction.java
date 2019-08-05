@@ -130,7 +130,7 @@ public class NetworkUserScoringFunction implements PersonDepartureEventHandler, 
 			
 			//BigDecimal averagetripDur = new BigDecimal(totalPersonTripDuration/(18*60*personMap.size()));
 			//BigDecimal averagetripDur = new BigDecimal(totalPersonTripDuration/(totalTraveltime.size()));
-			BigDecimal averagetripDur = new BigDecimal(totalPersonTripDuration/(personMap.size()*60*60));
+			BigDecimal averagetripDur = new BigDecimal(totalPersonTripDuration/(personMap.size()*60));
 			BigDecimal userScore = averagetripDur.setScale(4, RoundingMode.CEILING);
 
 			return userScore.doubleValue();
