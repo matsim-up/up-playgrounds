@@ -101,7 +101,7 @@ public class RunSimulationBasedTransitOptimisation {
 	 * @param resultFilePath root directory of the optimisation results
 	 * @param algorithmNameFolder specific folder for the result of each specific algorithms
 	 * @param folderNum number of the result folder
-	 * @param fileNum number of the result file
+	 * @param fileNum number of the result file 
 	 * @throws IOException
 	 */
 	private void decodeResult(Variable variable, String resultFilePath,  int folderNum, int fileNum) throws IOException  {
@@ -213,7 +213,7 @@ public class RunSimulationBasedTransitOptimisation {
 		
 		List<File> outputFiles = new ArrayList<File>();
 		
-			for(int run = 0; run < numberOfRuns; run++) {
+		for(int run = 0; run < numberOfRuns; run++) {
 				
 				for (int i = 0; i < algorithmNames.length; i++) {
 					
@@ -262,14 +262,12 @@ public class RunSimulationBasedTransitOptimisation {
 				allSeeds.add(seed);
 				outputFiles.add(outputFile);
 				
-				
-				
+								
 				computeRefSet(problem, outputFiles, algorithmOutputFolder);			
 				writeSeeds(allSeeds, algorithmOutputFolder);			
 				processResults(allResults, algorithmOutputFolder);	
 				
-				
-				
+	
 			}
 		
 			// computeRefSet(problem, outputFiles, algorithmOutputFolder);			
