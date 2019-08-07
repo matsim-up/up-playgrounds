@@ -62,7 +62,7 @@ public class RunSimulationBasedTransitOptimisation {
     private static final int MAX_NFE = 2500;   
 	private static final int POP_SIZE = 50;
 	private static final int CHECKPOINT_FREQ = POP_SIZE;
-	public static final int MATSIM_ITERATION_NUMBER = 80;
+	public static final int MATSIM_ITERATION_NUMBER = 10;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
     public static Path matsimOutput; 
 
