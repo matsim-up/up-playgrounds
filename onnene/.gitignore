@@ -2,6 +2,7 @@
 .project
 .settings
 *.zip
+*.properties
 target
 bin
 input
@@ -9,7 +10,7 @@ output
 initialPop
 onnene/src/main/java/playground/onnene/localMachineGA/
 onnene/src/main/java/playground/onnene/exampleCode/
+onnene/.gitattributes
 playground.onnene.localMachineGA
 
-*.properties
-onnene/.gitattributes
+
