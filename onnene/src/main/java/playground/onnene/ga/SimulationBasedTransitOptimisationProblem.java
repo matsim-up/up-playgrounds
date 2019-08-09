@@ -47,9 +47,9 @@ import org.moeaframework.problem.AbstractProblem;
  */
 public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 	/*TODO The following should be set once we have a good idea of what they need to be. */ 
-	final private static int SIMULATIONS_PER_EVALUATION = 30;
-	final private static int SIMULATIONS_PER_BLOCK = 30;
-	final private static int THREADS_PER_SIMULATION = 15;
+	final private static int SIMULATIONS_PER_EVALUATION = 2;
+	final private static int SIMULATIONS_PER_BLOCK = 2;
+	final private static int THREADS_PER_SIMULATION = 1;
 	final private ConsolidateMechanism mech = ConsolidateMechanism.mean;
 
 	/* Other variables. */
@@ -169,7 +169,9 @@ public class SimulationBasedTransitOptimisationProblem extends AbstractProblem {
 				int newFileNum = Integer.parseInt(fileList[fileList.length-1].getName().replaceAll("\\D+","")) + 1;			
 				File renamedEnsembleToCopy = org.apache.commons.io.FileUtils.getFile(ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt");
 				org.apache.commons.io.FileUtils.copyFile(ensembleToCopy, renamedEnsembleToCopy);
-				//ensembleToCopy.renameTo(new File (ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt"));				
+				//ensembleToCopy.renameTo(new File (ensembleDest.getAbsolutePath() + File.separator + "ensembleRuns" + newFileNum + ".txt"));
+				
+
 								
 			} else {
 				

@@ -21,7 +21,6 @@
  */
 package playground.onnene.ga;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,7 +35,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.matsim.core.utils.io.IOUtils;
 import org.matsim.up.utils.Header;
 import org.moeaframework.analysis.sensitivity.ResultFileEvaluator;
 import org.moeaframework.analysis.sensitivity.ResultFileMerger;
@@ -59,8 +57,8 @@ public class RunSimulationBasedTransitOptimisation {
 	
 	private static final Logger log = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
 	
-    private static final int MAX_NFE = 2500;   
-	private static final int POP_SIZE = 50;
+    private static final int MAX_NFE = 4;   
+	private static final int POP_SIZE = 2;
 	private static final int CHECKPOINT_FREQ = POP_SIZE;
 	public static final int MATSIM_ITERATION_NUMBER = 10;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
@@ -81,6 +79,7 @@ public class RunSimulationBasedTransitOptimisation {
 		if (System.getProperty("os.name").startsWith("Windows")){
             
             PropertyConfigurator.configure("log4j.properties");
+           
             
 		}
 
@@ -142,33 +141,33 @@ public class RunSimulationBasedTransitOptimisation {
 		}
 		
 		/* Set up output folders. */
-		new File("./output/logs/").mkdirs();
+		//new File("./output/logs/").mkdirs();
 		new File("./output/matsimOutput/").mkdirs();
-		new File("./output/optimisationResults/").mkdirs();
-		new File("./output/problemReferenceSet/").mkdirs();
+		//new File("./output/optimisationResults/").mkdirs();
+		//new File("./output/problemReferenceSet/").mkdirs();
 
-		BufferedWriter bwSeed = IOUtils.getBufferedWriter("./output/logs/seeds.txt");
-		BufferedWriter bwMoea = IOUtils.getBufferedWriter("./output/logs/run_moea_log.txt");
-		BufferedWriter bwRef = IOUtils.getBufferedWriter("./output/problemReferenceSet/referenceSet.txt");
-		
-		try {
-			bwSeed.write("Run\tSeed\n");
-			bwMoea.write("Run\tPareto\tObj1\tOb2\n");
-			bwRef.write("Run\tPareto\tObj1\tOb2\n");
-			/* No header to the PF format file. */
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Cannot write to seed file");
-		} finally {
-			try {
-				bwSeed.close();
-				bwMoea.close();
-				bwRef.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Cannot close seed file");
-			}
-		}
+//		BufferedWriter bwSeed = IOUtils.getBufferedWriter("./output/logs/seeds.txt");
+//		BufferedWriter bwMoea = IOUtils.getBufferedWriter("./output/logs/run_moea_log.txt");
+//		BufferedWriter bwRef = IOUtils.getBufferedWriter("./output/problemReferenceSet/referenceSet.txt");
+//		
+//		try {
+//			bwSeed.write("Run\tSeed\n");
+//			bwMoea.write("Run\tPareto\tObj1\tOb2\n");
+//			bwRef.write("Run\tPareto\tObj1\tOb2\n");
+//			/* No header to the PF format file. */
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			throw new RuntimeException("Cannot write to seed file");
+//		} finally {
+//			try {
+//				bwSeed.close();
+//				bwMoea.close();
+//				bwRef.close();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//				throw new RuntimeException("Cannot close seed file");
+//			}
+//		}
 		
 	}
 	
@@ -191,8 +190,8 @@ public class RunSimulationBasedTransitOptimisation {
     	
     	MOEA_LOG = new FileOutputStream(new File("./input/output/logs/run_moea_log.txt"));
 		MOEA_LOG.write(String.format("Run\tPareto\tObjective1\tObjective2\n").getBytes());
-		REFSET_TXT = new FileOutputStream(new File("./input/output/logs/refSet.txt"), true);
-		REFSET_PF = new FileOutputStream(new File("./input/output/logs/refSet.pf"), true);
+		REFSET_TXT = new FileOutputStream(new File("./input/output/logs/obtainedRefSet.txt"), true);
+		REFSET_PF = new FileOutputStream(new File("./input/output/logs/obtainedRefSet.pf"), true);
   		
 		// Step 1 - Run the algorithm(s).  If running multiple algorithms, save to separate files.
 		ProblemFactory.getInstance().addProvider(new GA_ProblemProvider());
@@ -205,9 +204,7 @@ public class RunSimulationBasedTransitOptimisation {
 		properties.setDouble("MyMutation.Rate", 0.25);
 		//properties.setDoubleArray("weights", new double[] {0.2, 0.8});
 		properties.setInt("populationSize", POP_SIZE);
-		
-		//String[] algorithmNames = new String[] {"NSGA-II"};
-
+	
 		String[] algorithmNames = new String[] {"NSGA-II","NSGA-III","SPEA2", "DBEA", "IBEA"};
 		//String[] algorithmNames = new String[] {"GA"}
 		
@@ -224,10 +221,11 @@ public class RunSimulationBasedTransitOptimisation {
 					log.info("Evaluating " + algorithmName + "...");
 					
 					Path algorithmOutputFolder = Files.createDirectories(Paths.get("./input/output" + File.separator + algorithmName + File.separator));
-					Path checkPointFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() +  File.separator + "checkPoint" + File.separator));
-					Path refsetFolder = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"referenceSet" + File.separator));
+					Path algorithmSeedFolder = Files.createDirectories(Paths.get(algorithmOutputFolder + File.separator + "seed_"+run));
+					Path checkPointFolder = Files.createDirectories(Paths.get(algorithmSeedFolder.toString() +  File.separator + "checkPoint" + File.separator));
+					Path refsetFolder = Files.createDirectories(Paths.get(algorithmSeedFolder.toString() + File.separator +"referenceSet" + File.separator));
 					
-					matsimOutput = Files.createDirectories(Paths.get(algorithmOutputFolder.toString() + File.separator +"matsimOutput" + File.separator));
+					matsimOutput = Files.createDirectories(Paths.get(algorithmSeedFolder.toString() + File.separator +"matsimOutput" + File.separator));
 					
 					OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
 					Algorithm algorithm = AlgorithmFactory.getInstance().getAlgorithm(algorithmName, properties.getProperties(), problem);
@@ -246,11 +244,9 @@ public class RunSimulationBasedTransitOptimisation {
 				
 				long seed = seed_base*run;
 				
-				PRNG.setSeed(seed);
-				
 				log.info("Running population " + run + " (using seed "+ seed + ")... ");	
 				
-			
+				PRNG.setSeed(seed);
 				while (wrapper.getNumberOfEvaluations() < MAX_NFE) {
 					
 					wrapper.step();				
@@ -263,9 +259,9 @@ public class RunSimulationBasedTransitOptimisation {
 				outputFiles.add(outputFile);
 				
 								
-				computeRefSet(problem, outputFiles, algorithmOutputFolder);			
-				writeSeeds(allSeeds, algorithmOutputFolder);			
-				processResults(allResults, algorithmOutputFolder);	
+				computeRefSet(problem, outputFiles, algorithmSeedFolder);			
+				writeSeeds(allSeeds, algorithmSeedFolder);			
+				processResults(allResults, algorithmSeedFolder);	
 				
 	
 			}
@@ -329,13 +325,23 @@ public class RunSimulationBasedTransitOptimisation {
 			
 			log.info("Calculating metrics for " + outputFile + "...");
 			
+			
+			try {
+		
 			ResultFileEvaluator.main(new String[] {
+					
 					"--dimension", Integer.toString(problem.getNumberOfObjectives()),
 					"--input", outputFile.getAbsolutePath(),
 					"--output", new File(outputFile.getParentFile(), outputFile.getName().replace(".set", ".metrics")).getAbsolutePath(),
 					"--reference", referenceSetFile.getAbsolutePath(),
 					"--force"
-			});
+				});
+	
+			
+			} catch (Exception e) {
+				
+				log.error("requires at least two solutions", e);
+			}
 		}
 	}
 		
