@@ -8,7 +8,7 @@ bin
 input
 output
 initialPop
-playground.onnene.localMachineGA
-playground.onnene.exampleCode
 .gitattributes
 
+onnene/src/main/java/playground/onnene/localMachineGA/
+onnene/src/main/java/playground/onnene/exampleCode/
