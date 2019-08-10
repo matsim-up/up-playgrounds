@@ -8,8 +8,8 @@ target
 
 */test/output/
 */output
-*.gitattributes
-*.properties
+*onnene/.gitattributes
+*.onnene/.properties
 
 onnene/src/main/java/playground/onnene/localMachineGA/
 onnene/src/main/java/playground/onnene/exampleCode/
