@@ -231,6 +231,22 @@ public class ProblemUtils{
 		});
 	
 	}
+    
+ // Sort an array of files in reverse order
+    public static void reverseSortArrayOfFiles(File[] files){
+		
+		Arrays.sort(files, new Comparator<File>()  {
+		    
+			@Override
+            public int compare(File f1, File f2) {
+                int n1 = Integer.parseInt(f1.getName().replaceAll("\\D+", ""));
+                int n2 = Integer.parseInt(f2.getName().replaceAll("\\D+", ""));
+                return n2 - n1;
+            }
+	
+		});
+	
+	}
 	
      //Sort a list of files
 	 public static List<File> SortListOfFiles(List<File> files){

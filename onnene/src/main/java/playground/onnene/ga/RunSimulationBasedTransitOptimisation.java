@@ -169,6 +169,27 @@ public class RunSimulationBasedTransitOptimisation {
 //			}
 //		}
 		
+		//int excessFiles = matsimOutput.getNameCount() % POP_SIZE;
+		
+		
+	}
+
+
+	/**
+	 * Method to delete extra files ensembleRuns file when a run of the algorithm stops 
+	 * without completely evaluating a population.
+	 */
+	private static void deleteExcessEnsembleRunsFiles() {
+		File[] ensembleFiles = new File(matsimOutput.toString()).listFiles();
+		ProblemUtils.reverseSortArrayOfFiles(ensembleFiles);
+		
+		int excessFiles = ensembleFiles.length % POP_SIZE;
+		
+		for(int i = 0; i < excessFiles; i++) {
+			
+			ensembleFiles[i].delete();
+			
+		}
 	}
 	
 	
@@ -215,6 +236,7 @@ public class RunSimulationBasedTransitOptimisation {
 				for (int i = 0; i < algorithmNames.length; i++) {
 					
 					List<NondominatedPopulation> allResults = new ArrayList<>();
+					List<NondominatedPopulation> currentResults = new ArrayList<>();
 					List<Long> allSeeds = new ArrayList<>();
 					
 					String algorithmName = algorithmNames[i];
@@ -227,6 +249,7 @@ public class RunSimulationBasedTransitOptimisation {
 					
 					matsimOutput = Files.createDirectories(Paths.get(algorithmSeedFolder.toString() + File.separator +"matsimOutput" + File.separator));
 					
+					
 					OperatorFactory.getInstance().addProvider(new GA_OperatorProvider());
 					Algorithm algorithm = AlgorithmFactory.getInstance().getAlgorithm(algorithmName, properties.getProperties(), problem);
 
@@ -235,6 +258,12 @@ public class RunSimulationBasedTransitOptimisation {
 					
 					if (checkpointFile.exists()) {
 						log.info("Using checkpoint file for " + algorithmName + "!");
+												
+						deleteExcessEnsembleRunsFiles();
+						
+					} else {
+						
+						FileUtils.cleanDirectory(new File(matsimOutput.toString()));
 						
 					}
 					
@@ -249,7 +278,19 @@ public class RunSimulationBasedTransitOptimisation {
 				PRNG.setSeed(seed);
 				while (wrapper.getNumberOfEvaluations() < MAX_NFE) {
 					
-					wrapper.step();				
+					wrapper.step();			
+					
+					if (MAX_NFE % POP_SIZE == 0 && wrapper.getNumberOfEvaluations() < MAX_NFE) {
+						
+						wrapper.getResult();
+						
+						NondominatedPopulation currentResult = algorithm.getResult();
+						
+						currentResults.add(currentResult);
+						processCurrentResults(currentResults, algorithmSeedFolder);
+							
+					}
+
 					
 				}
 				
@@ -356,7 +397,7 @@ public class RunSimulationBasedTransitOptimisation {
 	 */
 	private static void processResults(List<NondominatedPopulation> allResults, Path algorithmNameDirectory) throws IOException{
 
-		String resultFolder =  algorithmNameDirectory.toAbsolutePath() +  File.separator + "optimisationResults" + File.separator;
+		String resultFolder =  algorithmNameDirectory.toAbsolutePath() +  File.separator + "finalOptimisationResults" + File.separator;
 		
 		if (Files.exists(Paths.get(resultFolder))){
 			
@@ -375,6 +416,58 @@ public class RunSimulationBasedTransitOptimisation {
 		for(int run = 0; run < allResults.size(); run++) {
 			
 			NondominatedPopulation runResult = allResults.get(run);
+
+			folderIdx++;
+			int fileIdx = 0;
+			log.info("Size of Pareto front for run " + (run+1) + " is:" + " " + runResult.size());
+
+			for(int solution = 0; solution < runResult.size(); solution++) {				
+				Solution runSolution = runResult.get(solution);
+
+				fileIdx++;
+				tr.decodeResult(runSolution.getVariable(0), resultFolder, folderIdx, fileIdx);
+				log.info(String.format("%.4f\t%.4f", runSolution.getObjective(0), runSolution.getObjective(1)));
+				
+				MOEA_LOG.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
+				REFSET_TXT.write(String.format("%d\t%d\t%.4f\t%.4f\n", run+1, solution+1, runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
+				REFSET_PF.write(String.format("%.4f\t%.4f\n", runSolution.getObjective(0), runSolution.getObjective(1)).getBytes());
+							
+			}
+
+		}
+		
+	}
+	
+	
+	/**
+	 * This method to call @decodeResult() (convert from JSON to XML) on the 
+	 * final optimisation results contained in the Pareto front of the 
+	 * algorithm and write them to file.	 
+	 * 
+	 * @param allResults List of results obtained from runSimulation()
+	 * @throws IOException
+	 */
+	private static void processCurrentResults(List<NondominatedPopulation> currentResults, Path algorithmNameDirectory) throws IOException{
+
+		String resultFolder =  algorithmNameDirectory.toAbsolutePath() +  File.separator + "currentOptimisationResults" + File.separator;
+		
+		if (Files.exists(Paths.get(resultFolder))){
+			
+			FileUtils.cleanDirectory(new File(resultFolder));
+			
+		} else {
+		
+			Files.createDirectories(Paths.get(resultFolder));
+		
+		}
+		
+		RunSimulationBasedTransitOptimisation tr = new RunSimulationBasedTransitOptimisation();	
+				
+		int folderIdx = 0;
+		
+		for(int run = 0; run < currentResults.size(); run++) {
+			
+			NondominatedPopulation runResult = currentResults.get(run);
 
 			folderIdx++;
 			int fileIdx = 0;
