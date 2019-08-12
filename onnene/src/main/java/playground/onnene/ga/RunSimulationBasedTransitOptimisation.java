@@ -226,7 +226,9 @@ public class RunSimulationBasedTransitOptimisation {
 		//properties.setDoubleArray("weights", new double[] {0.2, 0.8});
 		properties.setInt("populationSize", POP_SIZE);
 	
-		String[] algorithmNames = new String[] {"NSGA-II","NSGA-III","SPEA2", "DBEA", "IBEA"};
+		String[] algorithmNames = new String[] {"NSGA-II","NSGA-III"};
+		String[] algorithmNames = new String[] {"SPEA2", "DBEA"};
+		String[] algorithmNames = new String[] {"IBEA"};
 		//String[] algorithmNames = new String[] {"GA"}
 		
 		List<File> outputFiles = new ArrayList<File>();
@@ -302,7 +304,7 @@ public class RunSimulationBasedTransitOptimisation {
 								
 				computeRefSet(problem, outputFiles, algorithmSeedFolder);			
 				writeSeeds(allSeeds, algorithmSeedFolder);			
-				processResults(allResults, algorithmSeedFolder);	
+				processFinalResults(allResults, algorithmSeedFolder);	
 				
 	
 			}
@@ -395,7 +397,7 @@ public class RunSimulationBasedTransitOptimisation {
 	 * @param allResults List of results obtained from runSimulation()
 	 * @throws IOException
 	 */
-	private static void processResults(List<NondominatedPopulation> allResults, Path algorithmNameDirectory) throws IOException{
+	private static void processFinalResults(List<NondominatedPopulation> allResults, Path algorithmNameDirectory) throws IOException{
 
 		String resultFolder =  algorithmNameDirectory.toAbsolutePath() +  File.separator + "finalOptimisationResults" + File.separator;
 		
