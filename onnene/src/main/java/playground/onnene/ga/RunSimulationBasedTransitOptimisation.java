@@ -226,9 +226,9 @@ public class RunSimulationBasedTransitOptimisation {
 		//properties.setDoubleArray("weights", new double[] {0.2, 0.8});
 		properties.setInt("populationSize", POP_SIZE);
 	
-		String[] algorithmNames = new String[] {"NSGA-II","NSGA-III"};
-		String[] algorithmNames = new String[] {"SPEA2", "DBEA"};
-		String[] algorithmNames = new String[] {"IBEA"};
+		String[] algorithmNames = new String[] {"NSGA-II","NSGA-III"}; 
+		//String[] algorithmNames = new String[] {"SPEA2", "DBEA"};
+		//String[] algorithmNames = new String[] {"IBEA"};
 		//String[] algorithmNames = new String[] {"GA"}
 		
 		List<File> outputFiles = new ArrayList<File>();
