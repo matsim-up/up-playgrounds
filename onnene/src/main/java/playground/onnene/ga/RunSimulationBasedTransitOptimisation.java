@@ -227,9 +227,9 @@ public class RunSimulationBasedTransitOptimisation {
 		properties.setInt("populationSize", POP_SIZE);
 	
 		//String[] algorithmNames = new String[] {"NSGA-II","NSGA-III"}; 
-		String[] algorithmNames = new String[] {"NSGA-II"};
+		//String[] algorithmNames = new String[] {"NSGA-II"};
 		//String[] algorithmNames = new String[] {"NSGA-III"};
-		//String[] algorithmNames = new String[] {"DBEA"};
+		String[] algorithmNames = new String[] {"DBEA"};
 		//String[] algorithmNames = new String[] {"SPEA2"};
 		//String[] algorithmNames = new String[] {"IBEA"};
 		//String[] algorithmNames = new String[] {"GA"}
@@ -276,7 +276,7 @@ public class RunSimulationBasedTransitOptimisation {
 				
 					CheckpointAndOutputResult wrapper = new CheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
 				
-				long seed = seed_base*run;
+				long seed = seed_base;
 				
 				log.info("Running population " + run + " (using seed "+ seed + ")... ");	
 				
@@ -285,16 +285,16 @@ public class RunSimulationBasedTransitOptimisation {
 					
 					wrapper.step();			
 					
-					if (MAX_NFE % POP_SIZE == 0 && wrapper.getNumberOfEvaluations() < MAX_NFE) {
-						
-						wrapper.getResult();
-						
-						NondominatedPopulation currentResult = algorithm.getResult();
-						
-						currentResults.add(currentResult);
-						processCurrentResults(currentResults, algorithmSeedFolder);
-							
-					}
+//					if (MAX_NFE % POP_SIZE == 0 && wrapper.getNumberOfEvaluations() < MAX_NFE) {
+//						
+//						wrapper.getResult();
+//						
+//						NondominatedPopulation currentResult = algorithm.getResult();
+//						
+//						currentResults.add(currentResult);
+//						processCurrentResults(currentResults, algorithmSeedFolder);
+//							
+//					}
 
 					
 				}
