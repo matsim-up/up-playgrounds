@@ -57,8 +57,8 @@ public class RunSimulationBasedTransitOptimisation {
 	
 	private static final Logger log = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
 	
-    private static final int MAX_NFE = 500;   
-	private static final int POP_SIZE = 50;
+    private static final int MAX_NFE = 5000;   
+	private static final int POP_SIZE = 100;
 	private static final int CHECKPOINT_FREQ = POP_SIZE;
 	public static final int MATSIM_ITERATION_NUMBER = 10;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
@@ -229,7 +229,7 @@ public class RunSimulationBasedTransitOptimisation {
 		//String[] algorithmNames = new String[] {"NSGA-II","NSGA-III"}; 
 		//String[] algorithmNames = new String[] {"NSGA-II"};
 		//String[] algorithmNames = new String[] {"NSGA-III"};
-		String[] algorithmNames = new String[] {"DBEA"};
+		String[] algorithmNames = new String[] {"I-DBEA"};
 		//String[] algorithmNames = new String[] {"SPEA2"};
 		//String[] algorithmNames = new String[] {"IBEA"};
 		//String[] algorithmNames = new String[] {"GA"}
@@ -276,7 +276,7 @@ public class RunSimulationBasedTransitOptimisation {
 				
 					CheckpointAndOutputResult wrapper = new CheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
 				
-				long seed = seed_base;
+				long seed = seed_base*run;
 				
 				log.info("Running population " + run + " (using seed "+ seed + ")... ");	
 				
@@ -285,18 +285,17 @@ public class RunSimulationBasedTransitOptimisation {
 					
 					wrapper.step();			
 					
-//					if (MAX_NFE % POP_SIZE == 0 && wrapper.getNumberOfEvaluations() < MAX_NFE) {
-//						
-//						wrapper.getResult();
-//						
-//						NondominatedPopulation currentResult = algorithm.getResult();
-//						
-//						currentResults.add(currentResult);
-//						processCurrentResults(currentResults, algorithmSeedFolder);
-//							
-//					}
+					if (MAX_NFE % POP_SIZE == 0 && wrapper.getNumberOfEvaluations() < MAX_NFE) {
+						
+						wrapper.getResult();
+						
+						NondominatedPopulation currentResult = algorithm.getResult();
+						
+						currentResults.add(currentResult);
+						processCurrentResults(currentResults, algorithmSeedFolder);
+							
+					}
 
-					
 				}
 				
 				NondominatedPopulation finalResult = algorithm.getResult();
