@@ -24,6 +24,8 @@
 package playground.onnene.afc;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,15 +59,110 @@ import org.matsim.up.utils.Header;
  */
 public class AfcDailyPopulationBuilder {
 	final private static Logger LOG = Logger.getLogger(AfcDailyPopulationBuilder.class);
-	private Scenario sc;
+	private static Scenario sc;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		Header.printHeader(AfcDailyPopulationBuilder.class, args);
-		run(args);		
-		Header.printFooter();
+		
+	
+		String monthlyAfcTripChainsDataDir = "./input/AFC_data/";
+		
+		File[] afcTripChains = new File(monthlyAfcTripChainsDataDir).listFiles();
+		
+		for (File chains : afcTripChains) {
+			
+			if (chains.isDirectory()) {
+		
+			String dailyTripChainsDir = chains.getAbsolutePath() + File.separator;
+			
+			System.out.println("outer: " + dailyTripChainsDir);
+		 
+			File[] dailyChains = new File(dailyTripChainsDir).listFiles();
+			
+			
+			
+			for (File dc: dailyChains) {
+			
+	
+				if (dc.isDirectory()) {
+				
+					String input =  dc.getAbsolutePath();
+					
+					System.out.println("chains: " + input);
+					
+					//File out = new File(dailyTripChainsDir + dc.getName().substring(0,8) + "_tripChains");
+					
+					String date = dc.getName().substring(0,8);
+					
+					String tripFile = input+ File.separator + date + "_tripChain.csv";
+					System.out.println("tripFie: " + tripFile);
+					
+					String network = "./input/gtfsInputs/gtfsOutput/transitNetwork.xml";
+					String populationFile = dailyTripChainsDir + date + "_tripChains" + File.separator+ "plan.xml";
+					
+					System.out.println("pop: " + populationFile);
+					
+					//System.out.println("out: " + out);
+					
+					//if (!out.exists()){
+				        //out.mkdir();
+				        
+					//}
+					
+					//String output = out + File.separator + dc.getName().substring(0,8) + "_tripChain.csv"; 
+					
+					//System.out.println("output: " + output);
+					
+					AfcDailyPopulationBuilder apb = new AfcDailyPopulationBuilder(network);
+					Map<Id<Person>, List<String>> personMap = apb.parseTrips(tripFile);
+					int ridership = apb.buildPopulation(personMap);
+					apb.writePopulationToFile(populationFile);
+					
+					
+				
+				try (FileWriter writer = new FileWriter(dailyTripChainsDir + "dailyRidership.csv", true)) {
+
+				      StringBuilder sb = new StringBuilder();
+				      //sb.append("Date");
+				      //sb.append(',');
+				      //sb.append("Ridership");
+				      //sb.append('\n');
+
+				      sb.append(date);
+				      sb.append(',');
+				      sb.append(ridership);
+				      sb.append('\n');
+
+				      writer.write(sb.toString());
+
+				      System.out.println("done!");
+
+				    } catch (IOException e) {
+				      System.out.println(e.getMessage());
+				    
+				   }
+				
+			}
+				 
+			}
+			}
+				//"./input/AFC_data/April_2016/20160404.csv.gz"
+				//"./input/gtfsInputs/stops.txt/"
+				//"./input/gtfsInputs/gtfsOutput/transitNetwork.xml/"
+				//"./input/gtfsInputs/gtfsOutput/transitSchedule.xml/"
+				//"./input/AFC_data/April_2016/trip_chain.csv/"
+			
+			
+			
+			
+		
+		}
+		
+		//run(args);		
+				Header.printFooter();
 	}
 	
 	public static void run(String[] args) {
@@ -79,13 +176,11 @@ public class AfcDailyPopulationBuilder {
 		apb.writePopulationToFile(populationFile);
 	}
 	
-
 	public AfcDailyPopulationBuilder(String network) {
 		this.sc = ScenarioUtils.createScenario(ConfigUtils.createConfig());
 		new MatsimNetworkReader(this.sc.getNetwork()).readFile(network);
 	}
 
-	
 	/**
 	 * Reads the trips from file and groups the records per person.
 	 *  
@@ -127,7 +222,8 @@ public class AfcDailyPopulationBuilder {
 	
 	
 	
-	public void buildPopulation(Map<Id<Person>, List<String>> map) {
+	public int buildPopulation(Map<Id<Person>, List<String>> map) {
+
 		
 		for(Id<Person> pId : map.keySet()) {
 			Person person = this.sc.getPopulation().getFactory().createPerson(pId);
@@ -221,17 +317,20 @@ public class AfcDailyPopulationBuilder {
 			}
 			person.addPlan(plan);
 			this.sc.getPopulation().addPerson(person);
+			
 		}
 		
+		
 		LOG.info("Number of persons in population: " + this.sc.getPopulation().getPersons().size());
+		
+		return this.sc.getPopulation().getPersons().size();
+		
 	}
 	
 	public void writePopulationToFile(String output) {
 		new PopulationWriter(this.sc.getPopulation()).write(output);
 	}
 	
-	
-	
-	
+
 
 }

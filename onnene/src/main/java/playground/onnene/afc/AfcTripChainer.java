@@ -22,11 +22,12 @@
  * 
  */
 package playground.onnene.afc;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,69 @@ public class AfcTripChainer {
 	 */
 	public static void main(String[] args) {
 		Header.printHeader(AfcTripChainer.class, args);
-		run(args);
+		
+		String monthlyAfcTripChainsDataDir = "./input/AFC_data/";
+		
+		File[] afcTripChains = new File(monthlyAfcTripChainsDataDir).listFiles();
+		
+		System.out.println(Arrays.toString(afcTripChains ));
+		
+		for (File chains : afcTripChains) {
+			
+			if (chains.isDirectory()) {
+		
+			String dailyTripChainsDir = chains.getAbsolutePath() + File.separator;
+		 
+			File[] dailyChains = new File(dailyTripChainsDir).listFiles();
+			
+			
+			
+			for (File dc: dailyChains) {
+	
+				
+				if (!dc.isDirectory() && dc.getName().contains(".csv.gz")) {
+				
+					String input =  dc.getAbsolutePath();
+					
+					System.out.println("chains: " + input);
+					
+					String gtfsStops = "./input/gtfsInputs/stops.txt";
+					String gtfsNetwork = "./input/gtfsInputs/gtfsOutput/transitNetwork.xml";
+					String gtfsSchedule = "./input/gtfsInputs/gtfsOutput/transitSchedule.xml";
+					
+					
+					File out = new File(dailyTripChainsDir + dc.getName().substring(0,8) + "_tripChains"); 
+					
+					System.out.println("out: " + out);
+					
+					if (!out.exists()){
+				        out.mkdir();
+				        
+					}
+					
+					String output = out + File.separator + dc.getName().substring(0,8) + "_tripChain.csv"; 
+					
+					System.out.println("output: " + output);
+					
+					AfcTripChainer atc = new AfcTripChainer(gtfsStops, gtfsNetwork, gtfsSchedule);
+					atc.extractTripChains(input, output);
+				
+				}
+				
+			}
+				
+				//"./input/AFC_data/April_2016/20160404.csv.gz"
+				//"./input/gtfsInputs/stops.txt/"
+				//"./input/gtfsInputs/gtfsOutput/transitNetwork.xml/"
+				//"./input/gtfsInputs/gtfsOutput/transitSchedule.xml/"
+				//"./input/AFC_data/April_2016/trip_chain.csv/"
+			
+			}
+		
+	}
+		
+		
+		//run(args);
 		Header.printFooter();
 	}
 	
@@ -73,11 +136,11 @@ public class AfcTripChainer {
 	 * @param args
 	 */
 	public static void run(String[] args) {
-		String input = args[0];
-		String gtfsStops = args[1];
-		String gtfsNetwork = args[2];
-		String gtfsSchedule = args[3];
-		String output = args[4];
+		String input = args[0]; 		
+		String gtfsStops = args[1];		
+		String gtfsNetwork = args[2];	
+		String gtfsSchedule = args[3];	
+		String output = args[4];		
 		
 		AfcTripChainer atc = new AfcTripChainer(gtfsStops, gtfsNetwork, gtfsSchedule);
 		atc.extractTripChains(input, output);

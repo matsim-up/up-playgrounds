@@ -42,6 +42,7 @@ public class UnzipUtilityRunner {
 		
 		String zipFilePath = "./input/matsimInput/release.zip";
         String destDirectory = "./input/matsimInput/new/";
+        
         UnzipUtility unzipper = new UnzipUtility();
         try {
             unzipper.unzip(zipFilePath, destDirectory);

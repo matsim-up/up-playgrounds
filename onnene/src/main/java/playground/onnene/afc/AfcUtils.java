@@ -28,7 +28,16 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.matsim.core.utils.io.IOUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Utility class with various methods to handle and deal with the City of Cape
@@ -94,6 +103,55 @@ public class AfcUtils {
 		}
 		return abbreviation;
 	}
+	
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		int counter = 0;
+		try {
+			DocumentBuilder builder = factory.newDocumentBuilder();			
+			
+			Document transitSchedule = builder.parse("C:\\Users\\NNNOB\\Documents\\GitHub\\up-playgrounds\\onnene\\input\\AFC_data\\April_2016\\20160430_tripChains\\plan.xml");
+			
+			NodeList transitLines = transitSchedule.getElementsByTagName("transitLine");
+			
+			System.out.println(transitLines.getLength());
+			
+			for (int i = 0; i < transitLines.getLength(); i++) {
+				
+				Node tL = transitLines.item(i);
+				
+				if (tL.getNodeType() == Node.ELEMENT_NODE) {
+					
+					Element transitLine = (Element) tL;
+					String transitLineId = transitLine.getAttribute("id");
+					System.out.println(transitLineId);
+					
+					NodeList transitRoutes = transitLine.getChildNodes();
+					//System.out.println(transitRoutes);
+					
+					
+					
+				}
+				
+			}
+					
+				} catch (ParserConfigurationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		
+	}
+					
+			
 	
 	
 	/**
