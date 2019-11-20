@@ -57,8 +57,8 @@ public class RunSimulationBasedTransitOptimisation {
 	
 	private static final Logger log = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
 	
-    private static final int MAX_NFE = 6;   
-	private static final int POP_SIZE = 3;
+    private static final int MAX_NFE = 300;   
+	private static final int POP_SIZE = 30;
 	private static final int CHECKPOINT_FREQ = POP_SIZE;
 	public static final int MATSIM_ITERATION_NUMBER = 10;
     private static FileOutputStream SEED_FILE, REFSET_TXT, REFSET_PF, MOEA_LOG;
@@ -251,7 +251,7 @@ public class RunSimulationBasedTransitOptimisation {
 					log.info("Evaluating " + algorithmName + "...");
 					
 					Path algorithmOutputFolder = Files.createDirectories(Paths.get("./input/output" + File.separator + algorithmName + File.separator));
-					Path algorithmSeedFolder = Files.createDirectories(Paths.get(algorithmOutputFolder + File.separator + "seed_"+run));
+					Path algorithmSeedFolder = Files.createDirectories(Paths.get(algorithmOutputFolder + File.separator + "Run_"+run));
 					Path checkPointFolder = Files.createDirectories(Paths.get(algorithmSeedFolder.toString() +  File.separator + "checkPoint" + File.separator));
 					Path refsetFolder = Files.createDirectories(Paths.get(algorithmSeedFolder.toString() + File.separator +"referenceSet" + File.separator));
 					
@@ -275,11 +275,12 @@ public class RunSimulationBasedTransitOptimisation {
 						
 					}
 					
-					long seed_base = seedBase + PRNG.nextInt(1000, 10000);
+					//long seed_base = seedBase + PRNG.nextInt(1000, 10000);
 				
 					CheckpointAndOutputResult wrapper = new CheckpointAndOutputResult(algorithm, checkpointFile, outputFile, CHECKPOINT_FREQ);
 				
-				long seed = seed_base*run;
+					long seed = seedBase*run;
+				//long seed = seedBase + PRNG.nextInt(POP_SIZE);
 				
 				log.info("Running population " + run + " (using seed "+ seed + ")... ");	
 				
