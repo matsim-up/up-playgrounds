@@ -56,7 +56,7 @@ import org.moeaframework.util.TypedProperties;
 public class RunSimulationBasedTransitOptimisation {
 	
 	private static final Logger log = Logger.getLogger(RunSimulationBasedTransitOptimisation.class);
-    private static final int MAX_NFE = 450;   
+    private static final int MAX_NFE = 600;   
 	private static final int POP_SIZE = 30;
 	private static final int CHECKPOINT_FREQ = POP_SIZE; 
 	public static final int MATSIM_ITERATION_NUMBER = 10;
