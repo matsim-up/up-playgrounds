@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
+import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.network.NetworkChangeEvent;
@@ -59,31 +60,30 @@ public class TestNetworkChangeEvents {
 		Network network = sc.getNetwork();
 		Collection<NetworkChangeEvent> events = new ArrayList<>();
 		
-		double cache06 = network.getLinks().get(Id.createLinkId("6")).getFlowCapacityPerSec();
-		double cache15 = network.getLinks().get(Id.createLinkId("15")).getFlowCapacityPerSec();
+		for(String s : getLinkIds()) {
+			Link link = network.getLinks().get(Id.createLinkId(s));
+			double originalFlowCapacityPerSecond = link.getFlowCapacityPerSec();
+			
+			/* Reduce the number of lanes by one and make flow capacity zero. */
+			NetworkChangeEvent reduce = new NetworkChangeEvent(Time.parseTime("05:00:00"));
+			reduce.addLink(link);
+			ChangeValue reduceLaneByOne = new ChangeValue(ChangeType.OFFSET_IN_SI_UNITS, -1);
+			reduce.setLanesChange(reduceLaneByOne);
+			ChangeValue reduceFlow = new ChangeValue(ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0);
+			reduce.setFlowCapacityChange(reduceFlow);
+			events.add(reduce);
+			
+			/* Increase the number of lanes by one and set original flow capacity. */
+			NetworkChangeEvent increase = new NetworkChangeEvent(Time.parseTime("08:00:00"));
+			increase.addLink(link);
+			ChangeValue increaseLaneByOne = new ChangeValue(ChangeType.OFFSET_IN_SI_UNITS, 1);
+			increase.setLanesChange(increaseLaneByOne);
+			ChangeValue resetFlow = new ChangeValue(ChangeType.ABSOLUTE_IN_SI_UNITS, originalFlowCapacityPerSecond);
+			increase.setFlowCapacityChange(resetFlow);
+			events.add(increase);
+		}
 		
-		NetworkChangeEvent nceAddOne = new NetworkChangeEvent(Time.parseTime("05:00:00"));
-		nceAddOne.addLink(network.getLinks().get(Id.createLinkId("6")));
-		nceAddOne.addLink(network.getLinks().get(Id.createLinkId("15")));
-		ChangeValue changeAdd = new ChangeValue(ChangeType.OFFSET_IN_SI_UNITS, -1);
-		nceAddOne.setLanesChange(changeAdd);
-		events.add(nceAddOne);
-		
-//		NetworkChangeEvent nceToZero = new NetworkChangeEvent(Time.parseTime("05:00:00"));
-//		nceToZero.addLink(network.getLinks().get(Id.createLinkId("6")));
-//		nceToZero.addLink(network.getLinks().get(Id.createLinkId("15")));
-//		ChangeValue setZero = new ChangeValue(ChangeType.ABSOLUTE_IN_SI_UNITS, 0.0);
-//		nceToZero.setFlowCapacityChange(setZero);
-
-		NetworkChangeEvent nceRemoveOne = new NetworkChangeEvent(Time.parseTime("08:00:00"));
-		nceRemoveOne.addLink(network.getLinks().get(Id.createLinkId("6")));
-		nceRemoveOne.addLink(network.getLinks().get(Id.createLinkId("15")));
-		ChangeValue changeRemove = new ChangeValue(ChangeType.OFFSET_IN_SI_UNITS, +1);
-		nceRemoveOne.setLanesChange(changeRemove);
-		events.add(nceRemoveOne);
-
 		new NetworkChangeEventsWriter().write("/Users/jwjoubert/Downloads/changeEvents.xml", events );
-		
 		
 		/* Now try and read it. */
 		List<NetworkChangeEvent> readEvents = new ArrayList<>();
@@ -91,6 +91,12 @@ public class TestNetworkChangeEvents {
 		p.readFile("/Users/jwjoubert/Downloads/changeEvents.xml");
 		
 		Header.printFooter();
+	}
+	
+	
+	private static String[] getLinkIds() {
+		String[] sa = {"6", "15"};
+		return sa;
 	}
 
 }
