@@ -16,12 +16,10 @@
  *                                                                         *
  * *********************************************************************** */
   
-package playground.onnene.ga;
+package playground.onnene.exampleCode;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import playground.onnene.exampleCode.DirectoryConfig;
 
 public class DirectoryConfigTest {
 
