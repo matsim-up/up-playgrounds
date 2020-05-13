@@ -5,10 +5,13 @@
 .properties
 target
 bin
-input
+input/
 output
 initialPop
 .gitattributes
 
 onnene/src/main/java/playground/onnene/localMachineGA/
 onnene/src/main/java/playground/onnene/exampleCode/
+
+
+
