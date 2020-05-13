@@ -15,10 +15,7 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-  
-/**
- * 
- */
+
 package playground.jwjoubert.projects.ortia;
 
 import java.io.BufferedWriter;
@@ -34,9 +31,9 @@ import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.utils.geometry.CoordinateTransformation;
 import org.matsim.core.utils.geometry.transformations.TransformationFactory;
 import org.matsim.core.utils.io.IOUtils;
-import org.matsim.up.freight.algorithms.complexNetwork.DigicorePathDependentNetworkReader_v2;
-import org.matsim.up.freight.algorithms.complexNetwork.PathDependentNetwork;
-import org.matsim.up.freight.algorithms.complexNetwork.PathDependentNetwork.PathDependentNode;
+import org.matsim.up.freight.algorithms.complexNetworks.DigicorePathDependentNetworkReader_v2;
+import org.matsim.up.freight.algorithms.complexNetworks.PathDependentNetwork;
+import org.matsim.up.freight.algorithms.complexNetworks.PathDependentNetwork.PathDependentNode;
 import org.matsim.up.freight.containers.DigicoreActivity;
 import org.matsim.up.freight.containers.DigicoreChain;
 import org.matsim.up.freight.containers.DigicoreFacility;
@@ -89,8 +86,7 @@ public class OrtiaSubnetworkExtractor {
 	public void extract(String outputFile) {
 		LOG.info("Extracting first and second echelon network nodes...");
 		
-		BufferedWriter bw = IOUtils.getBufferedWriter(outputFile);
-		try {
+		try(BufferedWriter bw = IOUtils.getBufferedWriter(outputFile)){
 			bw.write("echelon,direction,oId,oX,oY,dId,dX,dY");
 			bw.newLine();
 			
@@ -104,13 +100,6 @@ public class OrtiaSubnetworkExtractor {
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Cannot write to " + outputFile);
-		} finally {
-			try {
-				bw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				throw new RuntimeException("Cannot close " + outputFile);
-			}
 		}
 		
 		LOG.info("Done extracting echelon facilities.");
@@ -236,7 +225,6 @@ public class OrtiaSubnetworkExtractor {
 	/**
 	 * Creates a list of {@link DigicoreFacility} {@link Id}s as taken from the
 	 * 2014/03 clustered facilities using (20,20) density-based configuration.
-	 * @return
 	 */
 	private List<Id<Node>> getOrtiaFacilities(){
 		List<Id<Node>> list = new ArrayList<>();

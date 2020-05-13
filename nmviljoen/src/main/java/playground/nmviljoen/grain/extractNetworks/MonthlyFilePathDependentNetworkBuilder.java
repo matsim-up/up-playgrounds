@@ -16,16 +16,14 @@
  *   See also COPYING, LICENSE and WARRANTY file                           *
  *                                                                         *
  * *********************************************************************** */
-/**
- * 
- */
 package playground.nmviljoen.grain.extractNetworks;
 
 import java.io.File;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.matsim.up.freight.algorithms.complexNetwork.PathDependentNetworkBuilder;
+import org.matsim.up.freight.algorithms.complexNetworks.PathDependentNetworkBuilder;
+import org.matsim.up.freight.utils.DigicoreChainCleaner;
 import org.matsim.up.utils.Header;
 
 import playground.nmviljoen.grain.GrainUtils;

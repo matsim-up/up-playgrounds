@@ -45,9 +45,8 @@ import org.matsim.core.utils.misc.Counter;
 import org.matsim.facilities.ActivityFacilities;
 import org.matsim.facilities.ActivityFacility;
 import org.matsim.facilities.MatsimFacilitiesReader;
-import org.matsim.up.freight.algorithms.complexNetwork.DigicorePathDependentNetworkReader_v2;
-import org.matsim.up.freight.algorithms.complexNetwork.PathDependentNetwork;
-import org.matsim.up.freight.algorithms.complexNetwork.PathDependentNetwork.PathDependentNode;
+import org.matsim.up.freight.algorithms.complexNetworks.DigicorePathDependentNetworkReader_v2;
+import org.matsim.up.freight.algorithms.complexNetworks.PathDependentNetwork;
 import org.matsim.up.utils.FileUtils;
 import org.matsim.up.utils.Header;
 
@@ -173,8 +172,6 @@ public class FacilityMatcher {
 	/**
 	 * Reads an {@link ActivityFacilities} file, and building a {@link QuadTree}
 	 * from them.
-	 * @param filename
-	 * @return
 	 */
 	public QuadTree<ActivityFacility> buildFacilitiesQT(ActivityFacilities facilities){
 		log.info("Populating the QuadTree of facilities.");
@@ -420,7 +417,7 @@ public class FacilityMatcher {
 		Iterator<Id<Node>> inIterator = network.getConnectedInNodeIds(nodeId).iterator();
 		while(inIterator.hasNext()){
 			Id<Node> inNodeId = inIterator.next();
-			PathDependentNode inNode = network.getPathDependentNode(inNodeId);
+			PathDependentNetwork.PathDependentNode inNode = network.getPathDependentNode(inNodeId);
 			
 			for(int i = 0; i < level; i++){
 				
@@ -456,7 +453,7 @@ public class FacilityMatcher {
 		Iterator<Id<Node>> outIterator = network.getConnectedOutNodeIds(nodeId).iterator();
 		while(outIterator.hasNext()){
 			Id<Node> outNodeId = outIterator.next();
-			PathDependentNode outNode = network.getPathDependentNode(outNodeId);
+			PathDependentNetwork.PathDependentNode outNode = network.getPathDependentNode(outNodeId);
 			
 			/*FIXME Remove after debugging. */
 			if(outNode == null){
