@@ -41,7 +41,7 @@ public class ConvertGtfsToMatsimTransit {
 	}
 	
 	public static void run(String[] args) {
-		String gtfsFile = "./input/31Mar2018_MyCiTi_gtfs.zip";
+		String gtfsFile = "./input/gtfsInputs/31Mar2018_MyCiTi_gtfs.zip";
 		String outputFolder = "./input/gtfsInputs/gtfsOutput/";
 		//String gtfsFile = DirectoryConfig.GTFS_FEED;
 		//String outputFolder = DirectoryConfig.COMPRESSED_GTFS_GZIP_DIRECTORY;
